@@ -34,11 +34,15 @@ export default class Setup extends Scene {
         text: "End time",
       },
     ];
+    this.inputElements = [];
   }
 
   async onCreated() {
     this.drawLogo();
     this.createFormElement();
+    setTimeout(() => {
+      console.log(this.submittedSettings);
+    }, 30000);
   }
 
   createInputElement(isBig, text) {
@@ -61,7 +65,9 @@ export default class Setup extends Scene {
     form.classList.add("setup-form");
     document.body.appendChild(form);
     this.inputs.forEach((input) => {
-      form.appendChild(this.createInputElement(input.isBig, input.text));
+      const element = this.createInputElement(input.isBig, input.text);
+      form.appendChild(element);
+      this.inputElements = [...this.inputElements, element];
     });
   }
 
@@ -72,5 +78,31 @@ export default class Setup extends Scene {
     logo.scale.y = 0.4;
     logo.y = -window.innerHeight / 3;
     this.addChild(logo);
+  }
+
+  get submittedSettings() {
+    return [
+      {
+        hackatonName: this.inputElements[0].value,
+      },
+      {
+        mainColor: this.inputElements[1].value,
+      },
+      {
+        accentColor: this.inputElements[2].value,
+      },
+      {
+        teams: this.inputElements[3].value.split(","),
+      },
+      {
+        topics: this.inputElements[4].value.split(","),
+      },
+      {
+        startTime: this.inputElements[5].value,
+      },
+      {
+        endTime: this.inputElements[6].value,
+      },
+    ];
   }
 }
