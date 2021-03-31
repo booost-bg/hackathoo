@@ -1,4 +1,5 @@
 import Scene from "./Scene";
+import { Sprite } from "pixi.js";
 
 export default class Setup extends Scene {
   constructor() {
@@ -36,6 +37,7 @@ export default class Setup extends Scene {
   }
 
   async onCreated() {
+    this.drawLogo();
     this.createFormElement();
   }
 
@@ -53,5 +55,14 @@ export default class Setup extends Scene {
     this.inputs.forEach((input) => {
       form.appendChild(this.createInputElement(input.isBig, input.text));
     });
+  }
+
+  drawLogo() {
+    const logo = new Sprite.from("logo");
+    logo.anchor.set(0.5);
+    logo.scale.x = 0.4;
+    logo.scale.y = 0.4;
+    logo.y = -window.innerHeight / 3;
+    this.addChild(logo);
   }
 }
