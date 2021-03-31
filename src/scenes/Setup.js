@@ -6,31 +6,38 @@ export default class Setup extends Scene {
     super();
     this.inputs = [
       {
-        isBig: false,
+        element: "input",
+        type: "text",
         text: "Hackaton Name",
       },
       {
-        isBig: false,
+        element: "input",
+        type: "color",
         text: "Main Color",
       },
       {
-        isBig: false,
+        element: "input",
+        type: "color",
         text: "Accent Color",
       },
       {
-        isBig: true,
+        element: "textarea",
+        type: "text-area",
         text: "Teams (separated by comas)",
       },
       {
-        isBig: true,
+        element: "textarea",
+        type: "text-area",
         text: "Topics (separated by comas)",
       },
       {
-        isBig: false,
+        element: "input",
+        type: "datetime-local",
         text: "Start time",
       },
       {
-        isBig: false,
+        element: "input",
+        type: "datetime-local",
         text: "End time",
       },
     ];
@@ -42,30 +49,59 @@ export default class Setup extends Scene {
     this.createFormElement();
     setTimeout(() => {
       console.log(this.submittedSettings);
-    }, 30000);
+    }, 40000);
   }
 
-  createInputElement(isBig, text) {
-    const input = document.createElement("input");
-
-    input.addEventListener(
-      "focus",
-      () => {
-        input.value = "";
-      },
-      { once: true }
-    );
-    input.classList.add(isBig ? "input-big" : "input-small");
-    input.value = text;
+  createInputElement(element, type, text) {
+    const input = document.createElement(element);
+    Object.assign(input.style, {
+      "box-sizing": "border-box",
+      width: "100%",
+      resize: "none",
+      margin: "7px",
+      padding: "15px",
+      "font-size": "16px",
+      "min-height": "54px",
+    });
+    input.placeholder = text;
+    if (element !== "textarea") {
+      input.type = "text";
+      input.addEventListener(
+        "focus",
+        () => {
+          input.type = type;
+        },
+        { once: true }
+      );
+    } else {
+      input.rows = "20";
+    }
     return input;
   }
 
   createFormElement() {
     const form = document.createElement("form");
+    Object.assign(form.style, {
+      "align-self": "center",
+      "justify-self": "center",
+      display: "flex",
+      "flex-direction": "column",
+      height: "550px",
+      width: "420px",
+      position: "relative",
+      top: "-75vh",
+      "justify-content": "space-between",
+      "box-sizing": "border-box",
+    });
+
     form.classList.add("setup-form");
     document.body.appendChild(form);
     this.inputs.forEach((input) => {
-      const element = this.createInputElement(input.isBig, input.text);
+      const element = this.createInputElement(
+        input.element,
+        input.type,
+        input.text
+      );
       form.appendChild(element);
       this.inputElements = [...this.inputElements, element];
     });
@@ -81,28 +117,20 @@ export default class Setup extends Scene {
   }
 
   get submittedSettings() {
-    return [
-      {
-        hackatonName: this.inputElements[0].value,
-      },
-      {
-        mainColor: this.inputElements[1].value,
-      },
-      {
-        accentColor: this.inputElements[2].value,
-      },
-      {
-        teams: this.inputElements[3].value.split(","),
-      },
-      {
-        topics: this.inputElements[4].value.split(","),
-      },
-      {
-        startTime: this.inputElements[5].value,
-      },
-      {
-        endTime: this.inputElements[6].value,
-      },
-    ];
+    return {
+      hackatonName: this.inputElements[0].value,
+
+      mainColor: this.inputElements[1].value,
+
+      accentColor: this.inputElements[2].value,
+
+      teams: this.inputElements[3].value.split(","),
+
+      topics: this.inputElements[4].value.split(","),
+
+      startTime: this.inputElements[5].value,
+
+      endTime: this.inputElements[6].value,
+    };
   }
 }
