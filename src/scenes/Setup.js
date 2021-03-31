@@ -43,8 +43,16 @@ export default class Setup extends Scene {
 
   createInputElement(isBig, text) {
     const input = document.createElement("input");
+
+    input.addEventListener(
+      "focus",
+      () => {
+        input.value = "";
+      },
+      { once: true }
+    );
     input.classList.add(isBig ? "input-big" : "input-small");
-    input.innerText = text;
+    input.value = text;
     return input;
   }
 
