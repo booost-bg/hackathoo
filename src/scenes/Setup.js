@@ -1,46 +1,11 @@
 import Scene from "./Scene";
 import { Sprite } from "pixi.js";
+import config from "../config";
 
 export default class Setup extends Scene {
   constructor() {
     super();
-    this.inputs = [
-      {
-        element: "input",
-        type: "text",
-        text: "Hackaton Name",
-      },
-      {
-        element: "input",
-        type: "color",
-        text: "Main Color",
-      },
-      {
-        element: "input",
-        type: "color",
-        text: "Accent Color",
-      },
-      {
-        element: "textarea",
-        type: "text-area",
-        text: "Teams (separated by comas)",
-      },
-      {
-        element: "textarea",
-        type: "text-area",
-        text: "Topics (separated by comas)",
-      },
-      {
-        element: "input",
-        type: "datetime-local",
-        text: "Start time",
-      },
-      {
-        element: "input",
-        type: "datetime-local",
-        text: "End time",
-      },
-    ];
+    this.inputs = config.scenes.Setup.inputs;
     this.inputElements = [];
   }
 

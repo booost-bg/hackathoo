@@ -21,6 +21,45 @@ export default {
     Splash: {
       hideDelay: 0,
     },
+    Setup: {
+      inputs: [
+        {
+          element: "input",
+          type: "text",
+          text: "Hackaton Name",
+        },
+        {
+          element: "input",
+          type: "color",
+          text: "Main Color",
+        },
+        {
+          element: "input",
+          type: "color",
+          text: "Accent Color",
+        },
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Teams (separated by comas)",
+        },
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Topics (separated by comas)",
+        },
+        {
+          element: "input",
+          type: "datetime-local",
+          text: "Start time",
+        },
+        {
+          element: "input",
+          type: "datetime-local",
+          text: "End time",
+        },
+      ],
+    },
   },
 
   assets: {
