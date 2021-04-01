@@ -1,10 +1,13 @@
 import { Container } from "pixi.js";
 import { pad } from "../core/utils";
+import { Text } from "pixi.js";
 
 export default class Timer extends Container {
   constructor() {
     super();
     this.createCountdownTimer();
+    this.timer = null;
+    this.sortableChildren = true;
   }
   getDates() {
     const settings = JSON.parse(localStorage.getItem("hackathonSettings"));
@@ -24,7 +27,7 @@ export default class Timer extends Container {
     const { startDate, endDate } = this.getDates();
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
-    const timer = setInterval(() => {
+    setInterval(() => {
       let distance = endDateTime - startDateTime;
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
@@ -32,8 +35,45 @@ export default class Timer extends Container {
       );
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      const allHours = days * 24 + hours;
       startDateTime += 1000;
-      console.log(days + "d " + hours + "h " + minutes + "m " + seconds + "s ");
+      this.timer = `${pad(allHours)}:${pad(minutes)}:${pad(seconds)}`;
+      this.drawTimer();
     }, 1000);
+  }
+
+  drawTimer() {
+    this.removeChildren();
+    const mainText = new Text(this.timer, {
+      fill: "#ffffff",
+      fontFamily: "Verdana, Geneva, sans-serif",
+      fontSize: 150,
+      fontWeight: 800,
+    });
+    mainText.anchor.set(0.5);
+    mainText.zIndex = 1;
+    this.addChild(mainText);
+
+    const blueText = new Text(this.timer, {
+      fill: "#0f25ec",
+      fontFamily: "Verdana, Geneva, sans-serif",
+      fontSize: 150,
+      fontWeight: 800,
+    });
+    blueText.anchor.set(0.5);
+    blueText.zIndex = 0;
+    blueText.x += 7;
+    this.addChild(blueText);
+
+    const redText = new Text(this.timer, {
+      fill: "#ff0000",
+      fontFamily: "Verdana, Geneva, sans-serif",
+      fontSize: 150,
+      fontWeight: 800,
+    });
+    redText.anchor.set(0.5);
+    redText.zIndex = 0;
+    redText.x -= 7;
+    this.addChild(redText);
   }
 }
