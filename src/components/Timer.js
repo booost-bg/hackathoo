@@ -1,6 +1,7 @@
 import { Container } from "pixi.js";
 import { pad } from "../core/utils";
 import { Text } from "pixi.js";
+import gsap from "gsap/all";
 
 /**
  * Represents the timer for the countdown scene.
@@ -14,9 +15,12 @@ export default class Timer extends Container {
      * @var
      */
     this.timer = null;
+    this.blueX = 3;
+    this.redX = -3;
     this.sortableChildren = true;
     this.isPaused = true;
-    this.timerPauseDelay = 10000;
+    this.timerPauseDelay = 0;
+    this.parralax();
   }
 
   /**
@@ -90,26 +94,54 @@ export default class Timer extends Container {
     mainText.zIndex = 1;
     this.addChild(mainText);
 
-    const blueText = new Text(this.timer, {
+    this.blueText = new Text(this.timer, {
       fill: "#0f25ec",
       fontFamily: "Verdana, Geneva, sans-serif",
       fontSize: 150,
       fontWeight: 800,
     });
-    blueText.anchor.set(0.5);
-    blueText.zIndex = 0;
-    blueText.x += 7;
-    this.addChild(blueText);
+    this.blueText.anchor.set(0.5);
+    this.blueText.zIndex = 0;
+    this.blueText.x = this.blueX;
+    this.addChild(this.blueText);
 
-    const redText = new Text(this.timer, {
+    this.redText = new Text(this.timer, {
       fill: "#ff0000",
       fontFamily: "Verdana, Geneva, sans-serif",
       fontSize: 150,
       fontWeight: 800,
     });
-    redText.anchor.set(0.5);
-    redText.zIndex = 0;
-    redText.x -= 7;
-    this.addChild(redText);
+    this.redText.anchor.set(0.5);
+    this.redText.zIndex = 0;
+    this.redText.x = this.redX;
+    this.addChild(this.redText);
+  }
+
+  parralax() {
+    this.request = null;
+    this.mouse = {
+      x: 0,
+      y: 0,
+    };
+    this.cx = window.innerWidth / 2;
+    this.cy = window.innerHeight / 2;
+
+    document.addEventListener("mousemove", (event) => {
+      this.mouse.x = event.pageX;
+      this.mouse.y = event.pageY;
+
+      cancelAnimationFrame(this.request);
+      this.request = requestAnimationFrame(() => this.update());
+    });
+  }
+  update() {
+    if (!this.redText) return;
+    if (this.mouse.x < window.innerWidth / 2) {
+      this.redText.x = -(window.innerWidth / 2 - this.mouse.x) * 0.01;
+      this.redX = -(window.innerWidth / 2 - this.mouse.x + 2) * 0.01;
+    } else if (this.mouse.x > window.innerWidth / 2) {
+      this.blueText.x = (this.mouse.x - window.innerWidth / 2) * 0.01;
+      this.blueX = (this.mouse.x - window.innerWidth / 2) * 0.01;
+    }
   }
 }
