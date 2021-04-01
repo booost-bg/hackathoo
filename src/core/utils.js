@@ -52,5 +52,5 @@ export function random(min, max) {
 }
 
 export function pad(num) {
-  return d < 10 ? "0" + d.toString() : d.toString();
+  return num < 10 ? "0" + num.toString() : num.toString();
 }
