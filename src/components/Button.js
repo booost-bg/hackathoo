@@ -1,3 +1,4 @@
+import { Elastic } from 'gsap/all';
 import gsap from 'gsap/gsap-core';
 import { Container, Graphics, Text } from 'pixi.js';
 
@@ -6,13 +7,21 @@ export default class Button extends Container {
    * @param {Number} width The button width value
    * @param {Number} height The button height value
    * @param {String} text The button text value
+   * @param {String} fontSize The button text font size
    * @param {Number} curveSize The button onclick curve size
    */
-  constructor(width, height, text, curveSize = 10) {
+  constructor({
+    text = 'Example',
+    fontSize = 18,
+    width = 0,
+    height = 0,
+    curveSize = 5,
+  } = {}) {
     super();
     this._width = width;
     this._height = height;
     this._text = text;
+    this._fontSize = fontSize;
     this._curveSize = curveSize;
 
     /**
@@ -44,11 +53,31 @@ export default class Button extends Container {
    * @private
    */
   _init() {
+    this._createText();
     this._createBackground();
+    this._addText();
     this._setBackgroundCurvePath();
     this._drawBackground();
-    this._addText();
     this._addEventListener();
+  }
+
+  /**
+   * @private
+   */
+  _createText() {
+    const buttonText = new Text(this._text, {
+      fill: '0xffffff',
+      fontFamily: 'Raleway',
+      fontSize: 18,
+      fontWeight: 700,
+      align: 'center',
+    });
+
+    buttonText.resolution = 2;
+    buttonText.anchor.set(0.5);
+
+    this._buttonText = buttonText;
+    this.addChild(this._buttonText);
   }
 
   /**
@@ -58,7 +87,20 @@ export default class Button extends Container {
     const background = new Graphics();
 
     this._background = background;
+
+    if (this._width === 0 && this._height === 0) {
+      this._setBackgroundSize();
+    }
     this.addChild(this._background);
+  }
+
+  /**
+   * @private
+   */
+  _addText() {
+    this._buttonText.x = this._width / 2;
+    this._buttonText.y = this._height / 2;
+    this._background.addChild(this._buttonText);
   }
 
   /**
@@ -104,58 +146,63 @@ export default class Button extends Container {
       this._height
     );
     this._background.quadraticCurveTo(this._path.leftX, this._path.leftY, 0, 0);
+    this._background.endFill();
   }
 
   /**
+   * Set background size based of text if no width and height is providet
    * @private
    */
-  _addText() {
-    const text = new Text(this._text, {
-      fill: '0xffffff',
-      fontFamily: 'Raleway',
-      fontSize: 18,
-      fontWeight: 700,
-    });
-
-    text.anchor.set(0.5);
-    text.x = this._background.width / 2;
-    text.y = this._background.height / 2;
-
-    this.addChild(text);
+  _setBackgroundSize() {
+    this._width = this._buttonText.width + 50;
+    this._height = this._buttonText.height + 20;
   }
 
   /**
    * @private
    */
   _addEventListener() {
-    this.on('click', () => {
-      if (this._animationIsPlaying) return;
-      this._animate();
+    this.on('pointerdown', () => {
+      this._contractAnimation();
+    });
+
+    this.on('pointerup', () => {
+      this._resetAnimation();
     });
   }
 
   /**
-   * Button animation
+   * Reset button size on pointerup
    * @private
    */
-  async _animate() {
-    this._animationIsPlaying = true;
-
-    await gsap.to(this._path, {
-      duration: 0.3,
-      topY: -this._curveSize,
-      rightX: this._width + this._curveSize,
-      bottomY: this._height + this._curveSize,
-      leftX: -this._curveSize,
-      repeat: 1,
-      yoyo: true,
-      ease: 'Back.easeInOut',
-
+  _resetAnimation() {
+    gsap.to(this._path, {
+      ease: Elastic.easeOut.config(2.5, 1),
+      duration: 0.4,
+      topY: 0,
+      rightX: this._width,
+      bottomY: this._height,
+      leftX: 0,
       onUpdate: () => {
         this._drawBackground();
       },
     });
+  }
 
-    this._animationIsPlaying = false;
+  /**
+   * Contract button size on pointerdown
+   * @private
+   */
+  async _contractAnimation() {
+    await gsap.to(this._path, {
+      duration: 0.01,
+      topY: this._curveSize,
+      rightX: this._width - this._curveSize,
+      bottomY: this._height - this._curveSize,
+      leftX: this._curveSize,
+      onUpdate: () => {
+        this._drawBackground();
+      },
+    });
   }
 }
