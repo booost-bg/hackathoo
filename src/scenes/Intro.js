@@ -1,5 +1,6 @@
 import Scene from "./Scene";
-import { Sprite, Text, Graphics, Container } from "pixi.js";
+import { Sprite } from "pixi.js";
+import Title from "../components/Title";
 
 export default class Intro extends Scene {
   constructor() {
@@ -18,31 +19,7 @@ export default class Intro extends Scene {
   }
 
   drawTitle() {
-    const container = new Container();
-    container.addChild(this.drawTitleBox());
-    container.addChild(this.createTitleText());
-    this.addChild(container);
-  }
-
-  drawTitleBox() {
-    const box = new Graphics();
-    box.beginFill(0xffffff);
-    box.drawRect(0, 0, 400, 75);
-    box.pivot.x = 200;
-    box.pivot.y = 75 / 2;
-    box.y = 200;
-    return box;
-  }
-
-  createTitleText() {
-    const text = new Text("The missing hackathon app", {
-      fill: "#000000",
-      fontFamily: "sans-serif",
-      fontSize: 30,
-      fontWeight: 400,
-    });
-    text.anchor.set(0.5);
-    text.y = 200;
-    return text;
+    const title = new Title("The missing hackathon app");
+    this.addChild(title);
   }
 }
