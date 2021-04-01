@@ -2,6 +2,9 @@ import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import config from "../config";
 
+/**
+ * Represents the setup scene of the app.
+ */
 export default class Setup extends Scene {
   constructor() {
     super();
@@ -17,6 +20,15 @@ export default class Setup extends Scene {
     }, 40000);
   }
 
+  /**
+   * Creates a dom input element.
+   * @param {string} element
+   * @param {string} type
+   * @param {string} text
+   * @returns DOM element.
+   * @method
+   * @private
+   */
   createInputElement(element, type, text) {
     const input = document.createElement(element);
     Object.assign(input.style, {
@@ -44,6 +56,11 @@ export default class Setup extends Scene {
     return input;
   }
 
+  /**
+   * Creates dom form element.
+   * @method
+   * @private
+   */
   createFormElement() {
     const form = document.createElement("form");
     Object.assign(form.style, {
@@ -72,6 +89,11 @@ export default class Setup extends Scene {
     });
   }
 
+  /**
+   * Renders the app's logo.
+   * @method
+   * @private
+   */
   drawLogo() {
     const logo = new Sprite.from("logo");
     logo.anchor.set(0.5);
@@ -81,6 +103,9 @@ export default class Setup extends Scene {
     this.addChild(logo);
   }
 
+  /**
+   * @returns {Object} Hakcathon's settings.
+   */
   get submittedSettings() {
     const settings = {
       hackatonName: this.inputElements[0].value,
