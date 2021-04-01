@@ -21,8 +21,17 @@ export default {
     Splash: {
       hideDelay: 0,
     },
+    Intro: {
+      Button: {
+        text: "CONTINUE",
+        fontSize: 24,
+        width: 300,
+        height: 50,
+        curveSize: 20,
+      },
+    },
   },
   assets: {
-    root: '/',
+    root: "/",
   },
 };

@@ -1,6 +1,8 @@
 import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import Title from "../components/Title";
+import Button from "../components/Button";
+import config from "../config";
 
 /**
  * Represents the intro scene of the app.
@@ -13,6 +15,7 @@ export default class Intro extends Scene {
   async onCreated() {
     this.drawLogo();
     this.drawTitle();
+    this.drawButton();
   }
 
   /**
@@ -36,5 +39,23 @@ export default class Intro extends Scene {
   drawTitle() {
     const title = new Title("The missing hackathon app");
     this.addChild(title);
+  }
+
+  drawButton() {
+    const button = new Button(config.scenes.Intro.Button);
+    button.pivot.x = 300 / 2;
+    button.pivot.y = 50 / 2;
+    button.y += 300;
+    this.addChild(button);
+
+    button.once("click", this.buttonClickHandler);
+  }
+
+  buttonClickHandler() {
+    this.finishScene();
+  }
+
+  finishScene() {
+    this.emit("finishScene");
   }
 }
