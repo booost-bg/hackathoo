@@ -3,12 +3,17 @@ import { Container, Graphics, Sprite, Text } from 'pixi.js';
 import Button from '../components/Button';
 import gsap, { random } from 'gsap/gsap-core';
 
+/**
+ * Class representing the Topics scene
+ */
 export default class Topics extends Scene {
+  /**
+   * @param {String[]} topics Topics array
+   */
   constructor(topics = ['ONE', 'TWO', 'THREE']) {
     super();
 
     this._topics = topics;
-
     this._container = new Container();
     this._spinning = false;
     this._topicsContainerHeight = null;
@@ -16,18 +21,24 @@ export default class Topics extends Scene {
     this._config = {
       arrowPositionOffset: 470,
       topicGap: 10,
+      topicsScale: 0.9,
+      topicWidth: 820,
+      topicHeight: 250,
     };
 
     this._init();
   }
 
+  /**
+   * @private
+   */
   _init() {
     this._addLogo();
     this._addTopics();
     this._addArrows();
 
+    this._container.scale.set(this._config.topicsScale);
     this.addChild(this._container);
-    this._container.scale.set(0.9);
     this._addButton();
   }
 
@@ -47,6 +58,10 @@ export default class Topics extends Scene {
     this.addChild(logo);
   }
 
+  /**
+   * Spins the topics
+   * @priavte
+   */
   _spinWheel() {
     if (this._spinning) return;
     const containers = this.topicsContainer.children;
@@ -87,9 +102,15 @@ export default class Topics extends Scene {
     });
   }
 
-  async _playArrowAnimation() {
+  /**
+   * Animates the arrows' contraction
+   * @private
+   */
+  _playArrowAnimation() {
     const posOffset = this._config.arrowPositionOffset - 100;
+
     if (this.arrowAnimation) this.arrowAnimation.clear();
+    
     this.arrowAnimation = gsap.timeline()
       .to(this._leftArrow, {
         keyframes: [
@@ -117,6 +138,10 @@ export default class Topics extends Scene {
       }, '<');
   }
 
+  /**
+   * Adds the START button to the scene
+   * @private
+   */
   _addButton() {
     const buttonWidth = 300;
     const buttonHeight = 50;
@@ -133,6 +158,10 @@ export default class Topics extends Scene {
     this.addChild(button);
   }
 
+  /**
+   * Adds the yellow arrows to the scene
+   * @private
+   */
   _addArrows() {
     const arrowHeight = 400;
 
@@ -170,14 +199,13 @@ export default class Topics extends Scene {
     );
   }
 
+  /**
+   * Adds the topics container
+   * @private
+   */
   _addTopics() {
-    this._topicsGraphics = [];
-    const topicWidth = 820;
-    const topicHeight = 250;
-
     const mask = new Sprite.from('topicsMask');
     mask.anchor.set(0.5);
-    mask.isMask = true;
     this.topicsContainer = new Container();
     this.topicsContainer.mask = mask;
 
@@ -189,7 +217,14 @@ export default class Topics extends Scene {
 
       const topicBackground = new Graphics();
       topicBackground.beginFill(0xFFFFFF);
-      topicBackground.drawRect(-topicWidth / 2, -topicHeight / 2, topicWidth, topicHeight);
+
+      topicBackground.drawRect(
+        -this._config.topicWidth / 2,
+        -this._config.topicHeight / 2,
+        this._config.topicWidth,
+        this._config.topicHeight
+      );
+
       topicBackground.endFill();
       topicBackground.tint = 0xFF00C7;
 
@@ -205,7 +240,7 @@ export default class Topics extends Scene {
       topicText.anchor.set(0.5);
       topicText.resolution = 2;
       topicContainer.addChild(topicBackground, topicText);
-      topicContainer.position.y = (i + 1) * (topicHeight + this._config.topicGap);
+      topicContainer.position.y = (i + 1) * (this._config.topicHeight + this._config.topicGap);
 
       this.topicsContainer.addChild(topicContainer);
     }
