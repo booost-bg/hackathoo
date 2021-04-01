@@ -22,6 +22,13 @@ export default {
       hideDelay: 0,
     },
     Setup: {
+      Button: {
+        text: "CONTINUE",
+        fontSize: 24,
+        width: 367,
+        height: 53,
+        curveSize: 20,
+      },
       inputs: [
         {
           element: "input",

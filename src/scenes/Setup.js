@@ -1,6 +1,7 @@
 import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import config from "../config";
+import Button from "../components/Button";
 
 /**
  * Represents the setup scene of the app.
@@ -15,6 +16,7 @@ export default class Setup extends Scene {
   async onCreated() {
     this.drawLogo();
     this.createFormElement();
+    this.drawButton();
     setTimeout(() => {
       console.log(this.submittedSettings);
     }, 40000);
@@ -71,7 +73,7 @@ export default class Setup extends Scene {
       height: "550px",
       width: "420px",
       position: "relative",
-      top: "-75vh",
+      top: "-80vh",
       "justify-content": "space-between",
       "box-sizing": "border-box",
     });
@@ -99,7 +101,7 @@ export default class Setup extends Scene {
     logo.anchor.set(0.5);
     logo.scale.x = 0.4;
     logo.scale.y = 0.4;
-    logo.y = -window.innerHeight / 3;
+    logo.y = -window.innerHeight / 2.7;
     this.addChild(logo);
   }
 
@@ -124,5 +126,24 @@ export default class Setup extends Scene {
     };
     localStorage.setItem("hackathonSettings", JSON.stringify(settings));
     return settings;
+  }
+
+  drawButton() {
+    const buttonConfig = config.scenes.Setup.Button;
+    const button = new Button(buttonConfig);
+    button.pivot.x = buttonConfig.width / 2;
+    button.pivot.y = buttonConfig.height / 2;
+    button.y += 300;
+    this.addChild(button);
+
+    button.once("click", () => this.buttonClickHandler);
+  }
+
+  buttonClickHandler() {
+    this.finishScene();
+  }
+
+  finishScene() {
+    this.emit("finishScene");
   }
 }
