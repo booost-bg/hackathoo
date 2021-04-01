@@ -136,7 +136,7 @@ export default class Setup extends Scene {
     button.y += 300;
     this.addChild(button);
 
-    button.once("click", () => this.buttonClickHandler);
+    button.once("click", () => this.buttonClickHandler());
   }
 
   buttonClickHandler() {
