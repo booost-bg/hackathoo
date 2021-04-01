@@ -4,6 +4,7 @@ import Topics from './scenes/Topics';
 import Splash from "./scenes/Splash";
 import Play from "./scenes/Play";
 import { Container } from "pixi.js";
+import Countdown from "./scenes/Countdown";
 
 /**
  * Main game stage, manages scenes/levels.
