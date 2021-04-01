@@ -68,7 +68,7 @@ export default class Button extends Container {
     const buttonText = new Text(this._text, {
       fill: '0xffffff',
       fontFamily: 'Raleway',
-      fontSize: 18,
+      fontSize: this._fontSize,
       fontWeight: 700,
       align: 'center',
     });
@@ -176,6 +176,13 @@ export default class Button extends Container {
    * @private
    */
   _resetAnimation() {
+    gsap.to(this._buttonText.scale, {
+      ease: Elastic.easeOut.config(3, 0.7),
+      x: 1,
+      y: 1,
+      duration: 0.6,
+    });
+
     gsap.to(this._path, {
       ease: Elastic.easeOut.config(3, 0.7),
       duration: 0.6,
@@ -194,6 +201,12 @@ export default class Button extends Container {
    * @private
    */
   async _contractAnimation() {
+    gsap.to(this._buttonText.scale, {
+      x: 0.9,
+      y: 0.9,
+      duration: 0.07,
+    });
+
     await gsap.to(this._path, {
       duration: 0.07,
       topY: this._curveSize,
