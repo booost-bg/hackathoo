@@ -1,13 +1,17 @@
 import Scene from './Scene';
 import { Container, Graphics, Sprite, Text } from 'pixi.js';
+import Button from '../components/Button';
+import gsap, { random } from 'gsap/gsap-core';
 
 export default class Topics extends Scene {
-  constructor(topics = ['TOPIC 1', 'TOPIC 2', 'TOPIC 3', 'TOPIC 4', 'TOPIC 5']) {
+  constructor(topics = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']) {
     super();
 
     this._topics = topics;
 
     this._container = new Container();
+    this.arrowPositionOffset = 470;
+    this.spinning = false;
 
     this._init();
   }
@@ -18,7 +22,8 @@ export default class Topics extends Scene {
     this._addArrows();
 
     this.addChild(this._container);
-    this._container.scale.set(0.8);
+    this._container.scale.set(0.9);
+    this._addButton();
   }
 
   /**
@@ -37,9 +42,99 @@ export default class Topics extends Scene {
     this.addChild(logo);
   }
 
+  _spinWheel() {
+    if (this.spinning) return;
+    const containers = this.topicsContainer.children;
+    const topPosition = containers[0].position.y;
+    const botPosition = containers[containers.length - 1].position.y;
+
+    const arrowBounds = this._leftArrow.getBounds();
+    const arrowPoint = arrowBounds.y + (arrowBounds.height / 2);
+
+    this.spinning = true;
+    const dummyObj = {
+      y: random(7, 10),
+    };
+
+    let selectedTopic = null;
+
+    gsap.to(dummyObj, {
+      y: 0,
+      duration: 10,
+      onComplete: () => this.spinning = false,
+      onUpdate: () => {
+        containers.forEach((topic) => {
+          topic.position.y += dummyObj.y;
+          const topicBounds = topic.getBounds();
+
+          if ((arrowPoint > topicBounds.y) && (arrowPoint < (topicBounds.y + topicBounds.height))) {
+            topic.children[0].tint = 0xFFFFFF;
+
+            if (selectedTopic !== topic) {
+              this._playArrowAnimation();
+              selectedTopic = topic;
+            }
+          } else {
+            topic.children[0].tint = 0xFF00C7;
+          }
+
+          if (topic.position.y >= (botPosition + topic.height)) {
+            topic.position.y = topPosition - 10;
+          }
+        });
+      },
+      repeat: 0,
+    });
+  }
+
+  async _playArrowAnimation() {
+    const posOffset = this.arrowPositionOffset - 100;
+    if (this.arrowAnimation) this.arrowAnimation.clear();
+    this.arrowAnimation = gsap.timeline()
+      .to(this._leftArrow, {
+        keyframes: [
+          { x: -posOffset, duration: 0.2 }, 
+          { x: -this.arrowPositionOffset, ease: 'power1.in', duration: 0.3 }
+        ] 
+      })
+      .to(this._rightArrow, {
+        keyframes: [
+          { x: posOffset, duration: 0.2 }, 
+          { x: this.arrowPositionOffset, ease: 'power1.in', duration: 0.3 }
+        ]
+      }, '<')
+      .to(this._leftArrowSmall, {
+        keyframes: [
+          { x: -posOffset - 150, duration: 0.2 }, 
+          { x: -this.arrowPositionOffset - 150, ease: 'power1.in', duration: 0.3 }
+        ] 
+      }, '<')
+      .to(this._rightArrowSmall, {
+        keyframes: [
+          { x: posOffset + 150, duration: 0.2 }, 
+          { x: this.arrowPositionOffset + 150, ease: 'power1.in', duration: 0.3 }
+        ] 
+      }, '<');
+  }
+
+  _addButton() {
+    const buttonWidth = 300;
+    const buttonHeight = 50;
+    const button = new Button({ 
+      text: 'START',
+      width: buttonWidth,
+      height: buttonHeight,
+    });
+    button.position.y = window.innerHeight / 2 - buttonHeight - 20;
+    button.position.x = -buttonWidth / 2;
+
+    button.on('pointerup', this._spinWheel.bind(this));
+
+    this.addChild(button);
+  }
+
   _addArrows() {
     const arrowHeight = 400;
-    const positionOffset = 470;
 
     this._leftArrow = new Graphics();
     this._leftArrow.beginFill(0xFFE500);
@@ -49,21 +144,21 @@ export default class Topics extends Scene {
     this._leftArrow.lineTo(0, 0);
     this._leftArrow.closePath();
     this._leftArrow.endFill();
-    this._leftArrow.position.x = -positionOffset;
+    this._leftArrow.position.x = -this.arrowPositionOffset;
     this._leftArrow.pivot.y = arrowHeight / 2;
 
     this._leftArrowSmall = this._leftArrow.clone();
     this._leftArrowSmall.scale.set(0.5);
-    this._leftArrowSmall.position.x = -(positionOffset + 150);
+    this._leftArrowSmall.position.x = -(this.arrowPositionOffset + 150);
     this._leftArrowSmall.pivot.y = arrowHeight / 2;
 
     this._rightArrow = this._leftArrow.clone();
-    this._rightArrow.position.x = positionOffset;
+    this._rightArrow.position.x = this.arrowPositionOffset;
     this._rightArrow.scale.x = -1;
     this._rightArrow.pivot.y = arrowHeight / 2;
 
     this._rightArrowSmall = this._leftArrow.clone();
-    this._rightArrowSmall.position.x = positionOffset + 150;
+    this._rightArrowSmall.position.x = this.arrowPositionOffset + 150;
     this._rightArrowSmall.scale.set(-0.5, 0.5);
     this._rightArrowSmall.pivot.y = arrowHeight / 2;
 
@@ -83,8 +178,8 @@ export default class Topics extends Scene {
     const mask = new Sprite.from('topicsMask');
     mask.anchor.set(0.5);
     mask.isMask = true;
-    const topicsContainer = new Container();
-    topicsContainer.mask = mask;
+    this.topicsContainer = new Container();
+    this.topicsContainer.mask = mask;
 
     for (let i = 0; i < this._topics.length; i++) {
       const topicContainer = new Container();
@@ -101,17 +196,18 @@ export default class Topics extends Scene {
         fontWeight: 900,
         align: 'center',
         fontStyle: 'italic',
+        padding: 20
       });
 
       topicText.anchor.set(0.5);
       topicText.resolution = 2;
       topicContainer.addChild(topicBackground, topicText);
-      topicContainer.position.y = i * (topicHeight + 5) - ((topicHeight + 5) * (this._topics.length / 2)) + topicHeight / 2;
+      topicContainer.position.y = i * (topicHeight + 10) - ((topicHeight) * (this._topics.length / 2)) + topicHeight / 2;
 
-      topicsContainer.addChild(topicContainer);
+      this.topicsContainer.addChild(topicContainer);
     }
 
-    this._container.addChild(topicsContainer);
+    this._container.addChild(this.topicsContainer);
     this._container.addChild(mask);
   }
 
