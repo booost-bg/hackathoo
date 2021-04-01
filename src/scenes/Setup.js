@@ -17,9 +17,6 @@ export default class Setup extends Scene {
     this.drawLogo();
     this.createFormElement();
     this.drawButton();
-    setTimeout(() => {
-      console.log(this.submittedSettings);
-    }, 40000);
   }
 
   /**
@@ -124,7 +121,6 @@ export default class Setup extends Scene {
 
       endTime: this.inputElements[6].value,
     };
-    localStorage.setItem("hackathonSettings", JSON.stringify(settings));
     return settings;
   }
 
@@ -140,6 +136,10 @@ export default class Setup extends Scene {
   }
 
   buttonClickHandler() {
+    localStorage.setItem(
+      "hackathonSettings",
+      JSON.stringify(this.submittedSettings)
+    );
     this.finishScene();
   }
 
