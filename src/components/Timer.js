@@ -15,6 +15,8 @@ export default class Timer extends Container {
      */
     this.timer = null;
     this.sortableChildren = true;
+    this.isPaused = true;
+    this.timerPauseDelay = 10000;
   }
 
   /**
@@ -54,7 +56,7 @@ export default class Timer extends Container {
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
     setInterval(() => {
-      let distance = endDateTime - startDateTime;
+      const distance = endDateTime - startDateTime;
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -62,7 +64,10 @@ export default class Timer extends Container {
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
       const allHours = days * 24 + hours;
-      startDateTime += 1000;
+      setTimeout(() => {
+        startDateTime += 1000;
+      }, this.timerPauseDelay);
+
       this.timer = `${pad(allHours)}:${pad(minutes)}:${pad(seconds)}`;
       this.drawTimer();
     }, 1000);
