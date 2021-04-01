@@ -3,24 +3,39 @@ import { gsap } from 'gsap/all';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 import { random } from '../core/utils';
 
+/**
+ * Class representing the background and background effects
+ */
 export default class Background extends Container {
-  constructor(
+  /**
+   * @param {Object} colors - Object containing the colors
+   * @param {String} colors.circleColor1 Circle color
+   * @param {String} colors.circleColor2 Second circle color
+   * @param {String} colors.bgColor1 Leftmost background gradient color
+   * @param {String} colors.bgColor2 Rightmost background gradient color
+   */
+  constructor({
     circleColor1 = '#FF00C7', 
     circleColor2 = '#FFE600', 
     bgColor1 = '#5200FF', 
-    bgColor2 = '#A80080'
-  ) {
+    bgColor2 = '#A80080',
+  } = {}) {
     super();
 
     gsap.registerPlugin(PixiPlugin);
     PixiPlugin.registerPIXI(window.PIXI);
 
-    this._config = {
+    this._colors = {
       bgColor1,
       bgColor2,
       circleColor1,
       circleColor2,
-      numberOfCircles: 6
+    };
+
+    this._config = {
+      numberOfCircles: 6,
+      minCircleRadius: 15,
+      maxCircleRadius: 250,
     };
 
     this.name = 'background';
@@ -30,17 +45,44 @@ export default class Background extends Container {
     this._animateCircles();
   }
 
-  changeColors(circleColor1, circleColor2, bgFrom, bgTo) {
-    if (circleColor1 && circleColor2) this._transitionCircleColors(circleColor1, circleColor2);
-    if (bgFrom) this._transitionBgColor({ from: bgFrom, to: (bgTo ? bgTo : bgFrom) });
+  /**
+   * Smoothly transition the background gradient and circle colors
+   * @param {String} circleColor1 Circle color
+   * @param {String} circleColor2 Circle color
+   * @param {String} bgColor1 Leftmost color of the background gradient
+   * @param {String} bgColor2 Rightmost color of the background gradient
+   */
+  changeColors(circleColor1, circleColor2, bgColor1, bgColor2) {
+    if (circleColor1 && circleColor2) {
+      this._transitionCircleColors(circleColor1, circleColor2);
+    }
+
+    if (bgColor1 && bgColor2) {
+      this._transitionBgColor({ from: bgColor1, to: bgColor2 });
+    }
   }
 
+  /**
+   * Resizes the background to fit the window.
+   */
+  resize() {
+    this._updateBgColor(this._colors.bgColor1, this._colors.bgColor2, this._background);
+
+    this._background.x = -window.innerWidth / 2;
+    this._background.y = -window.innerHeight / 2;
+  }
+
+  /**
+   * Animates the circle color change
+   * @param {String} color1 Circle color
+   * @param {String} color2 Circle color
+   * @private
+   */
   _transitionCircleColors(color1, color2) {
     gsap.to(this._circles.filter((circle) => circle.colorIndex), {
       duration: 1,
       pixi: {
         tint: color1,
-        skewX: 2
       }
     });
 
@@ -48,30 +90,34 @@ export default class Background extends Container {
       duration: 1,
       pixi: {
         tint: color2,
-        skewX: 2
       }
     });
   }
   
+  /**
+   * Animates the background gradient color change
+   * @param {Object} bgColors { from: "colorStr", to: "colorStr" }
+   * @private
+   */
   _transitionBgColor(bgColors) {
-    gsap.to(this._config, {
+    gsap.to(this._colors, {
       bgColor1: bgColors.from,
       bgColor2: bgColors.to,
-      duration: 1,
+      duration: 2,
       onUpdate: () => {
-        this._updateBgColor(this._config.bgColor1, this._config.bgColor2);
+        this._updateBgColor(this._colors.bgColor1, this._colors.bgColor2);
       }
     });
   }
 
-  _init() {
-    this._addGradientBackground();
-    this._addCircles();
-  }
-
+  /**
+   * Adds the gradient background
+   * @returns {PIXI.Graphics} Background graphics object
+   * @private
+   */
   _addGradientBackground() {
     const bg = new Graphics();
-    this._updateBgColor(this._config.bgColor1, this._config.bgColor2, bg);
+    this._updateBgColor(this._colors.bgColor1, this._colors.bgColor2, bg);
 
     bg.x = -window.innerWidth / 2;
     bg.y = -window.innerHeight / 2;
@@ -81,13 +127,27 @@ export default class Background extends Container {
     return bg;
   }
 
-  _updateBgColor(color1 = 0xFF00C7, color2 = 0xFFE600, bg = this._background) {
+  /**
+   * Instantly updates the background gradient color
+   * @param {String} color1 Leftmost background color
+   * @param {String} color2 Rightmost background color
+   * @param {PIXI.Graphics} bg Background Graphics object
+   * @private
+   */
+  _updateBgColor(color1 = '#FF00C7', color2 = '#FFE600', bg = this._background) {
     const gradientTexture = this._getGradientTexture(color1, color2);
     bg.clear();
     bg.beginTextureFill(gradientTexture);
     bg.drawRect(0, 0, window.innerWidth, window.innerHeight);
   }
 
+  /**
+   * Get a gradient texture from canvas
+   * @param {String} fromColor Leftmost gradient color
+   * @param {*} toColor Rightmost gradient color
+   * @private
+   * @returns {PIXI.Texture} Gradient texture
+   */
   _getGradientTexture(fromColor, toColor) {
     const canvas = document.createElement('canvas');
     canvas.width = window.innerWidth;
@@ -106,19 +166,22 @@ export default class Background extends Container {
     return Texture.from(canvas);
   }
 
+  /**
+   * Adds randomised circles.
+   * @private
+   * @returns {PIXI.Graphics[]} Circles array
+   */
   _addCircles() {
     const circles = [];
-    const minRadius = 15;
-    const maxRadius = 250;
 
     for (let i = 0; i < this._config.numberOfCircles; i++) {
       const circle = new Graphics();
-      const radius = Math.round(random(minRadius, maxRadius));
+      const radius = Math.round(random(this._config.minCircleRadius, this._config.maxCircleRadius));
       const pos = {
         x: random(window.innerWidth / 3, window.innerWidth / 2) * (Math.random() > 0.5 ? -1 : 1),
         y: random(-window.innerHeight / 2, window.innerHeight / 2),
       };
-      let color = i % 2 ? this._config.circleColor1 : this._config.circleColor2;
+      let color = i % 2 ? this._colors.circleColor1 : this._colors.circleColor2;
       color = parseInt(color.substr(1, color.length), 16);
 
       circle.beginFill(0xFFFFFF);
@@ -135,15 +198,19 @@ export default class Background extends Container {
     return circles;
   }
 
+  /**
+   * Animates the circles' position up and down.
+   * @private
+   */
   _animateCircles() {
     this._circles.forEach(async (circle) => {
       const posTop = -window.innerHeight / random(2, 3);
       const posBottom = window.innerHeight / random(2, 3);
-      const duration = 8 * (1 + circle.radius / 100);
+      const duration = 10 * (1 + circle.radius / 100);
 
       await gsap.to(circle, {
         y: posTop,
-        duration,
+        duration: duration / 1.5,
       });
 
       gsap.to(circle, {
