@@ -25,8 +25,8 @@ export default {
       Button: {
         text: "CONTINUE",
         fontSize: 24,
-        width: 300,
-        height: 50,
+        width: 367,
+        height: 53,
         curveSize: 20,
       },
     },

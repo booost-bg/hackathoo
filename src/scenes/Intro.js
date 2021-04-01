@@ -42,9 +42,10 @@ export default class Intro extends Scene {
   }
 
   drawButton() {
-    const button = new Button(config.scenes.Intro.Button);
-    button.pivot.x = 300 / 2;
-    button.pivot.y = 50 / 2;
+    const buttonConfig = config.scenes.Intro.Button;
+    const button = new Button(buttonConfig);
+    button.pivot.x = buttonConfig.width / 2;
+    button.pivot.y = buttonConfig.height / 2;
     button.y += 300;
     this.addChild(button);
 
