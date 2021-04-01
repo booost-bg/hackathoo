@@ -2,6 +2,10 @@ import Scene from "./Scene";
 import Timer from "../components/Timer";
 import Title from "../components/Title";
 
+/**
+ * Represents the countdown before the hackaton ends.
+ * @class
+ */
 export default class Countdown extends Scene {
   constructor() {
     super();
@@ -11,11 +15,21 @@ export default class Countdown extends Scene {
     this.createTimer();
     this.createTitle();
   }
-
+  /**
+   * Renders the timer for the scene.
+   * @method
+   * @private
+   */
   createTimer() {
     const timer = new Timer();
     this.addChild(timer);
   }
+
+  /**
+   * Renders the scene's title/
+   * @method
+   * @private
+   */
   createTitle() {
     const endTime = JSON.parse(localStorage.getItem("hackathonSettings"))
       .endTime;

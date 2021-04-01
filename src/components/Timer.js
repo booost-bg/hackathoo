@@ -2,13 +2,27 @@ import { Container } from "pixi.js";
 import { pad } from "../core/utils";
 import { Text } from "pixi.js";
 
+/**
+ * Represents the timer for the countdown scene.
+ */
 export default class Timer extends Container {
   constructor() {
     super();
     this.createCountdownTimer();
+    /**
+     * Represents the state of the timer.
+     * @var
+     */
     this.timer = null;
     this.sortableChildren = true;
   }
+
+  /**
+   * Gets the dates for the timer.
+   * @returns {{string, string}} Object with start-date and end-date.
+   * @method
+   * @private
+   */
   getDates() {
     const settings = JSON.parse(localStorage.getItem("hackathonSettings"));
     const startDate = this.parseHtmlDateTime(settings.startTime);
@@ -16,6 +30,13 @@ export default class Timer extends Container {
     return { startDate, endDate };
   }
 
+  /**
+   *
+   * @param {string} dateTime - from Html dateTime type input.
+   * @returns {Object} - Javascript date object.
+   * @method
+   * @private
+   */
   parseHtmlDateTime(dateTime) {
     const dateArr = dateTime.replace(/T|:/g, "-").split("-");
     dateArr[1] = pad(dateArr[1] - 1);
@@ -23,6 +44,11 @@ export default class Timer extends Container {
     return date;
   }
 
+  /**
+   * Creates the countdown timer.
+   * @method
+   * @private
+   */
   createCountdownTimer() {
     const { startDate, endDate } = this.getDates();
     let startDateTime = startDate.getTime();
@@ -42,6 +68,11 @@ export default class Timer extends Container {
     }, 1000);
   }
 
+  /**
+   * Draws the countdown timer.
+   * @method
+   * @private
+   */
   drawTimer() {
     this.removeChildren();
     const mainText = new Text(this.timer, {
