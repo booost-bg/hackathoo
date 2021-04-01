@@ -15,7 +15,7 @@ export default class Button extends Container {
     fontSize = 18,
     width = 0,
     height = 0,
-    curveSize = 5,
+    curveSize = 10,
   } = {}) {
     super();
     this._width = width;
@@ -177,8 +177,8 @@ export default class Button extends Container {
    */
   _resetAnimation() {
     gsap.to(this._path, {
-      ease: Elastic.easeOut.config(2.5, 1),
-      duration: 0.4,
+      ease: Elastic.easeOut.config(3, 0.7),
+      duration: 0.6,
       topY: 0,
       rightX: this._width,
       bottomY: this._height,
@@ -195,7 +195,7 @@ export default class Button extends Container {
    */
   async _contractAnimation() {
     await gsap.to(this._path, {
-      duration: 0.01,
+      duration: 0.07,
       topY: this._curveSize,
       rightX: this._width - this._curveSize,
       bottomY: this._height - this._curveSize,
