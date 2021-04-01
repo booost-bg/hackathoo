@@ -22,8 +22,6 @@ export default class Footer extends Container {
     bg.beginFill(0x000000);
     bg.drawRect(0, 0, window.innerWidth, 70);
     bg.endFill();
-
-    bg.anchor.set(0.5);
     this.addChild(bg);
   }
 

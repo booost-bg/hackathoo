@@ -36,6 +36,8 @@ export default class Background extends Container {
       numberOfCircles: 6,
       minCircleRadius: 15,
       maxCircleRadius: 250,
+      circleAnimationDuration: 50,
+      colorTransitionDuration: 1
     };
 
     this.name = 'background';
@@ -47,12 +49,13 @@ export default class Background extends Container {
 
   /**
    * Smoothly transition the background gradient and circle colors
-   * @param {String} circleColor1 Circle color
-   * @param {String} circleColor2 Circle color
-   * @param {String} bgColor1 Leftmost color of the background gradient
-   * @param {String} bgColor2 Rightmost color of the background gradient
+   * @param {Object} colors Colors object
+   * @param {String} colors.circleColor1 Circle color
+   * @param {String} colors.circleColor2 Circle color
+   * @param {String} colors.bgColor1 Leftmost color of the background gradient
+   * @param {String} colors.bgColor2 Rightmost color of the background gradient
    */
-  changeColors(circleColor1, circleColor2, bgColor1, bgColor2) {
+  changeColors({ circleColor1, circleColor2, bgColor1, bgColor2 }) {
     if (circleColor1 && circleColor2) {
       this._transitionCircleColors(circleColor1, circleColor2);
     }
@@ -80,14 +83,14 @@ export default class Background extends Container {
    */
   _transitionCircleColors(color1, color2) {
     gsap.to(this._circles.filter((circle) => circle.colorIndex), {
-      duration: 1,
+      duration: this._config.colorTransitionDuration,
       pixi: {
         tint: color1,
       }
     });
 
     gsap.to(this._circles.filter((circle) => !circle.colorIndex), {
-      duration: 1,
+      duration: this._config.colorTransitionDuration,
       pixi: {
         tint: color2,
       }
@@ -103,7 +106,7 @@ export default class Background extends Container {
     gsap.to(this._colors, {
       bgColor1: bgColors.from,
       bgColor2: bgColors.to,
-      duration: 2,
+      duration: this._config.colorTransitionDuration,
       onUpdate: () => {
         this._updateBgColor(this._colors.bgColor1, this._colors.bgColor2);
       }
@@ -167,6 +170,23 @@ export default class Background extends Container {
   }
 
   /**
+   * Checks the distance between two circles to see if they overlap.
+   * @param {PIXI.Graphics} circle1 Circle Graphics object
+   * @param {PIXI.Graphics} circle2 Circle Graphics object
+   * @private
+   * @returns {Boolean}
+   */
+  _checkCircleOverlap(circle1, circle2) {
+    if (Math.sqrt((circle2.position.x - circle1.position.x) * (circle2.position.x - circle1.position.x)
+                + (circle2.position.y - circle1.position.y) * (circle2.position.y - circle1.position.y))
+      < (circle1.radius + circle2.radius)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Adds randomised circles.
    * @private
    * @returns {PIXI.Graphics[]} Circles array
@@ -176,20 +196,30 @@ export default class Background extends Container {
 
     for (let i = 0; i < this._config.numberOfCircles; i++) {
       const circle = new Graphics();
-      const radius = Math.round(random(this._config.minCircleRadius, this._config.maxCircleRadius));
-      const pos = {
-        x: random(window.innerWidth / 3, window.innerWidth / 2) * (Math.random() > 0.5 ? -1 : 1),
-        y: random(-window.innerHeight / 2, window.innerHeight / 2),
-      };
+
+      let overlap;
+      do {
+        overlap = false;
+        const pos = {
+          x: random(window.innerWidth / 3, window.innerWidth / 2) * (Math.random() > 0.5 ? -1 : 1),
+          y: random(-window.innerHeight / 2, window.innerHeight / 2),
+        };
+        
+        circle.position.set(pos.x, pos.y);
+        circle.radius = Math.round(random(this._config.minCircleRadius, this._config.maxCircleRadius));
+
+        for (let j = 0; j < circles.length; j++) {
+          if (this._checkCircleOverlap(circles[j], circle)) overlap = true;
+        }
+      } while (overlap);
+
       let color = i % 2 ? this._colors.circleColor1 : this._colors.circleColor2;
       color = parseInt(color.substr(1, color.length), 16);
 
       circle.beginFill(0xFFFFFF);
-      circle.drawCircle(0, 0, radius);
-      circle.radius = radius;
+      circle.drawCircle(0, 0, circle.radius);
       circle.tint = color;
       circle.colorIndex = i % 2;
-      circle.position.set(pos.x, pos.y);
 
       circles.push(circle);
       this.addChild(circle);
@@ -206,7 +236,7 @@ export default class Background extends Container {
     this._circles.forEach(async (circle) => {
       const posTop = -window.innerHeight / random(2, 3);
       const posBottom = window.innerHeight / random(2, 3);
-      const duration = 10 * (1 + circle.radius / 100);
+      const duration = this._config.circleAnimationDuration * (1 + circle.radius / 100);
 
       await gsap.to(circle, {
         y: posTop,
