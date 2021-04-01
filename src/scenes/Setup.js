@@ -82,7 +82,7 @@ export default class Setup extends Scene {
   }
 
   get submittedSettings() {
-    return {
+    const settings = {
       hackatonName: this.inputElements[0].value,
 
       mainColor: this.inputElements[1].value,
@@ -97,5 +97,7 @@ export default class Setup extends Scene {
 
       endTime: this.inputElements[6].value,
     };
+    localStorage.setItem("hackathonSettings", JSON.stringify(settings));
+    return settings;
   }
 }
