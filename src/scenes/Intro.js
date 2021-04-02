@@ -2,7 +2,6 @@ import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import Title from "../components/Title";
 import Button from "../components/Button";
-import config from "../config";
 
 /**
  * Represents the intro scene of the app.
@@ -42,7 +41,14 @@ export default class Intro extends Scene {
   }
 
   drawButton() {
-    const buttonConfig = config.scenes.Intro.Button;
+    const buttonConfig = {
+      text: "CONTINUE",
+      fontSize: 24,
+      width: 367,
+      height: 53,
+      curveSize: 13,
+      y: 350,
+    };
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
     button.pivot.y = buttonConfig.height / 2;
