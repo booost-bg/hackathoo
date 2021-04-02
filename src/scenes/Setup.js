@@ -126,6 +126,11 @@ export default class Setup extends Scene {
     return settings;
   }
 
+  /**
+   * Draws the continue button for the scene switch.
+   * @method
+   * @private
+   */
   drawButton() {
     const buttonConfig = {
       text: "CONTINUE",
@@ -144,6 +149,11 @@ export default class Setup extends Scene {
     button.once("click", () => this.buttonClickHandler());
   }
 
+  /**
+   * Handles Continue button click.
+   * @method
+   * @private
+   */
   buttonClickHandler() {
     localStorage.setItem(
       "hackathonSettings",
@@ -152,10 +162,20 @@ export default class Setup extends Scene {
     this.finishScene();
   }
 
+  /**
+   * Emits an event.
+   * @method
+   * @private
+   */
   finishScene() {
-    this.emit("finishScene");
+    this.emit("finishScene", { settings: this.submittedSettings });
   }
 
+  /**
+   * Renders the background of the scene.
+   * @method
+   * @private
+   */
   renderBackground() {
     const background = new Background();
     this.addChild(background);
