@@ -2,6 +2,7 @@ import Scene from './Scene';
 import { Container, Graphics, Sprite, Text } from 'pixi.js';
 import Button from '../components/Button';
 import gsap, { random } from 'gsap/gsap-core';
+import Background from '../components/Background';
 
 /**
  * Class representing the Topics scene
@@ -10,21 +11,28 @@ export default class Topics extends Scene {
   /**
    * @param {String[]} topics Topics array
    */
-  constructor(topics = ['ONE', 'TWO', 'THREE']) {
+  constructor(topics = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX']) {
     super();
 
     this._topics = topics;
     this._container = new Container();
     this._spinning = false;
     this._topicsContainerHeight = null;
-    this._arrowAnimation = gsap.timeline();
 
     this._config = {
+      arrowAnimationOffset: 10,
       arrowPositionOffset: 470,
       topicGap: 6,
       topicsScale: 0.9,
       topicWidth: 820,
       topicHeight: 250,
+      minSpinSpeed: 10,
+      maxSpinSpeed: 18,
+      spinDuration: 10,
+      startButton: {
+        width: 300,
+        height: 50,
+      }
     };
 
     this._init();
@@ -34,6 +42,7 @@ export default class Topics extends Scene {
    * @private
    */
   _init() {
+    this._addBackground();
     this._addLogo();
     this._addTopics();
     this._addArrows();
@@ -44,8 +53,16 @@ export default class Topics extends Scene {
   }
 
   /**
+   * Adds the background to the scene
+   * @private
+   */
+  _addBackground() {
+    const background = new Background();
+    this.addChild(background);
+  }
+
+  /**
    * Renders the app's logo.
-   * @method
    * @private
    */
   _addLogo() {
@@ -71,7 +88,7 @@ export default class Topics extends Scene {
     
     this._spinning = true;
     const dummyObj = {
-      y: random(10, 20),
+      y: random(this._config.minSpinSpeed, this._config.maxSpinSpeed),
     };
 
     let selectedTopic = null;
@@ -90,7 +107,7 @@ export default class Topics extends Scene {
             topic.children[0].tint = 0xFFFFFF;
 
             if (selectedTopic !== topic) {
-              this._playArrowAnimation(dummyObj.y);
+              this._playArrowAnimation();
               selectedTopic = topic;
             }
           } else {
@@ -108,50 +125,28 @@ export default class Topics extends Scene {
    * Animates the arrows' contraction
    * @private
    */
-  _playArrowAnimation(speed) {
-    // const posOffset = this._config.arrowPositionOffset - 100;
-    const animationOffset = 100 // 5 * speed + 20;
-    // if (this._arrowAnimation && this._arrowAnimation.isActive()) return;
-    if (this.arrowAnimation) this.arrowAnimation.kill();
-    
-    this.arrowAnimation = gsap.timeline()
-      .to([this._leftArrow, this._leftArrowSmall, this._rightArrow, this._rightArrowSmall], {
+  _playArrowAnimation() {
+
+    gsap
+      .to(this._arrows, {
         keyframes: [
           { x: (_, target) => {
-            return target.startPos + (animationOffset * target.scale.x);
+            return target.startPos + (this._config.arrowAnimationOffset * target.scale.x);
+          },
+          pixi: {
+            tint: 0xFFF7B3
           },
           ease: 'power1.inOut',
-          duration: 0.2 }, 
+          duration: 0.1 }, 
           { x: (_, target) => target.startPos,
+            pixi: {
+              tint: 0xFFE500,
+            },
             ease: 'power1.inOut',
-            duration: 0.3 }
+            duration: 0.15 
+          }
         ] 
       });
-    // this._arrowAnimation = gsap.timeline()
-    //   .to(this._leftArrow, {
-    //     keyframes: [
-    //       { x: -posOffset, ease: 'power1.inOut', duration: 0.2 }, 
-    //       { x: -this._config.arrowPositionOffset, ease: 'power1.inOut', duration: 0.2 }
-    //     ] 
-    //   })
-    //   .to(this._rightArrow, {
-    //     keyframes: [
-    //       { x: posOffset, ease: 'power1.inOut', duration: 0.2 }, 
-    //       { x: this._config.arrowPositionOffset, ease: 'power1.inOut', duration: 0.2 }
-    //     ]
-    //   }, '<')
-    //   .to(this._leftArrowSmall, {
-    //     keyframes: [
-    //       { x: -posOffset - 150, ease: 'power1.inOut', duration: 0.2 }, 
-    //       { x: -this._config.arrowPositionOffset - 150, ease: 'power1.inOut', duration: 0.1 }
-    //     ] 
-    //   }, '-=0.2')
-    //   .to(this._rightArrowSmall, {
-    //     keyframes: [
-    //       { x: posOffset + 150, ease: 'power1.inOut', duration: 0.2 }, 
-    //       { x: this._config.arrowPositionOffset + 150, ease: 'power1.inOut', duration: 0.2 }
-    //     ] 
-    //   }, '<');
   }
 
   /**
@@ -159,15 +154,13 @@ export default class Topics extends Scene {
    * @private
    */
   _addButton() {
-    const buttonWidth = 300;
-    const buttonHeight = 50;
     const button = new Button({ 
       text: 'START',
-      width: buttonWidth,
-      height: buttonHeight,
+      width: this._config.startButton.width,
+      height: this._config.startButton.height,
     });
-    button.position.y = window.innerHeight / 2 - buttonHeight - 20;
-    button.position.x = -buttonWidth / 2;
+    button.position.y = window.innerHeight / 2 - this._config.startButton.height - 20;
+    button.position.x = -this._config.startButton.width / 2;
 
     button.on('pointerup', this._spinWheel.bind(this));
 
@@ -180,9 +173,10 @@ export default class Topics extends Scene {
    */
   _addArrows() {
     const arrowHeight = 400;
+    this._arrows = [];
 
     this._leftArrow = new Graphics();
-    this._leftArrow.beginFill(0xFFE500);
+    this._leftArrow.beginFill(0xFFFFFF);
     this._leftArrow.moveTo(0, 0);
     this._leftArrow.lineTo(arrowHeight / 2.5, arrowHeight / 2);
     this._leftArrow.lineTo(0, arrowHeight);
@@ -211,12 +205,12 @@ export default class Topics extends Scene {
     this._rightArrowSmall.scale.set(-0.5, 0.5);
     this._rightArrowSmall.pivot.y = arrowHeight / 2;
 
-    this._container.addChild(
-      this._leftArrow,
-      this._rightArrow,
-      this._leftArrowSmall,
-      this._rightArrowSmall
-    );
+    this._arrows.push(this._leftArrow, this._leftArrowSmall, this._rightArrow, this._rightArrowSmall);
+
+    this._arrows.forEach((arrow) => {
+      arrow.tint = 0xFFE500;
+      this._container.addChild(arrow);
+    });
   }
 
   /**
