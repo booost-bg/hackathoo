@@ -23,7 +23,7 @@ export default class Timer extends Container {
     this.breakTimer = null;
     setTimeout(() => {
       this.pauseTimer(1);
-    }, 2000);
+    }, 10000);
   }
 
   /**
@@ -122,7 +122,7 @@ export default class Timer extends Container {
       fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
-      padding: 10,
+      padding: 20,
     });
     mainText.anchor.set(0.5);
     mainText.zIndex = 1;
@@ -134,7 +134,7 @@ export default class Timer extends Container {
       fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
-      padding: 10,
+      padding: 20,
     });
     this.blueText.anchor.set(0.5);
     this.blueText.zIndex = 0;
@@ -147,7 +147,7 @@ export default class Timer extends Container {
       fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
-      padding: 10,
+      padding: 20,
     });
     this.redText.anchor.set(0.5);
     this.redText.zIndex = 0;
