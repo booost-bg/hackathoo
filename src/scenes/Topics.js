@@ -77,47 +77,72 @@ export default class Topics extends Scene {
   }
 
   /**
-   * Spins the topics
+   * Updates the topics' position downwards, highlights the active sector
+   * @param {Number} speed How much to move the topics down
+   */
+  _updateTopicPos(speed) {
+    const containers = this.topicsContainer.children;
+
+    containers.forEach((topic) => {
+      topic.position.y += speed;
+      const topicBounds = topic.getBounds();
+
+      if ((this._arrowPoint > (topicBounds.y - this._config.topicGap / 2))
+          && (this._arrowPoint < (topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1))) {
+        topic.children[0].tint = 0xFFFFFF;
+
+        if (this._selectedTopic !== topic) {
+          this._playArrowAnimation();
+          this._selectedTopic = topic;
+        }
+      } else {
+        topic.children[0].tint = 0xFF00C7;
+      }
+
+      topic.position.y = topic.position.y % (this._topicsContainerHeight + this._config.topicGap);
+    });
+  }
+
+  /**
+   * Starts the topic spin animation
    * @priavte
    */
   _spinWheel() {
     if (this._spinning) return;
-    const containers = this.topicsContainer.children;
+
     const arrowBounds = this._leftArrow.getBounds();
-    const arrowPoint = arrowBounds.y + (arrowBounds.height / 2);
-    
+    this._arrowPoint = arrowBounds.y + (arrowBounds.height / 2);
     this._spinning = true;
+    this._selectedTopic = null;
+
     const dummyObj = {
-      y: random(this._config.minSpinSpeed, this._config.maxSpinSpeed),
+      speed: random(this._config.minSpinSpeed, this._config.maxSpinSpeed),
     };
 
-    let selectedTopic = null;
+    const delay = (time) => new Promise((resolve) => setTimeout(() => { resolve(); }, time));
+
+    // Topic anticipation
+    const onSpinComplete = async () => {
+      const times = Math.round(random(2, 5));
+      for (let i = 0; i < times; i++) {
+        dummyObj.speed = 3;
+        await gsap.to(dummyObj, {
+          speed: 0,
+          duration: 2,
+          onUpdate: () => { this._updateTopicPos(dummyObj.speed); },
+        });
+
+        await delay(1000);
+
+        this._spinning = false;
+      }
+    };
 
     gsap.to(dummyObj, {
-      y: 0,
+      speed: 0,
       duration: 10,
-      onComplete: () => this._spinning = false,
-      onUpdate: () => {
-        containers.forEach((topic) => {
-          topic.position.y += dummyObj.y;
-          const topicBounds = topic.getBounds();
-
-          if ((arrowPoint > (topicBounds.y - this._config.topicGap / 2))
-              && (arrowPoint < (topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1))) {
-            topic.children[0].tint = 0xFFFFFF;
-
-            if (selectedTopic !== topic) {
-              this._playArrowAnimation();
-              selectedTopic = topic;
-            }
-          } else {
-            topic.children[0].tint = 0xFF00C7;
-          }
-
-          topic.position.y = topic.position.y % (this._topicsContainerHeight + this._config.topicGap);
-        });
-      },
-      repeat: 0,
+      onComplete: onSpinComplete,
+      onUpdate: () => { this._updateTopicPos(dummyObj.speed); },
     });
   }
 
@@ -126,7 +151,6 @@ export default class Topics extends Scene {
    * @private
    */
   _playArrowAnimation() {
-
     gsap
       .to(this._arrows, {
         keyframes: [
@@ -145,7 +169,7 @@ export default class Topics extends Scene {
             ease: 'power1.inOut',
             duration: 0.15 
           }
-        ] 
+        ],
       });
   }
 
