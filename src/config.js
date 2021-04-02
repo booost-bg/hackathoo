@@ -28,6 +28,7 @@ export default {
         width: 367,
         height: 53,
         curveSize: 13,
+        y: 350,
       },
     },
   },
