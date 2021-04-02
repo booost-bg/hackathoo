@@ -20,6 +20,7 @@ export default class Timer extends Container {
     this.sortableChildren = true;
     this.isPaused = false;
     this.parallax();
+    this.breakTimer = null;
   }
 
   /**
@@ -46,19 +47,34 @@ export default class Timer extends Container {
     const endDateTime = endDate.getTime();
     setInterval(() => {
       const distance = endDateTime - startDateTime;
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      const allHours = days * 24 + hours;
-
-      if (!this.isPaused) startDateTime += 1000;
-
-      this.timer = `${pad(allHours)}:${pad(minutes)}:${pad(seconds)}`;
+      const { hours, minutes, seconds } = this.parseDistance(distance);
+      if (!this.isPaused) {
+        startDateTime += 1000;
+      }
+      this.timer = `${hours}:${minutes}:${seconds}`;
       this.drawTimer();
     }, 1000);
+  }
+
+  /**
+   * Parses the distance between two dates from milliseconds to h m s.
+   * @param {number} distance - miliseconds
+   * @returns {Object} Hours, minutes, seconds.
+   */
+  parseDistance(distance) {
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    );
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const allHours = days * 24 + hours;
+
+    return {
+      hours: pad(allHours),
+      minutes: pad(minutes),
+      seconds: pad(seconds),
+    };
   }
 
   /**
@@ -71,14 +87,8 @@ export default class Timer extends Container {
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
     const distance = endDateTime - startDateTime;
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    const allHours = days * 24 + hours;
-    this.timer = `${pad(allHours)}:${pad(minutes)}:${pad(seconds)}`;
+    const { hours, minutes, seconds } = this.parseDistance(distance);
+    this.timer = `${hours}:${minutes}:${seconds}`;
     this.drawTimer();
   }
 
