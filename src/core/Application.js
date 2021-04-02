@@ -3,6 +3,8 @@ import config from '../config';
 import Game from '../Game';
 import { Viewport } from 'pixi-viewport';
 import { center } from './utils';
+import { gsap } from 'gsap/all';
+import { PixiPlugin } from 'gsap/PixiPlugin';
 import Assets from './AssetManager';
 
 /**
@@ -26,6 +28,9 @@ export default class GameApplication extends Application {
    *
    */
   async initGame() {
+    gsap.registerPlugin(PixiPlugin);
+    PixiPlugin.registerPIXI(window.PIXI);
+
     await this.createBackground();
 
     this.game = new Game({

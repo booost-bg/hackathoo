@@ -1,6 +1,5 @@
 import { Container, Graphics, Texture } from 'pixi.js';
 import { gsap } from 'gsap/all';
-import { PixiPlugin } from 'gsap/PixiPlugin';
 import { random } from '../core/utils';
 
 /**
@@ -21,9 +20,6 @@ export default class Background extends Container {
     bgColor2 = '#A80080',
   } = {}) {
     super();
-
-    gsap.registerPlugin(PixiPlugin);
-    PixiPlugin.registerPIXI(window.PIXI);
 
     this._colors = {
       bgColor1,
