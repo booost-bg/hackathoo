@@ -129,7 +129,7 @@ export default class Setup extends Scene {
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
     button.pivot.y = buttonConfig.height / 2;
-    button.y += 300;
+    button.y += buttonConfig.y;
     this.addChild(button);
 
     button.once("click", () => this.buttonClickHandler());

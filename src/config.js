@@ -27,7 +27,8 @@ export default {
         fontSize: 24,
         width: 367,
         height: 53,
-        curveSize: 20,
+        curveSize: 13,
+        y: 350,
       },
       inputs: [
         {
