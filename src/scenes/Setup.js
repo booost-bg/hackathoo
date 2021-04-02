@@ -2,6 +2,7 @@ import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import config from "../config";
 import Button from "../components/Button";
+import Background from "../components/Background";
 
 /**
  * Represents the setup scene of the app.
@@ -14,6 +15,7 @@ export default class Setup extends Scene {
   }
 
   async onCreated() {
+    this.renderBackground();
     this.drawLogo();
     this.createFormElement();
     this.drawButton();
@@ -152,5 +154,10 @@ export default class Setup extends Scene {
 
   finishScene() {
     this.emit("finishScene");
+  }
+
+  renderBackground() {
+    const background = new Background();
+    this.addChild(background);
   }
 }
