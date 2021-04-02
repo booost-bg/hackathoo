@@ -40,6 +40,11 @@ export default class Countdown extends Scene {
     this.addChild(title);
   }
 
+  /**
+   * Renders the hackathon's logo
+   * @method
+   * @private
+   */
   createLogo() {
     const text = JSON.parse(
       localStorage.getItem("hackathonSettings")

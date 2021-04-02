@@ -18,7 +18,7 @@ export default class Timer extends Container {
     this.redX = -3;
     this.sortableChildren = true;
     this.isPaused = false;
-    this.parralax();
+    this.parallax();
   }
 
   /**
@@ -100,7 +100,12 @@ export default class Timer extends Container {
     this.addChild(this.redText);
   }
 
-  parralax() {
+  /**
+   * Adds parallax effect to the text.
+   * @private
+   * @method
+   */
+  parallax() {
     this.request = null;
     this.mouse = {
       x: 0,
@@ -117,6 +122,11 @@ export default class Timer extends Container {
       this.request = requestAnimationFrame(() => this.update());
     });
   }
+  /**
+   * Updates the red and blue texts's x position.
+   * @method
+   * @private
+   */
   update() {
     if (!this.redText) return;
     if (this.mouse.x < window.innerWidth / 2) {
