@@ -1,4 +1,5 @@
 import { Sprite, Application } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import config from '../config';
 import Game from '../Game';
 import { Viewport } from 'pixi-viewport';
@@ -29,7 +30,7 @@ export default class GameApplication extends Application {
    */
   async initGame() {
     gsap.registerPlugin(PixiPlugin);
-    PixiPlugin.registerPIXI(window.PIXI);
+    PixiPlugin.registerPIXI(PIXI);
 
     await this.createBackground();
 
