@@ -44,7 +44,6 @@ export default class Title extends Container {
       fontWeight: 400,
     });
     text.anchor.set(0.5);
-    text.y = 200;
     this.addChild(text);
   }
 }

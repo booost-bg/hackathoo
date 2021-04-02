@@ -22,6 +22,7 @@ export default {
       hideDelay: 0,
     },
   },
+
   assets: {
     root: "/",
   },

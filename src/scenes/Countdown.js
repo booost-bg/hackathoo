@@ -8,10 +8,6 @@ import HackathonLogo from "../components/HackathonLogo";
  * @class
  */
 export default class Countdown extends Scene {
-  constructor() {
-    super();
-  }
-
   async onCreated() {
     this.createTimer();
     this.createTitle();
@@ -24,6 +20,7 @@ export default class Countdown extends Scene {
    */
   createTimer() {
     const timer = new Timer();
+    timer.y = -100;
     this.addChild(timer);
   }
 
@@ -38,6 +35,8 @@ export default class Countdown extends Scene {
     const parsedEndTime = endTime.replace(/-|T/g, "/");
 
     const title = new Title(`Ends at ${parsedEndTime}`);
+
+    title.y = 100;
     this.addChild(title);
   }
 
