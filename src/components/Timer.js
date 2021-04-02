@@ -1,8 +1,7 @@
 import { Container } from "pixi.js";
 import { pad } from "../core/utils";
 import { Text } from "pixi.js";
-import gsap from "gsap/all";
-
+import dayjs from "dayjs";
 /**
  * Represents the timer for the countdown scene.
  */
@@ -23,30 +22,16 @@ export default class Timer extends Container {
   }
 
   /**
-   * Gets the dates for the timer.
+   * Gets the dates for the timer and parses them.
    * @returns {{string, string}} Object with start-date and end-date.
    * @method
    * @private
    */
   getDates() {
     const settings = JSON.parse(localStorage.getItem("hackathonSettings"));
-    const startDate = this.parseHtmlDateTime(settings.startTime);
-    const endDate = this.parseHtmlDateTime(settings.endTime);
+    const startDate = dayjs(settings.startTime).$d;
+    const endDate = dayjs(settings.endTime).$d;
     return { startDate, endDate };
-  }
-
-  /**
-   *
-   * @param {string} dateTime - from Html dateTime type input.
-   * @returns {Object} - Javascript date object.
-   * @method
-   * @private
-   */
-  parseHtmlDateTime(dateTime) {
-    const dateArr = dateTime.replace(/T|:/g, "-").split("-");
-    dateArr[1] = pad(dateArr[1] - 1);
-    const date = new Date(...dateArr);
-    return date;
   }
 
   /**
