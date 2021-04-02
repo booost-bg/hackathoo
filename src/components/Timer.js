@@ -18,8 +18,7 @@ export default class Timer extends Container {
     this.blueX = 3;
     this.redX = -3;
     this.sortableChildren = true;
-    this.isPaused = true;
-    this.paused = false;
+    this.isPaused = false;
     this.parralax();
   }
 
@@ -69,7 +68,7 @@ export default class Timer extends Container {
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
       const allHours = days * 24 + hours;
 
-      if (!this.paused) startDateTime += 1000;
+      if (!this.isPaused) startDateTime += 1000;
 
       this.timer = `${pad(allHours)}:${pad(minutes)}:${pad(seconds)}`;
       this.drawTimer();
@@ -151,9 +150,9 @@ export default class Timer extends Container {
    * @private
    */
   pauseTimer(time) {
-    this.paused = true;
+    this.isPaused = true;
     setTimeout(() => {
-      this.paused = false;
+      this.isPaused = false;
     }, time * 60000);
   }
 }
