@@ -125,7 +125,14 @@ export default class Setup extends Scene {
   }
 
   drawButton() {
-    const buttonConfig = config.scenes.Setup.Button;
+    const buttonConfig = {
+      text: "CONTINUE",
+      fontSize: 24,
+      width: 367,
+      height: 53,
+      curveSize: 13,
+      y: 350,
+    };
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
     button.pivot.y = buttonConfig.height / 2;
