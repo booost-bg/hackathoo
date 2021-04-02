@@ -9,9 +9,9 @@ export default class Title extends Container {
   drawTitleBox() {
     const box = new Graphics();
     box.beginFill(0xffffff);
-    box.drawRect(0, 0, 400, 75);
+    box.drawRect(0, 0, 400, 50);
     box.pivot.x = 200;
-    box.pivot.y = 75 / 2;
+    box.pivot.y = 50 / 2;
     box.y = 200;
     this.addChild(box);
   }
