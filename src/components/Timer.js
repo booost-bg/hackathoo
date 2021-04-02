@@ -120,7 +120,7 @@ export default class Timer extends Container {
       fill: "#ffffff",
       fontFamily: "Raleway, sans-serif",
       fontStyle: "italic",
-      fontSize: 150,
+      fontSize: 200,
       fontWeight: 800,
       padding: 10,
     });
@@ -132,7 +132,7 @@ export default class Timer extends Container {
       fill: "#0f25ec",
       fontFamily: "Raleway, sans-serif",
       fontStyle: "italic",
-      fontSize: 150,
+      fontSize: 200,
       fontWeight: 800,
       padding: 10,
     });
@@ -145,7 +145,7 @@ export default class Timer extends Container {
       fill: "#ff0000",
       fontFamily: "Raleway, sans-serif",
       fontStyle: "italic",
-      fontSize: 150,
+      fontSize: 200,
       fontWeight: 800,
       padding: 10,
     });

@@ -20,7 +20,7 @@ export default class Countdown extends Scene {
    */
   createTimer() {
     const timer = new Timer();
-    timer.y = -100;
+    timer.y = -75;
     this.addChild(timer);
   }
 
@@ -36,7 +36,7 @@ export default class Countdown extends Scene {
 
     const title = new Title(`Ends at ${parsedEndTime}`);
 
-    title.y = 100;
+    title.y = 150;
     this.addChild(title);
   }
 
