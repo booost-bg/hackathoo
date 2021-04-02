@@ -39,7 +39,7 @@ export default class Title extends Container {
   createTitleText() {
     const text = new Text(this.text, {
       fill: "#000000",
-      fontFamily: "sans-serif",
+      fontFamily: "Raleway",
       fontSize: 30,
       fontWeight: 400,
     });
