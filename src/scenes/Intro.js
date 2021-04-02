@@ -42,6 +42,11 @@ export default class Intro extends Scene {
     this.addChild(title);
   }
 
+  /**
+   * Draws the button of the scene.
+   * @method
+   * @private
+   */
   drawButton() {
     const buttonConfig = {
       text: "CONTINUE",
@@ -60,14 +65,29 @@ export default class Intro extends Scene {
     button.once("click", () => this.buttonClickHandler());
   }
 
+  /**
+   * Handles the button click.
+   * @method
+   * @private
+   */
   buttonClickHandler() {
     this.finishScene();
   }
 
+  /**
+   * Emits a finish event
+   * @method
+   * @private
+   */
   finishScene() {
     this.emit("finishScene");
   }
 
+  /**
+   * Renders the background of the scene.
+   * @method
+   * @private
+   */
   renderBackground() {
     const background = new Background();
     this.addChild(background);
