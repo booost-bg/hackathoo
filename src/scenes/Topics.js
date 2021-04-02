@@ -17,10 +17,11 @@ export default class Topics extends Scene {
     this._container = new Container();
     this._spinning = false;
     this._topicsContainerHeight = null;
+    this._arrowAnimation = gsap.timeline();
 
     this._config = {
       arrowPositionOffset: 470,
-      topicGap: 10,
+      topicGap: 6,
       topicsScale: 0.9,
       topicWidth: 820,
       topicHeight: 250,
@@ -84,11 +85,12 @@ export default class Topics extends Scene {
           topic.position.y += dummyObj.y;
           const topicBounds = topic.getBounds();
 
-          if ((arrowPoint > topicBounds.y) && (arrowPoint < (topicBounds.y + topicBounds.height))) {
+          if ((arrowPoint > (topicBounds.y - this._config.topicGap / 2))
+              && (arrowPoint < (topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1))) {
             topic.children[0].tint = 0xFFFFFF;
 
             if (selectedTopic !== topic) {
-              this._playArrowAnimation();
+              this._playArrowAnimation(dummyObj.y);
               selectedTopic = topic;
             }
           } else {
@@ -106,36 +108,50 @@ export default class Topics extends Scene {
    * Animates the arrows' contraction
    * @private
    */
-  _playArrowAnimation() {
-    const posOffset = this._config.arrowPositionOffset - 100;
-
-    if (this.arrowAnimation) this.arrowAnimation.clear();
+  _playArrowAnimation(speed) {
+    // const posOffset = this._config.arrowPositionOffset - 100;
+    const animationOffset = 100 // 5 * speed + 20;
+    // if (this._arrowAnimation && this._arrowAnimation.isActive()) return;
+    if (this.arrowAnimation) this.arrowAnimation.kill();
     
     this.arrowAnimation = gsap.timeline()
-      .to(this._leftArrow, {
+      .to([this._leftArrow, this._leftArrowSmall, this._rightArrow, this._rightArrowSmall], {
         keyframes: [
-          { x: -posOffset, duration: 0.2 }, 
-          { x: -this._config.arrowPositionOffset, ease: 'power1.in', duration: 0.3 }
+          { x: (_, target) => {
+            return target.startPos + (animationOffset * target.scale.x);
+          },
+          ease: 'power1.inOut',
+          duration: 0.2 }, 
+          { x: (_, target) => target.startPos,
+            ease: 'power1.inOut',
+            duration: 0.3 }
         ] 
-      })
-      .to(this._rightArrow, {
-        keyframes: [
-          { x: posOffset, duration: 0.2 }, 
-          { x: this._config.arrowPositionOffset, ease: 'power1.in', duration: 0.3 }
-        ]
-      }, '<')
-      .to(this._leftArrowSmall, {
-        keyframes: [
-          { x: -posOffset - 150, duration: 0.2 }, 
-          { x: -this._config.arrowPositionOffset - 150, ease: 'power1.in', duration: 0.3 }
-        ] 
-      }, '<')
-      .to(this._rightArrowSmall, {
-        keyframes: [
-          { x: posOffset + 150, duration: 0.2 }, 
-          { x: this._config.arrowPositionOffset + 150, ease: 'power1.in', duration: 0.3 }
-        ] 
-      }, '<');
+      });
+    // this._arrowAnimation = gsap.timeline()
+    //   .to(this._leftArrow, {
+    //     keyframes: [
+    //       { x: -posOffset, ease: 'power1.inOut', duration: 0.2 }, 
+    //       { x: -this._config.arrowPositionOffset, ease: 'power1.inOut', duration: 0.2 }
+    //     ] 
+    //   })
+    //   .to(this._rightArrow, {
+    //     keyframes: [
+    //       { x: posOffset, ease: 'power1.inOut', duration: 0.2 }, 
+    //       { x: this._config.arrowPositionOffset, ease: 'power1.inOut', duration: 0.2 }
+    //     ]
+    //   }, '<')
+    //   .to(this._leftArrowSmall, {
+    //     keyframes: [
+    //       { x: -posOffset - 150, ease: 'power1.inOut', duration: 0.2 }, 
+    //       { x: -this._config.arrowPositionOffset - 150, ease: 'power1.inOut', duration: 0.1 }
+    //     ] 
+    //   }, '-=0.2')
+    //   .to(this._rightArrowSmall, {
+    //     keyframes: [
+    //       { x: posOffset + 150, ease: 'power1.inOut', duration: 0.2 }, 
+    //       { x: this._config.arrowPositionOffset + 150, ease: 'power1.inOut', duration: 0.2 }
+    //     ] 
+    //   }, '<');
   }
 
   /**
@@ -173,21 +189,25 @@ export default class Topics extends Scene {
     this._leftArrow.lineTo(0, 0);
     this._leftArrow.closePath();
     this._leftArrow.endFill();
-    this._leftArrow.position.x = -this._config.arrowPositionOffset;
+    this._leftArrow.startPos = -this._config.arrowPositionOffset;
+    this._leftArrow.position.x = this._leftArrow.startPos;
     this._leftArrow.pivot.y = arrowHeight / 2;
 
     this._leftArrowSmall = this._leftArrow.clone();
     this._leftArrowSmall.scale.set(0.5);
-    this._leftArrowSmall.position.x = -(this._config.arrowPositionOffset + 150);
+    this._leftArrowSmall.startPos = -(this._config.arrowPositionOffset + 150);
+    this._leftArrowSmall.position.x = this._leftArrowSmall.startPos;
     this._leftArrowSmall.pivot.y = arrowHeight / 2;
 
     this._rightArrow = this._leftArrow.clone();
+    this._rightArrow.startPos = this._config.arrowPositionOffset;
     this._rightArrow.position.x = this._config.arrowPositionOffset;
     this._rightArrow.scale.x = -1;
     this._rightArrow.pivot.y = arrowHeight / 2;
 
     this._rightArrowSmall = this._leftArrow.clone();
-    this._rightArrowSmall.position.x = this._config.arrowPositionOffset + 150;
+    this._rightArrowSmall.startPos = this._config.arrowPositionOffset + 150;
+    this._rightArrowSmall.position.x = this._rightArrowSmall.startPos;
     this._rightArrowSmall.scale.set(-0.5, 0.5);
     this._rightArrowSmall.pivot.y = arrowHeight / 2;
 
