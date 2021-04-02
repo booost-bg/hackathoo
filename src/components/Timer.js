@@ -21,6 +21,9 @@ export default class Timer extends Container {
     this.isPaused = false;
     this.parallax();
     this.breakTimer = null;
+    setTimeout(() => {
+      this.pauseTimer(1);
+    }, 2000);
   }
 
   /**
@@ -47,12 +50,13 @@ export default class Timer extends Container {
     const endDateTime = endDate.getTime();
     setInterval(() => {
       const distance = endDateTime - startDateTime;
-      const { hours, minutes, seconds } = this.parseDistance(distance);
+      const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
         startDateTime += 1000;
+        this.removeChildren();
+        this.timer = `${hours}:${minutes}:${seconds}`;
+        this.drawTimerTexts();
       }
-      this.timer = `${hours}:${minutes}:${seconds}`;
-      this.drawTimer();
     }, 1000);
   }
 
@@ -61,7 +65,7 @@ export default class Timer extends Container {
    * @param {number} distance - miliseconds
    * @returns {Object} Hours, minutes, seconds.
    */
-  parseDistance(distance) {
+  parseDistanceHours(distance) {
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
       (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -78,6 +82,20 @@ export default class Timer extends Container {
   }
 
   /**
+   * Parses the distance between two dates from milliseconds to m s.
+   * @param {number} distance - miliseconds
+   * @returns {Object} Minutes, seconds.
+   */
+  parseDistanceMinutes(distance) {
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    return {
+      minutes: pad(minutes),
+      seconds: pad(seconds),
+    };
+  }
+
+  /**
    * Draws the timer before the set interval starts.
    * @method
    * @private
@@ -87,9 +105,9 @@ export default class Timer extends Container {
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
     const distance = endDateTime - startDateTime;
-    const { hours, minutes, seconds } = this.parseDistance(distance);
+    const { hours, minutes, seconds } = this.parseDistanceHours(distance);
     this.timer = `${hours}:${minutes}:${seconds}`;
-    this.drawTimer();
+    this.drawTimerTexts();
   }
 
   /**
@@ -97,13 +115,14 @@ export default class Timer extends Container {
    * @method
    * @private
    */
-  drawTimer() {
-    this.removeChildren();
+  drawTimerTexts() {
     const mainText = new Text(this.timer, {
       fill: "#ffffff",
-      fontFamily: "Verdana, Geneva, sans-serif",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 150,
       fontWeight: 800,
+      padding: 10,
     });
     mainText.anchor.set(0.5);
     mainText.zIndex = 1;
@@ -111,9 +130,11 @@ export default class Timer extends Container {
 
     this.blueText = new Text(this.timer, {
       fill: "#0f25ec",
-      fontFamily: "Verdana, Geneva, sans-serif",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 150,
       fontWeight: 800,
+      padding: 10,
     });
     this.blueText.anchor.set(0.5);
     this.blueText.zIndex = 0;
@@ -122,9 +143,11 @@ export default class Timer extends Container {
 
     this.redText = new Text(this.timer, {
       fill: "#ff0000",
-      fontFamily: "Verdana, Geneva, sans-serif",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 150,
       fontWeight: 800,
+      padding: 10,
     });
     this.redText.anchor.set(0.5);
     this.redText.zIndex = 0;
@@ -178,8 +201,38 @@ export default class Timer extends Container {
    */
   pauseTimer(time) {
     this.isPaused = true;
+    this.createBreakTimer(time);
     setTimeout(() => {
       this.isPaused = false;
     }, time * 60000);
+  }
+
+  createBreakTimer(time) {
+    let timeMilliseconds = time * 60000;
+    const breakInterval = setInterval(() => {
+      if (timeMilliseconds !== 0) {
+        const { minutes, seconds } = this.parseDistanceMinutes(
+          timeMilliseconds
+        );
+        this.breakTimer = `${minutes}:${seconds}`;
+        this.drawBreakTimerText();
+        timeMilliseconds -= 1000;
+      } else {
+        clearInterval(breakInterval);
+      }
+    }, 1000);
+  }
+
+  drawBreakTimerText() {
+    this.removeChild(this.breakTimerText);
+    this.breakTimerText = new Text(`Break: ${this.breakTimer}`, {
+      fill: "#000000",
+      fontFamily: "Raleway, sans-serif",
+      fontSize: 50,
+      fontWeight: 300,
+    });
+    this.breakTimerText.anchor.set(0.5);
+    this.breakTimerText.y = -100;
+    this.addChild(this.breakTimerText);
   }
 }
