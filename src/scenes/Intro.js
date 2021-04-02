@@ -2,6 +2,7 @@ import Scene from "./Scene";
 import { Sprite } from "pixi.js";
 import Title from "../components/Title";
 import Button from "../components/Button";
+import Background from "../components/Background";
 
 /**
  * Represents the intro scene of the app.
@@ -12,6 +13,7 @@ export default class Intro extends Scene {
     super();
   }
   async onCreated() {
+    this.renderBackground();
     this.drawLogo();
     this.drawTitle();
     this.drawButton();
@@ -64,5 +66,10 @@ export default class Intro extends Scene {
 
   finishScene() {
     this.emit("finishScene");
+  }
+
+  renderBackground() {
+    const background = new Background();
+    this.addChild(background);
   }
 }
