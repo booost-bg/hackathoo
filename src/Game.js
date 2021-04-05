@@ -32,7 +32,7 @@ export default class Game extends Container {
 
     // this.switchScene(Play, { scene: "play" });
     this.switchScene(Setup, { scene: "setup" });
-    this.switchScene(Intro, { scene: "intro" });
+    // this.switchScene(Intro, { scene: "intro" });
   }
 
   /**
