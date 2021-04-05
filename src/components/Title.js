@@ -27,7 +27,7 @@ export default class Title extends Container {
     box.drawRect(0, 0, 400, 50);
     box.pivot.x = 200;
     box.pivot.y = 50 / 2;
-    box.y = 200;
+    box.y = 0;
     this.addChild(box);
   }
 

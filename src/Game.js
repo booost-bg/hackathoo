@@ -1,4 +1,4 @@
-import Timer from "./scenes/Timer";
+import Timer from "./components/Timer";
 import Intro from "./scenes/Intro";
 import Topics from './scenes/Topics';
 import Splash from "./scenes/Splash";
@@ -32,7 +32,7 @@ export default class Game extends Container {
     await this.switchScene(Splash, { scene: "splash" });
     await this.currentScene.finish;
 
-    this.switchScene(Intro, { scene: "intro" });
+    this.switchScene(Countdown, { scene: "countdown" });
   }
 
   /**
