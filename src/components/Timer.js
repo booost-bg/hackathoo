@@ -2,6 +2,8 @@ import { Container } from "pixi.js";
 import { pad } from "../core/utils";
 import { Text } from "pixi.js";
 import dayjs from "dayjs";
+import duration from "../../node_modules/dayjs/plugin/duration";
+dayjs.extend(duration);
 /**
  * Represents the timer for the countdown scene.
  */
@@ -36,9 +38,22 @@ export default class Timer extends Container {
    */
   getDates() {
     const settings = JSON.parse(localStorage.getItem("hackathonSettings"));
-    const startDate = dayjs(settings.startTime).$d;
-    const endDate = dayjs(settings.endTime).$d;
+    const startDate = dayjs(settings.startTime);
+    const endDate = dayjs(settings.endTime);
     return { startDate, endDate };
+  }
+
+  /**
+   * Draws the timer before the set interval starts.
+   * @method
+   * @private
+   */
+  drawInitial() {
+    const { startDate, endDate } = this.getDates();
+    const distance = endDate.diff(startDate);
+    const { hours, minutes, seconds } = this.parseDistanceHours(distance);
+    this.timer = `${hours}:${minutes}:${seconds}`;
+    this.drawTexts();
   }
 
   /**
@@ -47,14 +62,13 @@ export default class Timer extends Container {
    * @private
    */
   createCountdown() {
-    const { startDate, endDate } = this.getDates();
-    let startDateTime = startDate.getTime();
-    const endDateTime = endDate.getTime();
+    const { endDate } = this.getDates();
+    let { startDate } = this.getDates();
     setInterval(() => {
-      const distance = endDateTime - startDateTime;
+      const distance = endDate.diff(startDate);
       const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
-        startDateTime += 1000;
+        startDate = dayjs(startDate).add(1, "second");
         this.removeChildren();
         this.timer = `${hours}:${minutes}:${seconds}`;
         this.drawTexts();
@@ -68,18 +82,11 @@ export default class Timer extends Container {
    * @returns {Object} Hours, minutes, seconds.
    */
   parseDistanceHours(distance) {
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(
-      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    const allHours = days * 24 + hours;
-
+    const distances = dayjs.duration(distance).$d;
     return {
-      hours: pad(allHours),
-      minutes: pad(minutes),
-      seconds: pad(seconds),
+      hours: pad(distances.days * 24 + distances.hours),
+      minutes: pad(distances.minutes),
+      seconds: pad(distances.seconds),
     };
   }
 
@@ -89,27 +96,11 @@ export default class Timer extends Container {
    * @returns {Object} Minutes, seconds.
    */
   parseDistanceMinutes(distance) {
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const distances = dayjs.duration(distance).$d;
     return {
-      minutes: pad(minutes),
-      seconds: pad(seconds),
+      minutes: pad(distances.hours * 60 + distances.minutes),
+      seconds: pad(distances.seconds),
     };
-  }
-
-  /**
-   * Draws the timer before the set interval starts.
-   * @method
-   * @private
-   */
-  drawInitial() {
-    const { startDate, endDate } = this.getDates();
-    let startDateTime = startDate.getTime();
-    const endDateTime = endDate.getTime();
-    const distance = endDateTime - startDateTime;
-    const { hours, minutes, seconds } = this.parseDistanceHours(distance);
-    this.timer = `${hours}:${minutes}:${seconds}`;
-    this.drawTexts();
   }
 
   /**
@@ -211,7 +202,7 @@ export default class Timer extends Container {
   }
 
   createBreakTimer(time) {
-    let timeMilliseconds = time * 60000;
+    let timeMilliseconds = dayjs.duration(time * 60000).asMilliseconds();
     this.breakInterval = setInterval(() => {
       if (timeMilliseconds !== 0) {
         const { minutes, seconds } = this.parseDistanceMinutes(
