@@ -30,31 +30,36 @@ export default class Setup extends Scene {
    * @method
    * @private
    */
-  createInputElement(element, type, text) {
+  createInputElement(element, type, text, id) {
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.innerText = text;
     const input = document.createElement(element);
+    input.id = id;
+    if (element !== "textarea") input.type = type;
+    else {
+      input.rows = "20";
+    }
+
+    Object.assign(label.style, {
+      "font-family": "Raleway",
+      "margin-top": "10px",
+      position: "relative",
+      left: "-20px",
+      color: "white",
+    });
+
     Object.assign(input.style, {
       "box-sizing": "border-box",
       width: "100%",
       resize: "none",
-      margin: "7px",
+      margin: "3px",
       padding: "15px",
       "font-size": "16px",
       "min-height": "54px",
     });
-    input.placeholder = text;
-    if (element !== "textarea") {
-      input.type = "text";
-      input.addEventListener(
-        "focus",
-        () => {
-          input.type = type;
-        },
-        { once: true }
-      );
-    } else {
-      input.rows = "20";
-    }
-    return input;
+
+    return { label, input };
   }
 
   /**
@@ -72,7 +77,7 @@ export default class Setup extends Scene {
       height: "550px",
       width: "420px",
       position: "relative",
-      top: "-80vh",
+      top: "-84vh",
       "justify-content": "space-between",
       "box-sizing": "border-box",
     });
@@ -83,9 +88,11 @@ export default class Setup extends Scene {
       const element = this.createInputElement(
         input.element,
         input.type,
-        input.text
+        input.text,
+        input.id
       );
-      form.appendChild(element);
+      form.appendChild(element.label);
+      form.appendChild(element.input);
       this.inputElements = [...this.inputElements, element];
     });
   }
@@ -100,7 +107,7 @@ export default class Setup extends Scene {
     logo.anchor.set(0.5);
     logo.scale.x = 0.4;
     logo.scale.y = 0.4;
-    logo.y = -window.innerHeight / 2.7;
+    logo.y = -window.innerHeight / 2.5;
     this.addChild(logo);
   }
 
@@ -109,7 +116,7 @@ export default class Setup extends Scene {
    */
   get submittedSettings() {
     const settings = {
-      hackatonName: this.inputElements[0].value,
+      hackathonName: this.inputElements[0].value,
 
       mainColor: this.inputElements[1].value,
 
@@ -138,7 +145,7 @@ export default class Setup extends Scene {
       width: 367,
       height: 53,
       curveSize: 13,
-      y: 350,
+      y: 360,
     };
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
