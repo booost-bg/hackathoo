@@ -1,15 +1,15 @@
-import { Container } from 'pixi.js';
-import { pad } from '../core/utils';
-import { Text } from 'pixi.js';
-import dayjs from 'dayjs';
+import { Container } from "pixi.js";
+import { pad } from "../core/utils";
+import { Text } from "pixi.js";
+import dayjs from "dayjs";
 /**
  * Represents the timer for the countdown scene.
  */
 export default class Timer extends Container {
   constructor() {
     super();
-    this.drawInitialTimer();
-    this.createCountdownTimer();
+    this.drawInitial();
+    this.createCountdown();
     /**
      * Represents the state of the timer.
      * @var
@@ -35,7 +35,7 @@ export default class Timer extends Container {
    * @private
    */
   getDates() {
-    const settings = JSON.parse(localStorage.getItem('hackathonSettings'));
+    const settings = JSON.parse(localStorage.getItem("hackathonSettings"));
     const startDate = dayjs(settings.startTime).$d;
     const endDate = dayjs(settings.endTime).$d;
     return { startDate, endDate };
@@ -46,7 +46,7 @@ export default class Timer extends Container {
    * @method
    * @private
    */
-  createCountdownTimer() {
+  createCountdown() {
     const { startDate, endDate } = this.getDates();
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
@@ -57,7 +57,7 @@ export default class Timer extends Container {
         startDateTime += 1000;
         this.removeChildren();
         this.timer = `${hours}:${minutes}:${seconds}`;
-        this.drawTimerTexts();
+        this.drawTexts();
       }
     }, 1000);
   }
@@ -102,14 +102,14 @@ export default class Timer extends Container {
    * @method
    * @private
    */
-  drawInitialTimer() {
+  drawInitial() {
     const { startDate, endDate } = this.getDates();
     let startDateTime = startDate.getTime();
     const endDateTime = endDate.getTime();
     const distance = endDateTime - startDateTime;
     const { hours, minutes, seconds } = this.parseDistanceHours(distance);
     this.timer = `${hours}:${minutes}:${seconds}`;
-    this.drawTimerTexts();
+    this.drawTexts();
   }
 
   /**
@@ -117,11 +117,11 @@ export default class Timer extends Container {
    * @method
    * @private
    */
-  drawTimerTexts() {
+  drawTexts() {
     const mainText = new Text(this.timer, {
-      fill: '#ffffff',
-      fontFamily: 'Raleway, sans-serif',
-      fontStyle: 'italic',
+      fill: "#ffffff",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
       padding: 20,
@@ -131,9 +131,9 @@ export default class Timer extends Container {
     this.addChild(mainText);
 
     this.blueText = new Text(this.timer, {
-      fill: '#0f25ec',
-      fontFamily: 'Raleway, sans-serif',
-      fontStyle: 'italic',
+      fill: "#0f25ec",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
       padding: 20,
@@ -144,9 +144,9 @@ export default class Timer extends Container {
     this.addChild(this.blueText);
 
     this.redText = new Text(this.timer, {
-      fill: '#ff0000',
-      fontFamily: 'Raleway, sans-serif',
-      fontStyle: 'italic',
+      fill: "#ff0000",
+      fontFamily: "Raleway, sans-serif",
+      fontStyle: "italic",
       fontSize: 200,
       fontWeight: 800,
       padding: 20,
@@ -171,7 +171,7 @@ export default class Timer extends Container {
     this.cx = window.innerWidth / 2;
     this.cy = window.innerHeight / 2;
 
-    document.addEventListener('mousemove', (event) => {
+    document.addEventListener("mousemove", (event) => {
       this.mouse.x = event.pageX;
       this.mouse.y = event.pageY;
 
@@ -201,7 +201,7 @@ export default class Timer extends Container {
    * @method
    * @private
    */
-  pauseTimer(time) {
+  pause(time) {
     if (this.breakInterval) clearInterval(this.breakInterval);
     this.isPaused = true;
     this.createBreakTimer(time);
@@ -229,8 +229,8 @@ export default class Timer extends Container {
   drawBreakTimerText() {
     this.removeChild(this.breakTimerText);
     this.breakTimerText = new Text(`Break: ${this.breakTimer}`, {
-      fill: '#000000',
-      fontFamily: 'Raleway, sans-serif',
+      fill: "#000000",
+      fontFamily: "Raleway, sans-serif",
       fontSize: 50,
       fontWeight: 300,
     });
