@@ -5,7 +5,7 @@ import HackathonLogo from "../components/HackathonLogo";
 import Button from "../components/Button";
 
 /**
- * Represents the countdown before the hackaton ends.
+ * Represents the countdown before the hackathon ends.
  * @class
  */
 export default class Countdown extends Scene {
@@ -54,7 +54,7 @@ export default class Countdown extends Scene {
   createLogo() {
     const text = JSON.parse(
       localStorage.getItem("hackathonSettings")
-    ).hackatonName.toUpperCase();
+    ).hackathonName.toUpperCase();
     const logo = new HackathonLogo(text);
     this.addChild(logo);
   }
