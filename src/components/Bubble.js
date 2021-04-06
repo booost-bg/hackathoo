@@ -30,8 +30,8 @@ export default class Bubble extends Graphics {
      */
     this._bubble = null;
 
-    this._createBubble();
-    this._animateBubbles();
+    this._create();
+    this._animate();
   }
 
   /**
@@ -44,7 +44,7 @@ export default class Bubble extends Graphics {
   /**
    * @private
    */
-  _createBubble() {
+  _create() {
     const bubble = new Graphics();
 
     bubble.beginFill(this._color);
@@ -60,12 +60,12 @@ export default class Bubble extends Graphics {
    * Bubble movement animation
    * @private
    */
-  async _animateBubbles() {
+  async _animate() {
     const tl = new gsap.timeline();
 
     await tl
       .to(this._bubble, {
-        x: random(60, 200),
+        x: random(55, 200),
         duration: 5,
         ease: 'Power1.easeIn',
       })
@@ -105,6 +105,10 @@ export default class Bubble extends Graphics {
 
   /**
    * Create random point for bubble animation path
+   * @param {Number} xMin x coordinate min value
+   * @param {Number} xMax x coordinate max value
+   * @param {Number} yMin y coordinate min value
+   * @param {Number} yMax y coordinate max value
    * @private
    */
   _generateRandomPoint(xMin, xMax, yMin, yMax) {
