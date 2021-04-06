@@ -17,6 +17,8 @@ export default class Setup extends Scene {
   async onCreated() {
     this.renderBackground();
     this.createFormElement();
+    this.colorInputListener();
+
     this.drawButton();
   }
 
@@ -172,7 +174,36 @@ export default class Setup extends Scene {
    * @private
    */
   renderBackground() {
-    const background = new Background();
-    this.addChild(background);
+    this.background = new Background();
+    this.addChild(this.background);
+  }
+
+  /**
+   * Changes the color of the background and fx dynamically on input change.
+   * @method
+   * @private
+   */
+  colorInputListener() {
+    const bg1 = this.inputElements["main-color"];
+    const bg2 = this.inputElements["accent-color"];
+    const fx = this.inputElements["fx-color"];
+    bg1.addEventListener("change", () => {
+      this.background.changeColors({
+        bgColor1: bg1.value,
+        bgColor2: this.background._colors.bgColor2,
+      });
+    });
+    bg2.addEventListener("change", () => {
+      this.background.changeColors({
+        bgColor1: this.background._colors.bgColor1,
+        bgColor2: bg2.value,
+      });
+    });
+    fx.addEventListener("change", () => {
+      this.background.changeColors({
+        circleColor1: fx.value,
+        circleColor2: fx.value,
+      });
+    });
   }
 }
