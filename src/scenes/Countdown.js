@@ -13,9 +13,9 @@ export default class Countdown extends Scene {
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton("15 min break", 220, 14.99);
-    this.createPauseTimerButton("30 min break", 290, 29.99);
-    this.createPauseTimerButton("60 min break", 360, 59.99);
+    this.createPauseTimerButton("15 min break", 220, 15);
+    this.createPauseTimerButton("30 min break", 290, 30);
+    this.createPauseTimerButton("60 min break", 360, 60);
   }
 
   /**
