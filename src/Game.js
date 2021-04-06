@@ -1,7 +1,8 @@
-import Splash from "./scenes/Splash";
-import Play from "./scenes/Play";
-import { Container } from "pixi.js";
+import Topics from './scenes/Topics';
 import Intro from "./scenes/Intro";
+import { Container } from "pixi.js";
+import Play from "./scenes/Play";
+import Splash from "./scenes/Splash";
 
 /**
  * Main game stage, manages scenes/levels.
