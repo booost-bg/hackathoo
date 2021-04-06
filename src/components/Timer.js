@@ -2,7 +2,7 @@ import { Container } from "pixi.js";
 import { pad } from "../core/utils";
 import { Text } from "pixi.js";
 import dayjs from "dayjs";
-import duration from "../../node_modules/dayjs/plugin/duration";
+import duration from "dayjs/plugin/duration";
 dayjs.extend(duration);
 /**
  * Represents the timer for the countdown scene.
