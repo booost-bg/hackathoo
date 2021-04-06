@@ -112,6 +112,8 @@ export default class Setup extends Scene {
 
       accentColor: this.inputElements["accent-color"].value,
 
+      fxColor: this.inputElements["fx-color"].value,
+
       teams: this.inputElements["teams"].value.split(","),
 
       topics: this.inputElements["topics"].value.split(","),
