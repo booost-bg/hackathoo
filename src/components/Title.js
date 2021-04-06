@@ -27,7 +27,7 @@ export default class Title extends Container {
     box.drawRect(0, 0, 400, 50);
     box.pivot.x = 200;
     box.pivot.y = 50 / 2;
-    box.y = 200;
+    box.y = 0;
     this.addChild(box);
   }
 
@@ -44,7 +44,6 @@ export default class Title extends Container {
       fontWeight: 400,
     });
     text.anchor.set(0.5);
-    text.y = 200;
     this.addChild(text);
   }
 }

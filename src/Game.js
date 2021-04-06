@@ -1,8 +1,10 @@
-import Topics from './scenes/Topics';
+import Timer from "./components/Timer";
 import Intro from "./scenes/Intro";
-import { Container } from "pixi.js";
-import Play from "./scenes/Play";
+import Topics from './scenes/Topics';
 import Splash from "./scenes/Splash";
+import Play from "./scenes/Play";
+import { Container } from "pixi.js";
+import Countdown from "./scenes/Countdown";
 
 /**
  * Main game stage, manages scenes/levels.
@@ -30,7 +32,7 @@ export default class Game extends Container {
     await this.switchScene(Splash, { scene: "splash" });
     await this.currentScene.finish;
 
-    this.switchScene(Intro, { scene: "intro" });
+    this.switchScene(Countdown, { scene: "countdown" });
   }
 
   /**
