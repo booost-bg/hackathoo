@@ -42,6 +42,12 @@ export default {
           id: "accent-color",
         },
         {
+          element: "input",
+          type: "color",
+          text: "Fx Color:",
+          id: "fx-color",
+        },
+        {
           element: "textarea",
           type: "text-area",
           text: "Teams (separated by comas):",

@@ -16,7 +16,6 @@ export default class Setup extends Scene {
 
   async onCreated() {
     this.renderBackground();
-    this.drawLogo();
     this.createFormElement();
     this.drawButton();
   }
@@ -43,17 +42,19 @@ export default class Setup extends Scene {
 
     Object.assign(label.style, {
       "font-family": "Raleway",
-      "margin-top": "10px",
-      position: "relative",
-      left: "-20px",
+      "font-weight": "600",
+      "margin-top": "4px",
       color: "white",
+      "background-color": "black",
+      "box-sizing": "border-box",
+      display: "inline-flex",
+      padding: "10px",
     });
 
     Object.assign(input.style, {
       "box-sizing": "border-box",
       width: "100%",
       resize: "none",
-      margin: "3px",
       padding: "15px",
       "font-size": "16px",
       "min-height": "54px",
@@ -77,9 +78,10 @@ export default class Setup extends Scene {
       height: "550px",
       width: "420px",
       position: "relative",
-      top: "-84vh",
+      top: "-97vh",
       "justify-content": "space-between",
       "box-sizing": "border-box",
+      "align-items": "flex-start",
     });
 
     form.classList.add("setup-form");
@@ -95,20 +97,6 @@ export default class Setup extends Scene {
       form.appendChild(element.input);
       this.inputElements[element.input.id] = element.input;
     });
-  }
-
-  /**
-   * Renders the app's logo.
-   * @method
-   * @private
-   */
-  drawLogo() {
-    const logo = new Sprite.from("logo");
-    logo.anchor.set(0.5);
-    logo.scale.x = 0.4;
-    logo.scale.y = 0.4;
-    logo.y = -window.innerHeight / 2.5;
-    this.addChild(logo);
   }
 
   /**
@@ -145,7 +133,7 @@ export default class Setup extends Scene {
       width: 367,
       height: 53,
       curveSize: 13,
-      y: 360,
+      y: 375,
     };
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
