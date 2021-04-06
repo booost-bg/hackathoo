@@ -11,7 +11,7 @@ export default class Setup extends Scene {
   constructor() {
     super();
     this.inputs = config.scenes.Setup.inputs;
-    this.inputElements = [];
+    this.inputElements = {};
   }
 
   async onCreated() {
@@ -93,7 +93,7 @@ export default class Setup extends Scene {
       );
       form.appendChild(element.label);
       form.appendChild(element.input);
-      this.inputElements = [...this.inputElements, element];
+      this.inputElements[element.input.id] = element.input;
     });
   }
 
@@ -116,19 +116,19 @@ export default class Setup extends Scene {
    */
   get submittedSettings() {
     const settings = {
-      hackathonName: this.inputElements[0].value,
+      hackathonName: this.inputElements["hackathon-name"].value,
 
-      mainColor: this.inputElements[1].value,
+      mainColor: this.inputElements["main-color"].value,
 
-      accentColor: this.inputElements[2].value,
+      accentColor: this.inputElements["accent-color"].value,
 
-      teams: this.inputElements[3].value.split(","),
+      teams: this.inputElements["teams"].value.split(","),
 
-      topics: this.inputElements[4].value.split(","),
+      topics: this.inputElements["topics"].value.split(","),
 
-      startTime: this.inputElements[5].value,
+      startTime: this.inputElements["start-time"].value,
 
-      endTime: this.inputElements[6].value,
+      endTime: this.inputElements["end-time"].value,
     };
     return settings;
   }
