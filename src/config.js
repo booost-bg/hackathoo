@@ -25,74 +25,82 @@ export default {
       hideDelay: 0,
     },
     Setup: {
-      inputs1: [
+      forms: [
         {
-          element: "input",
-          type: "text",
-          text: "Hackathon Name:",
-          id: "hackathon-name",
+          vh: "-90vh",
+          inputs: [
+            {
+              element: "input",
+              type: "text",
+              text: "Hackathon Name:",
+              id: "hackathon-name",
+            },
+            {
+              element: "input",
+              type: "color",
+              text: "Main Color:",
+              id: "main-color",
+            },
+            {
+              element: "input",
+              type: "color",
+              text: "Accent Color:",
+              id: "accent-color",
+            },
+            {
+              element: "input",
+              type: "color",
+              text: "Fx 1 Color:",
+              id: "fx1-color",
+            },
+            {
+              element: "input",
+              type: "color",
+              text: "Fx 2 Color:",
+              id: "fx2-color",
+            },
+            {
+              element: "input",
+              type: "datetime-local",
+              text: "Start time:",
+              id: "start-time",
+            },
+            {
+              element: "input",
+              type: "datetime-local",
+              text: "End time:",
+              id: "end-time",
+            },
+          ],
         },
         {
-          element: "input",
-          type: "color",
-          text: "Main Color:",
-          id: "main-color",
-        },
-        {
-          element: "input",
-          type: "color",
-          text: "Accent Color:",
-          id: "accent-color",
-        },
-        {
-          element: "input",
-          type: "color",
-          text: "Fx 1 Color:",
-          id: "fx1-color",
-        },
-        {
-          element: "input",
-          type: "color",
-          text: "Fx 2 Color:",
-          id: "fx2-color",
-        },
-        {
-          element: "input",
-          type: "datetime-local",
-          text: "Start time:",
-          id: "start-time",
-        },
-        {
-          element: "input",
-          type: "datetime-local",
-          text: "End time:",
-          id: "end-time",
-        },
-      ],
-      inputs2: [
-        {
-          element: "textarea",
-          type: "text-area",
-          text: "Teams (separated by comas):",
-          id: "teams",
-        },
-        {
-          element: "textarea",
-          type: "text-area",
-          text: "Topics (separated by comas):",
-          id: "topics",
-        },
-        {
-          element: "textarea",
-          type: "text-area",
-          text: "Rules (separated by comas):",
-          id: "rules",
-        },
-        {
-          element: "textarea",
-          type: "text-area",
-          text: "Criteria:",
-          id: "criteria",
+          vh: "-80vh",
+          inputs: [
+            {
+              element: "textarea",
+              type: "text-area",
+              text: "Teams (separated by comas):",
+              id: "teams",
+            },
+            {
+              element: "textarea",
+              type: "text-area",
+              text: "Topics (separated by comas):",
+              id: "topics",
+            },
+            {
+              element: "textarea",
+              type: "text-area",
+              text: "Rules (separated by comas):",
+              id: "rules",
+            },
+            {
+              element: "textarea",
+              type: "text-area",
+              text: "Criteria:",
+              id: "criteria",
+            },
+          ],
         },
       ],
     },

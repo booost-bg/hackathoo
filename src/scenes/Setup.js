@@ -3,6 +3,7 @@ import { Sprite } from "pixi.js";
 import config from "../config";
 import Button from "../components/Button";
 import Background from "../components/Background";
+import Form from "../components/Form";
 
 /**
  * Represents the setup scene of the app.
@@ -14,132 +15,28 @@ export default class Setup extends Scene {
 
   constructor() {
     super();
-    this.inputs1 = config.scenes.Setup.inputs1;
-    this.inputs2 = config.scenes.Setup.inputs2;
     this.inputElements = {};
+    this.formsConfig = config.scenes.Setup.forms;
+    this.currentFormIndex = 0;
   }
 
   async onCreated() {
     this.renderBackground();
-    this.createFormElement1();
-    this.createFormElement2();
-    this.colorInputListener();
-
     this.drawButton();
+    this.createForm();
+    this.colorInputListener();
   }
 
-  /**
-   * Creates a dom input element.
-   * @param {string} element
-   * @param {string} type
-   * @param {string} text
-   * @returns DOM element.
-   * @method
-   * @private
-   */
-  createInputElement(element, type, text, id) {
-    const label = document.createElement("label");
-    label.htmlFor = id;
-    label.innerText = text;
-    const input = document.createElement(element);
-    input.id = id;
-    if (element !== "textarea") input.type = type;
-    else {
-      input.rows = "20";
+  createForm() {
+    if (this.form) {
+      this.form.domElement.style.display = "none";
+      this.form = new Form(this.formsConfig[this.currentFormIndex]);
+    } else {
+      this.form = new Form(this.formsConfig[this.currentFormIndex]);
+      this.inputElements = {
+        ...this.form.inputElements,
+      };
     }
-
-    Object.assign(label.style, {
-      "font-family": "Raleway",
-      "font-weight": "600",
-      "margin-top": "4px",
-      color: "white",
-      "background-color": "black",
-      "box-sizing": "border-box",
-      display: "inline-flex",
-      padding: "10px",
-    });
-
-    Object.assign(input.style, {
-      "box-sizing": "border-box",
-      width: "100%",
-      resize: "none",
-      padding: "15px",
-      "font-size": "16px",
-      "min-height": "54px",
-    });
-
-    return { label, input };
-  }
-
-  /**
-   * Creates dom form1 element.
-   * @method
-   * @private
-   */
-  createFormElement1() {
-    this.form1 = document.createElement("form");
-    Object.assign(this.form1.style, {
-      "align-self": "center",
-      "justify-self": "center",
-      display: "flex",
-      "flex-direction": "column",
-      height: "550px",
-      width: "420px",
-      position: "relative",
-      top: "-90vh",
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
-    });
-
-    this.form1.classList.add("setup-form");
-    document.body.appendChild(this.form1);
-    this.inputs1.forEach((input) => {
-      const element = this.createInputElement(
-        input.element,
-        input.type,
-        input.text,
-        input.id
-      );
-      this.form1.appendChild(element.label);
-      this.form1.appendChild(element.input);
-      this.inputElements[element.input.id] = element.input;
-    });
-  }
-  /**
-   * Creates dom form2 element.
-   * @method
-   * @private
-   */
-  createFormElement2() {
-    this.form2 = document.createElement("form");
-    Object.assign(this.form2.style, {
-      "align-self": "center",
-      "justify-self": "center",
-      display: "none",
-      "flex-direction": "column",
-      height: "550px",
-      width: "420px",
-      position: "relative",
-      top: "-80vh",
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
-    });
-
-    this.form2.classList.add("setup-form");
-    document.body.appendChild(this.form2);
-    this.inputs2.forEach((input) => {
-      const element = this.createInputElement(
-        input.element,
-        input.type,
-        input.text,
-        input.id
-      );
-      this.form2.appendChild(element.label);
-      this.form2.appendChild(element.input);
-      this.inputElements[element.input.id] = element.input;
-    });
   }
 
   /**
@@ -191,14 +88,7 @@ export default class Setup extends Scene {
     this.button.pivot.y = buttonConfig.height / 2;
     this.button.y += buttonConfig.y;
     this.addChild(this.button);
-
-    this.button.once("click", () => this.displayNextForm());
-  }
-
-  displayNextForm() {
-    this.form1.style.display = "none";
-    this.form2.style.display = "flex";
-    this.button.once("click", () => this.buttonClickHandler());
+    this.button.on("click", () => this.buttonClickHandler());
   }
 
   /**
@@ -207,11 +97,20 @@ export default class Setup extends Scene {
    * @private
    */
   buttonClickHandler() {
-    localStorage.setItem(
-      "hackathonSettings",
-      JSON.stringify(this.submittedSettings)
-    );
-    this.finishScene();
+    this.inputElements = {
+      ...this.inputElements,
+      ...this.form.inputElements,
+    };
+    if (this.currentFormIndex >= this.formsConfig.length - 1) {
+      localStorage.setItem(
+        "hackathonSettings",
+        JSON.stringify(this.submittedSettings)
+      );
+      this.finishScene();
+    } else {
+      this.currentFormIndex++;
+      this.createForm();
+    }
   }
 
   /**
