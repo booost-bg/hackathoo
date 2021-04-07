@@ -12,7 +12,7 @@ import { Container } from "pixi.js";
 export default class Game extends Container {
   static get events() {
     return {
-      SWITCH_SCENE: "switch_scene",
+      SWITCH_SCENE: 'switch_scene',
     };
   }
 
@@ -24,10 +24,19 @@ export default class Game extends Container {
 
     this._background = background;
     this.currentScene = null;
+    this._registerPlugins();
+  }
+
+  /**
+   * Register global plugins here
+   * @private
+   */
+  _registerPlugins() {
+    gsap.registerPlugin(MotionPathPlugin);
   }
 
   async start() {
-    await this.switchScene(Splash, { scene: "splash" });
+    await this.switchScene(Splash, { scene: 'splash' });
     await this.currentScene.finish;
 
     // this.switchScene(Play, { scene: "play" });

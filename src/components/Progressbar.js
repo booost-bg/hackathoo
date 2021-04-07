@@ -1,10 +1,7 @@
 import { random } from '../core/utils';
 import { Container, Graphics } from 'pixi.js';
 import Bubble from './Bubble';
-
 import gsap from 'gsap';
-import MotionPathPlugin from 'gsap/MotionPathPlugin';
-gsap.registerPlugin(MotionPathPlugin);
 // Prevent timeline pause when tab is not on focus
 gsap.ticker.lagSmoothing(false);
 
