@@ -1,8 +1,10 @@
-import Scene from "./Scene";
-import Timer from "../components/Timer";
-import Title from "../components/Title";
-import HackathonLogo from "../components/HackathonLogo";
-import Button from "../components/Button";
+import Scene from './Scene';
+import Timer from '../components/Timer';
+import Title from '../components/Title';
+import HackathonLogo from '../components/HackathonLogo';
+import Button from '../components/Button';
+import Background from '../components/Background';
+import Progressbar from '../components/Progressbar';
 
 /**
  * Represents the countdown before the hackathon ends.
@@ -10,12 +12,42 @@ import Button from "../components/Button";
  */
 export default class Countdown extends Scene {
   async onCreated() {
+    this.createProgressBar();
+    this.createBackground();
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton("15 min break", 220, 15);
-    this.createPauseTimerButton("30 min break", 290, 30);
-    this.createPauseTimerButton("60 min break", 360, 60);
+    this.createPauseTimerButton('15 min break', 220, 15);
+    this.createPauseTimerButton('30 min break', 290, 30);
+    this.createPauseTimerButton('60 min break', 360, 60);
+  }
+
+  /**
+   * @private
+   */
+  createProgressBar() {
+    const pg = new Progressbar({ initialWidth: 100 });
+
+    pg.y = -window.innerHeight / 2;
+    pg.x = -window.innerWidth / 2;
+
+    this._pg = pg;
+  }
+
+  /**
+   * @private
+   */
+  createBackground() {
+    const background = new Background({
+      bgColor1: '#0C59EB',
+      bgColor2: '#0C59EB',
+      circleColor1: '#FFE600',
+      circleColor2: '#FFE600',
+    });
+
+    this._background = background;
+    this._background.addChild(this._pg);
+    this.addChild(this._background);
   }
 
   /**
@@ -28,6 +60,7 @@ export default class Countdown extends Scene {
     timer.y = -75;
     this.timer = timer;
     this.addChild(this.timer);
+    this.startProgressBar();
   }
 
   /**
@@ -36,9 +69,9 @@ export default class Countdown extends Scene {
    * @private
    */
   createTitle() {
-    const endTime = JSON.parse(localStorage.getItem("hackathonSettings"))
+    const endTime = JSON.parse(localStorage.getItem('hackathonSettings'))
       .endTime;
-    const parsedEndTime = endTime.replace(/-|T/g, "/");
+    const parsedEndTime = endTime.replace(/-|T/g, '/');
 
     const title = new Title(`Ends at ${parsedEndTime}`);
 
@@ -53,7 +86,7 @@ export default class Countdown extends Scene {
    */
   createLogo() {
     const text = JSON.parse(
-      localStorage.getItem("hackathonSettings")
+      localStorage.getItem('hackathonSettings')
     ).hackathonName.toUpperCase();
     const logo = new HackathonLogo(text);
     this.addChild(logo);
@@ -76,10 +109,17 @@ export default class Countdown extends Scene {
 
     button.pivot.x = button.width / 2;
     button.y = y;
-    button.on("click", () => {
+    button.on('click', () => {
       this.timer.pause(duration);
     });
 
     this.addChild(button);
+  }
+
+  /**
+   * @private
+   */
+  startProgressBar() {
+    this._pg.start(this.timer.totalTime);
   }
 }

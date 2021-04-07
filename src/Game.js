@@ -1,8 +1,10 @@
-import Setup from "./scenes/Setup";
-import Intro from "./scenes/Intro";
-import Splash from "./scenes/Splash";
-import Play from "./scenes/Play";
-import { Container } from "pixi.js";
+import Setup from './scenes/Setup';
+import Intro from './scenes/Intro';
+import Splash from './scenes/Splash';
+import Play from './scenes/Play';
+import { Container } from 'pixi.js';
+import gsap from 'gsap';
+import MotionPathPlugin from 'gsap/MotionPathPlugin';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -12,7 +14,7 @@ import { Container } from "pixi.js";
 export default class Game extends Container {
   static get events() {
     return {
-      SWITCH_SCENE: "switch_scene",
+      SWITCH_SCENE: 'switch_scene',
     };
   }
 
@@ -24,14 +26,25 @@ export default class Game extends Container {
 
     this._background = background;
     this.currentScene = null;
+    this._registerPlugins();
+  }
+
+  /**
+   * Register global plugins here
+   * @private
+   */
+  _registerPlugins() {
+    gsap.registerPlugin(MotionPathPlugin);
+    // Prevent timeline pause when tab is not on focus
+    gsap.ticker.lagSmoothing(false);
   }
 
   async start() {
-    await this.switchScene(Splash, { scene: "splash" });
+    await this.switchScene(Splash, { scene: 'splash' });
     await this.currentScene.finish;
 
     // this.switchScene(Play, { scene: "play" });
-    this.switchScene(Setup, { scene: "setup" });
+    this.switchScene(Setup, { scene: 'setup' });
     // this.switchScene(Intro, { scene: "intro" });
   }
 
