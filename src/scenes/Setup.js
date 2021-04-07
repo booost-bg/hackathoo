@@ -188,7 +188,8 @@ export default class Setup extends Scene {
   colorInputListener() {
     const bg1 = this.inputElements["main-color"];
     const bg2 = this.inputElements["accent-color"];
-    const fx = this.inputElements["fx-color"];
+    const fx1 = this.inputElements["fx1-color"];
+    const fx2 = this.inputElements["fx2-color"];
     bg1.addEventListener("change", () => {
       this.background.changeColors({
         bgColor1: bg1.value,
@@ -201,10 +202,16 @@ export default class Setup extends Scene {
         bgColor2: bg2.value,
       });
     });
-    fx.addEventListener("change", () => {
+    fx1.addEventListener("change", () => {
       this.background.changeColors({
-        circleColor1: fx.value,
-        circleColor2: fx.value,
+        circleColor1: fx1.value,
+        circleColor2: fx2.value,
+      });
+    });
+    fx2.addEventListener("change", () => {
+      this.background.changeColors({
+        circleColor1: fx1.value,
+        circleColor2: fx2.value,
       });
     });
   }
