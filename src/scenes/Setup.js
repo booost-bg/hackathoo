@@ -8,6 +8,10 @@ import Background from "../components/Background";
  * Represents the setup scene of the app.
  */
 export default class Setup extends Scene {
+  static get events() {
+    return { FINISH_SCENE: "finish-scene" };
+  }
+
   constructor() {
     super();
     this.inputs1 = config.scenes.Setup.inputs1;
@@ -216,7 +220,7 @@ export default class Setup extends Scene {
    * @private
    */
   finishScene() {
-    this.emit("finishScene", { settings: this.submittedSettings });
+    this.emit(Setup.events.FINISH_SCENE, { settings: this.submittedSettings });
   }
 
   /**
