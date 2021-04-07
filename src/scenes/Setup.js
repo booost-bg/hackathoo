@@ -161,7 +161,7 @@ export default class Setup extends Scene {
 
       endTime: this.inputElements["end-time"].value,
 
-      rules: this.inputElements["rules"].value,
+      rules: this.inputElements["rules"].value.split(","),
 
       criteria: this.inputElements["criteria"].value,
     };
