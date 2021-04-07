@@ -35,6 +35,8 @@ export default class Game extends Container {
    */
   _registerPlugins() {
     gsap.registerPlugin(MotionPathPlugin);
+    // Prevent timeline pause when tab is not on focus
+    gsap.ticker.lagSmoothing(false);
   }
 
   async start() {

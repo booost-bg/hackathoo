@@ -2,8 +2,6 @@ import { random } from '../core/utils';
 import { Container, Graphics } from 'pixi.js';
 import Bubble from './Bubble';
 import gsap from 'gsap';
-// Prevent timeline pause when tab is not on focus
-gsap.ticker.lagSmoothing(false);
 
 /**
  * Initializes a new instance of Progress
