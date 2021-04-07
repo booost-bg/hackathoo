@@ -10,13 +10,15 @@ import Background from "../components/Background";
 export default class Setup extends Scene {
   constructor() {
     super();
-    this.inputs = config.scenes.Setup.inputs;
+    this.inputs1 = config.scenes.Setup.inputs1;
+    this.inputs2 = config.scenes.Setup.inputs2;
     this.inputElements = {};
   }
 
   async onCreated() {
     this.renderBackground();
-    this.createFormElement();
+    this.createFormElement1();
+    this.createFormElement2();
     this.colorInputListener();
 
     this.drawButton();
@@ -66,13 +68,13 @@ export default class Setup extends Scene {
   }
 
   /**
-   * Creates dom form element.
+   * Creates dom form1 element.
    * @method
    * @private
    */
-  createFormElement() {
-    const form = document.createElement("form");
-    Object.assign(form.style, {
+  createFormElement1() {
+    this.form1 = document.createElement("form");
+    Object.assign(this.form1.style, {
       "align-self": "center",
       "justify-self": "center",
       display: "flex",
@@ -80,23 +82,58 @@ export default class Setup extends Scene {
       height: "550px",
       width: "420px",
       position: "relative",
-      top: "-97vh",
+      top: "-90vh",
       "justify-content": "space-between",
       "box-sizing": "border-box",
       "align-items": "flex-start",
     });
 
-    form.classList.add("setup-form");
-    document.body.appendChild(form);
-    this.inputs.forEach((input) => {
+    this.form1.classList.add("setup-form");
+    document.body.appendChild(this.form1);
+    this.inputs1.forEach((input) => {
       const element = this.createInputElement(
         input.element,
         input.type,
         input.text,
         input.id
       );
-      form.appendChild(element.label);
-      form.appendChild(element.input);
+      this.form1.appendChild(element.label);
+      this.form1.appendChild(element.input);
+      this.inputElements[element.input.id] = element.input;
+    });
+  }
+  /**
+   * Creates dom form2 element.
+   * @method
+   * @private
+   */
+  createFormElement2() {
+    this.form2 = document.createElement("form");
+    Object.assign(this.form2.style, {
+      "align-self": "center",
+      "justify-self": "center",
+      display: "none",
+      "flex-direction": "column",
+      height: "550px",
+      width: "420px",
+      position: "relative",
+      top: "-80vh",
+      "justify-content": "space-between",
+      "box-sizing": "border-box",
+      "align-items": "flex-start",
+    });
+
+    this.form2.classList.add("setup-form");
+    document.body.appendChild(this.form2);
+    this.inputs2.forEach((input) => {
+      const element = this.createInputElement(
+        input.element,
+        input.type,
+        input.text,
+        input.id
+      );
+      this.form2.appendChild(element.label);
+      this.form2.appendChild(element.input);
       this.inputElements[element.input.id] = element.input;
     });
   }
@@ -112,7 +149,9 @@ export default class Setup extends Scene {
 
       accentColor: this.inputElements["accent-color"].value,
 
-      fxColor: this.inputElements["fx-color"].value,
+      fx1Color: this.inputElements["fx1-color"].value,
+
+      fx2Color: this.inputElements["fx2-color"].value,
 
       teams: this.inputElements["teams"].value.split(","),
 
@@ -121,6 +160,10 @@ export default class Setup extends Scene {
       startTime: this.inputElements["start-time"].value,
 
       endTime: this.inputElements["end-time"].value,
+
+      rules: this.inputElements["rules"].value,
+
+      criteria: this.inputElements["criteria"].value,
     };
     return settings;
   }
@@ -139,13 +182,19 @@ export default class Setup extends Scene {
       curveSize: 13,
       y: 375,
     };
-    const button = new Button(buttonConfig);
-    button.pivot.x = buttonConfig.width / 2;
-    button.pivot.y = buttonConfig.height / 2;
-    button.y += buttonConfig.y;
-    this.addChild(button);
+    this.button = new Button(buttonConfig);
+    this.button.pivot.x = buttonConfig.width / 2;
+    this.button.pivot.y = buttonConfig.height / 2;
+    this.button.y += buttonConfig.y;
+    this.addChild(this.button);
 
-    button.once("click", () => this.buttonClickHandler());
+    this.button.once("click", () => this.displayNextForm());
+  }
+
+  displayNextForm() {
+    this.form1.style.display = "none";
+    this.form2.style.display = "flex";
+    this.button.once("click", () => this.buttonClickHandler());
   }
 
   /**

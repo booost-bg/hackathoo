@@ -25,7 +25,7 @@ export default {
       hideDelay: 0,
     },
     Setup: {
-      inputs: [
+      inputs1: [
         {
           element: "input",
           type: "text",
@@ -67,6 +67,32 @@ export default {
           type: "datetime-local",
           text: "End time:",
           id: "end-time",
+        },
+      ],
+      inputs2: [
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Teams (separated by comas):",
+          id: "teams",
+        },
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Topics (separated by comas):",
+          id: "topics",
+        },
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Rules (separated by comas):",
+          id: "rules",
+        },
+        {
+          element: "textarea",
+          type: "text-area",
+          text: "Criteria:",
+          id: "criteria",
         },
       ],
     },
