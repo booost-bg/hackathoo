@@ -3,7 +3,7 @@ import Scene from './Scene';
 import Background from '../components/Background';
 import { Model, Light, LightingEnvironment } from 'pixi3d';
 import gsap from 'gsap/gsap-core';
-import { Text } from 'pixi.js';
+import HackathonLogo from '../components/HackathonLogo';
 
 /**
  * Class representing the 3D countdown scene
@@ -18,6 +18,15 @@ export default class FinalCountdown extends Scene {
     this._init();
   }
   
+  /**
+   * Events getter
+   */
+  static get events() {
+    return {
+      finishScene: 'finishScene',
+    };
+  }
+
   /**
    * @private
    */
@@ -76,6 +85,8 @@ export default class FinalCountdown extends Scene {
 
       await delay(1000);
     }
+
+    this.emit(FinalCountdown.events.finishScene);
   }
 
   /**
@@ -84,11 +95,11 @@ export default class FinalCountdown extends Scene {
    */
   _addLights() {
     const pointLight1 = Object.assign(new Light(), { 
-      type: 'point', x: -1, y: 0, z: 6, range: 200, intensity: 100
+      type: 'point', x: -0.5, y: 0, z: 6, range: 200, intensity: 100
     });
 
     const pointLight2 = Object.assign(new Light(), { 
-      type: 'point', x: 1, y: 0, z: 6, range: 200, intensity: 50
+      type: 'point', x: 1, y: 0, z: 7, range: 200, intensity: 30
     });
 
     LightingEnvironment.main.lights.push(pointLight1, pointLight2);
@@ -99,17 +110,9 @@ export default class FinalCountdown extends Scene {
    * @private
    */
   _addHackathonName() {
-    const text = new Text(this._opts.hackathonName, {
-      fill: '#FFFFFF',
-      fontFamily: 'Raleway',
-      fontSize: 64,
-      fontWeight: 200,
-    });
+    const name = new HackathonLogo(this._opts.hackathonName);
 
-    text.anchor.set(0.5);
-    text.y = -window.innerHeight / 2 + 100;
-
-    this.addChild(text);
+    this.addChild(name);
   }
 
   /**
