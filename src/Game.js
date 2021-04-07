@@ -1,8 +1,10 @@
-import Setup from "./scenes/Setup";
-import Intro from "./scenes/Intro";
-import Splash from "./scenes/Splash";
-import Play from "./scenes/Play";
-import { Container } from "pixi.js";
+import Setup from './scenes/Setup';
+import Intro from './scenes/Intro';
+import Splash from './scenes/Splash';
+import Play from './scenes/Play';
+import { Container } from 'pixi.js';
+import gsap from 'gsap';
+import MotionPathPlugin from 'gsap/MotionPathPlugin';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -40,7 +42,7 @@ export default class Game extends Container {
     await this.currentScene.finish;
 
     // this.switchScene(Play, { scene: "play" });
-    this.switchScene(Setup, { scene: "setup" });
+    this.switchScene(Setup, { scene: 'setup' });
     // this.switchScene(Intro, { scene: "intro" });
   }
 
