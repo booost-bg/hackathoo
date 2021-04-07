@@ -1,11 +1,11 @@
-import { Container, Graphics, Sprite } from 'pixi.js';
-import gsap from 'gsap';
+import { Container, Graphics, Sprite } from "pixi.js";
+import gsap from "gsap";
 
 export default class Footer extends Container {
   constructor() {
     super();
 
-    this.name = 'footer';
+    this.name = "footer";
 
     this._addBg();
     this._addHighlight();
@@ -36,14 +36,14 @@ export default class Footer extends Container {
     highlight.endFill();
     this.addChild(highlight);
 
-    gsap.to(highlight.scale, { x: 0.005, duration: 1.5, ease: 'circ.inOut' });
+    gsap.to(highlight.scale, { x: 0.005, duration: 1.5, ease: "circ.inOut" });
   }
 
   /**
    * @private
    */
   _addLogo() {
-    const logo = Sprite.from('logo');
+    const logo = Sprite.from("logo");
     logo.x = window.innerWidth - logo.width - 20;
     logo.y = logo.height;
     this.addChild(logo);
@@ -51,6 +51,6 @@ export default class Footer extends Container {
     logo.interactive = true;
     logo.buttonMode = true;
 
-    logo.on('pointerdown', () => window.location = 'https://www.booost.bg/');
+    logo.on("pointerdown", () => (window.location = "https://www.booost.bg/"));
   }
 }
