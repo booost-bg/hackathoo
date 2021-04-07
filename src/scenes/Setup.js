@@ -193,19 +193,16 @@ export default class Setup extends Scene {
     bg1.addEventListener("change", () => {
       this.background.changeColors({
         bgColor1: bg1.value,
-        bgColor2: this.background._colors.bgColor2,
       });
     });
     bg2.addEventListener("change", () => {
       this.background.changeColors({
-        bgColor1: this.background._colors.bgColor1,
         bgColor2: bg2.value,
       });
     });
     fx1.addEventListener("change", () => {
       this.background.changeColors({
         circleColor1: fx1.value,
-        circleColor2: fx2.value,
       });
     });
     fx2.addEventListener("change", () => {
