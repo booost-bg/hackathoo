@@ -52,7 +52,7 @@ export function random(min, max) {
 }
 
 export function pad(num) {
-  return num < 10 ? "0" + num.toString() : num.toString();
+  return Math.abs(num) < 10 ? "0" + Math.abs(num) : Math.abs(num).toString();
 }
 
 /**

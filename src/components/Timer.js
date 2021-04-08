@@ -92,6 +92,7 @@ export default class Timer extends Container {
    * @private
    */
   createCountdown() {
+    const now = dayjs();
     const { endDate } = this.getDates();
     const { startDate } = this.getDates();
     this.startDate = startDate;
@@ -125,6 +126,7 @@ export default class Timer extends Container {
    */
   parseDistanceHours(distance) {
     const distances = dayjs.duration(distance).$d;
+
     return {
       hours: pad(distances.days * 24 + distances.hours),
       minutes: pad(distances.minutes),
