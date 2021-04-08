@@ -26,12 +26,11 @@ export default class MusicPlayer {
     el.setAttribute('frameborder', '0');
     el.setAttribute('allowtransparency', 'true');
     el.setAttribute('allow', 'encrypted-media');
-    el.setAttribute('color', 'red');
     el.setAttribute('class', 'player');
     Object.assign(el.style, {
-      position: 'relative',
-      top: '-15.5vh',
-      left: '80vw',
+      position: 'absolute',
+      bottom: '54px',
+      right: '50px',
     });
 
     document.body.appendChild(el);
