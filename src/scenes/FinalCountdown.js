@@ -67,12 +67,23 @@ export default class FinalCountdown extends Scene {
     const delay = (time) => new Promise((res) => setTimeout(() => res(), time));
 
     for (const digit of digits) {
+      const dummyObj = {
+        rotation: 20,
+      };
+      
       gsap.timeline()
+        .to(dummyObj, {
+          rotation: -30,  
+          duration: 3,
+          onUpdate: () => {
+            digit.rotationQuaternion.setEulerAngles(0, dummyObj.rotation, 0);
+          }
+        })
         .to(digit, {
           z: 1,
           ease: 'back',
           duration: 1
-        })
+        }, '<')
         .to(digit, {
           pixi: {
             z: -5,
@@ -81,7 +92,7 @@ export default class FinalCountdown extends Scene {
           onComplete: () => {
             this.removeChild(digit);
           } 
-        });
+        }, '-=2');
 
       await delay(1000);
     }
@@ -95,7 +106,7 @@ export default class FinalCountdown extends Scene {
    */
   _addLights() {
     const pointLight1 = Object.assign(new Light(), { 
-      type: 'point', x: -0.5, y: 0, z: 6, range: 200, intensity: 100
+      type: 'point', x: -1, y: 0, z: 6, range: 200, intensity: 100
     });
 
     const pointLight2 = Object.assign(new Light(), { 
