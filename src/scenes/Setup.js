@@ -23,16 +23,20 @@ export default class Setup extends Scene {
   async onCreated() {
     this.renderBackground();
     this.drawButton();
-    this.createForm();
+    this.handleFormCreation();
     this.colorInputListener();
   }
 
   createForm() {
+    this.form = new Form(this.formsConfig[this.currentFormIndex]);
+  }
+
+  handleFormCreation() {
     if (this.form) {
       this.form.domElement.style.display = "none";
-      this.form = new Form(this.formsConfig[this.currentFormIndex]);
+      this.createForm();
     } else {
-      this.form = new Form(this.formsConfig[this.currentFormIndex]);
+      this.createForm();
       this.inputElements = {
         ...this.form.inputElements,
       };
@@ -109,7 +113,7 @@ export default class Setup extends Scene {
       this.finishScene();
     } else {
       this.currentFormIndex++;
-      this.createForm();
+      this.handleFormCreation();
     }
   }
 
