@@ -1,5 +1,4 @@
 import Scene from "./Scene";
-import { Sprite } from "pixi.js";
 import config from "../config";
 import Button from "../components/Button";
 import Background from "../components/Background";
@@ -15,7 +14,7 @@ export default class Setup extends Scene {
 
   constructor() {
     super();
-    this.inputElements = {};
+    this.forms = [];
     this.formsConfig = config.scenes.Setup.forms;
     this.currentFormIndex = 0;
   }
@@ -23,54 +22,32 @@ export default class Setup extends Scene {
   async onCreated() {
     this.renderBackground();
     this.drawButton();
-    this.handleFormCreation();
+    this.createForm();
     this.colorInputListener();
   }
 
+  /**
+   * Creates a form.
+   * @method
+   * @private
+   */
   createForm() {
+    if (this.form) this.form.domElement.style.display = "none";
     this.form = new Form(this.formsConfig[this.currentFormIndex]);
-  }
-
-  handleFormCreation() {
-    if (this.form) {
-      this.form.domElement.style.display = "none";
-      this.createForm();
-    } else {
-      this.createForm();
-      this.inputElements = {
-        ...this.form.inputElements,
-      };
-    }
+    this.forms = [...this.forms, this.form];
   }
 
   /**
-   * @returns {Object} Hakcathon's settings.
+   * @returns {Object} Hakcathon's settings data.
    */
   get submittedSettings() {
-    const settings = {
-      hackathonName: this.inputElements["hackathon-name"].value,
-
-      mainColor: this.inputElements["main-color"].value,
-
-      accentColor: this.inputElements["accent-color"].value,
-
-      fx1Color: this.inputElements["fx1-color"].value,
-
-      fx2Color: this.inputElements["fx2-color"].value,
-
-      teams: this.inputElements["teams"].value.split(","),
-
-      topics: this.inputElements["topics"].value.split(","),
-
-      startTime: this.inputElements["start-time"].value,
-
-      endTime: this.inputElements["end-time"].value,
-
-      rules: this.inputElements["rules"].value.split(","),
-
-      criteria: this.inputElements["criteria"].value,
-    };
-    return settings;
+    let settingsObject = {};
+    this.forms.forEach((form) => {
+      for (let setting in form.inputElements) {
+        settingsObject[setting] = form.inputElements[setting].value;
+      }
+    });
+    return settingsObject;
   }
 
   /**
@@ -101,11 +78,8 @@ export default class Setup extends Scene {
    * @private
    */
   buttonClickHandler() {
-    this.inputElements = {
-      ...this.inputElements,
-      ...this.form.inputElements,
-    };
     if (this.currentFormIndex >= this.formsConfig.length - 1) {
+      console.log(this.submittedSettings);
       localStorage.setItem(
         "hackathonSettings",
         JSON.stringify(this.submittedSettings)
@@ -113,7 +87,7 @@ export default class Setup extends Scene {
       this.finishScene();
     } else {
       this.currentFormIndex++;
-      this.handleFormCreation();
+      this.createForm();
     }
   }
 
@@ -142,10 +116,10 @@ export default class Setup extends Scene {
    * @private
    */
   colorInputListener() {
-    const bg1 = this.inputElements["main-color"];
-    const bg2 = this.inputElements["accent-color"];
-    const fx1 = this.inputElements["fx1-color"];
-    const fx2 = this.inputElements["fx2-color"];
+    const bg1 = this.forms[0].inputElements["mainColor"];
+    const bg2 = this.forms[0].inputElements["accentColor"];
+    const fx1 = this.forms[0].inputElements["fx1Color"];
+    const fx2 = this.forms[0].inputElements["fx2Color"];
     bg1.addEventListener("change", () => {
       this.background.changeColors({
         bgColor1: bg1.value,
