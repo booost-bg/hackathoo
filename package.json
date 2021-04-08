@@ -27,6 +27,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "dat.gui": "^0.7.7",
     "dayjs": "^1.10.4",
     "eslint": "^6.8.0",
     "gsap": "^3.1.1",

@@ -1,10 +1,14 @@
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import Splash from './scenes/Splash';
+import Topics from './scenes/Topics';
+import Countdown from './scenes/Countdown';
 import Play from './scenes/Play';
+import CountdownStart from './scenes/CountdownStart';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
+import * as DAT from 'dat.gui';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -27,6 +31,7 @@ export default class Game extends Container {
     this._background = background;
     this.currentScene = null;
     this._registerPlugins();
+    this.initGUI();
   }
 
   /**
@@ -45,7 +50,7 @@ export default class Game extends Container {
 
     // this.switchScene(Play, { scene: "play" });
     this.switchScene(Setup, { scene: 'setup' });
-    // this.switchScene(Intro, { scene: "intro" });
+    // this.switchScene(Intro, { scene: 'intro' });
   }
 
   /**
@@ -74,5 +79,49 @@ export default class Game extends Container {
     if (this.currentScene === null) return;
 
     this.currentScene.onResize(width, height);
+  }
+
+  /**
+   * Dev purposes only
+   * Provides convenient scene changing approach for easier debuggin 
+   * 
+   * To add new scenes to the DropDownList of the dat.gui window 
+   * 
+   * @method 
+   * @return {dat.GUI} 
+   * @memberof Game
+   */
+  initGUI() {
+    const gui = new DAT.GUI();
+    const sceneSelector = { 'Select scene': '' };
+
+    // Definitions of the elements that will appear in the dat.gui DropDownList
+    const dropDownListItems = {
+      Intro: 'intro',
+      Countdown: 'countdown',
+      Play: 'play',
+      Setup: 'setup',
+      Splash: 'splash',
+      Topics: 'topics',
+      CountdownStart: 'countdownStart'
+    };
+
+    // Scene name - Scene constructor pairs
+    const scenes = {
+      setup: Setup,
+      intro: Intro,
+      countdown: Countdown,
+      play: Play,
+      splash: Splash,
+      topics: Topics,
+      countdownStart: CountdownStart
+    };
+
+    gui.add(sceneSelector, 'Select scene', dropDownListItems)
+      .onChange((selectedValue) => {
+        this.switchScene(scenes[selectedValue], { scene: selectedValue });
+      });
+
+    return gui;
   }
 }
