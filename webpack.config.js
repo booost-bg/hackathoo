@@ -22,6 +22,14 @@ module.exports = {
       {
         test: /\.(gif|png|jpe?g|svg|xml|wav|m4a|ogg|mp3)$/i,
         use: "file-loader"
+      },
+      {
+        test: /\.(gltf)$/,
+        use: [
+          {
+            loader: 'gltf-webpack-loader'
+          }
+        ]
       }
     ]
   },
