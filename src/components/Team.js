@@ -1,3 +1,4 @@
+import gsap from 'gsap/gsap-core';
 import { Text, Graphics, Container } from 'pixi.js';
 
 /**
@@ -5,7 +6,6 @@ import { Text, Graphics, Container } from 'pixi.js';
  */
 export default class Team extends Container {
   /**
-   *
    * @param {Object} teamInfo
    */
   constructor(teamInfo = { name: 'TEAM NAME', place: '3' }) {
@@ -30,6 +30,7 @@ export default class Team extends Container {
    */
   _addTeamPlace() {
     this.place = new Container();
+
     const digit = new Text(this._teamInfo.place, {
       fontFamily: 'Raleway',
       fontSize: 600,
@@ -52,9 +53,8 @@ export default class Team extends Container {
     ordinalText.position.y = -200;
     ordinalText.position.x = 160;
 
-    this.place.addChild(digit, ordinalText);
-
     this.place.position.y = -200;
+    this.place.addChild(digit, ordinalText);
 
     this.addChild(this.place);
   }
@@ -87,6 +87,35 @@ export default class Team extends Container {
     this.name.position.y = 300;
 
     this.addChild(this.name);
+  }
+
+  /**
+   * Animates the team containers into view
+   */
+  enterAnimation() {
+    gsap.from(this.name, {
+      y: window.innerHeight,
+      duration: 2,
+      ease: 'back(1)'
+    });
+
+    return gsap.from(this.place, {
+      y: -window.innerHeight,
+      duration: 2,
+      ease: 'elastic(0.5)',
+    });
+  }
+
+  /**
+   * Animation when the team leaves the scene
+   */
+  leaveAnimation() {
+    return gsap.to(this, {
+      pixi: {
+        scale: 0,
+      },
+      duration: 0.2,
+    });
   }
 
   /**
