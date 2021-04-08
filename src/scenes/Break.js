@@ -5,25 +5,27 @@ import HackathonLogo from '../components/HackathonLogo';
 import Button from '../components/Button';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
-import Break from '../scenes/Break';
 
 /**
  * Represents the countdown before the hackathon ends.
  * @class
  */
-export default class Countdown extends Scene {
+export default class Break extends Scene {
+  constructor(duration) {
+    super();
+    this._duration = duration;
+  }
+
   async onCreated() {
     this.createProgressBar();
     this.createBackground();
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton('15 min break', 220, 15);
-    this.createPauseTimerButton('30 min break', 290, 30);
-    this.createPauseTimerButton('60 min break', 360, 60);
-    // document.addEventListener('click', () => {
-    //   this.parent.parent.children[0].switchScene(Break, { scene: 'break' });
-    // });
+    // this.createPauseTimerButton('15 min break', 220, 15);
+    // this.createPauseTimerButton('30 min break', 290, 30);
+    // this.createPauseTimerButton('60 min break', 360, 60);
+    this.timer.pause(this.duration);
   }
 
   /**
@@ -43,8 +45,8 @@ export default class Countdown extends Scene {
    */
   createBackground() {
     const background = new Background({
-      bgColor1: '#0C59EB',
-      bgColor2: '#0C59EB',
+      bgColor1: '#014641',
+      bgColor2: '#014641',
       circleColor1: '#FFE600',
       circleColor2: '#FFE600',
     });
@@ -115,8 +117,6 @@ export default class Countdown extends Scene {
     button.y = y;
     button.on('click', () => {
       this.timer.pause(duration);
-      this.emit('start', duration);
-      console.log(this);
     });
 
     this.addChild(button);

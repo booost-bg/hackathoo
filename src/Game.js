@@ -2,6 +2,9 @@ import config from './config';
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import Splash from './scenes/Splash';
+import Play from './scenes/Play';
+import Break from './scenes/Break';
+import Countdown from './scenes/Countdown';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
@@ -60,21 +63,46 @@ export default class Game extends Container {
   }
 
   async start() {
+    this._addEventListeners();
+
     await this.switchScene(Splash, { scene: 'splash' });
     await this.currentScene.finish;
 
     // this.switchScene(Play, { scene: "play" });
-    this.switchScene(Setup, { scene: 'setup' });
-    // this.switchScene(Intro, { scene: 'intro' });
+    // this.switchScene(Setup, { scene: 'setup' });
+    // this.switchScene(Break, { scene: 'setup' });
+    this.switchScene(Countdown, { scene: 'setup' });
+    // this.switchScene(Intro, { scene: "intro" });
+  }
+  _addEventListeners() {
+    this.on(Game.events.SWITCH_SCENE, () => {
+      this.currentScene.on('start', (data) => {
+        this.addChild(new Break(data));
+        // this.currentScene = new Break(data);
+      });
+      // this.currentScene.once(Tutorial.events.TUTORIAL_DONE, async () => {
+      //   await this.switchScene(Countdown, { scene: 'countdown' });
+      // });
+      // this.currentScene.once(Countdown.events.START_GAME, async () => {
+      //   await this.switchScene(Play, { scene: 'play' });
+      // });
+      // this.currentScene.on(Play.events.GAME_OVER, async (data) => {
+      //   await this.switchScene(Win, { scene: 'win' }, data);
+      // });
+      // this.currentScene.once(
+      //   Win.events.RESTART_GAME,
+      //   async () => await this.switchScene(Countdown, { scene: 'countdown' })
+      // );
+    });
   }
 
   /**
    * @param {Function} constructor
    * @param {String} scene
    */
-  switchScene(constructor, scene) {
+  switchScene(constructor, scene, data = {}) {
     this.removeChild(this.currentScene);
-    this.currentScene = new constructor();
+    this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
     this.addChild(this.currentScene);
 
