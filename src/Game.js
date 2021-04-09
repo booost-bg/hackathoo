@@ -72,36 +72,21 @@ export default class Game extends Container {
     // this.switchScene(Setup, { scene: 'setup' });
     // this.switchScene(Break, { scene: 'setup' });
     this.switchScene(Countdown, { scene: 'setup' });
-    // this.switchScene(Intro, { scene: "intro" });
-  }
-  _addEventListeners() {
-    this.on(Game.events.SWITCH_SCENE, () => {
-      this.currentScene.on('start', (data) => {
-        this.addChild(new Break(data));
-        // this.currentScene = new Break(data);
-      });
-      // this.currentScene.once(Tutorial.events.TUTORIAL_DONE, async () => {
-      //   await this.switchScene(Countdown, { scene: 'countdown' });
-      // });
-      // this.currentScene.once(Countdown.events.START_GAME, async () => {
-      //   await this.switchScene(Play, { scene: 'play' });
-      // });
-      // this.currentScene.on(Play.events.GAME_OVER, async (data) => {
-      //   await this.switchScene(Win, { scene: 'win' }, data);
-      // });
-      // this.currentScene.once(
-      //   Win.events.RESTART_GAME,
-      //   async () => await this.switchScene(Countdown, { scene: 'countdown' })
-      // );
-    });
+    // this.switchScene(Intro, { scene: 'intro' });
   }
 
   /**
    * @param {Function} constructor
    * @param {String} scene
+   * @param {Object} data Scene data
+   * @param {Boolean} preserveScene Preserve or delete current scene
    */
-  switchScene(constructor, scene, data = {}) {
-    this.removeChild(this.currentScene);
+  switchScene(constructor, scene, { data, preserveScene = false } = {}) {
+    if (preserveScene) {
+      this._previousScene = this.currentScene;
+    } else {
+      this.removeChild(this.currentScene);
+    }
     this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
     this.addChild(this.currentScene);
@@ -109,6 +94,32 @@ export default class Game extends Container {
     this.emit(Game.events.SWITCH_SCENE, { scene });
 
     return this.currentScene.onCreated();
+  }
+
+  /**
+   * @private
+   */
+  _addEventListeners() {
+    this.on(Game.events.SWITCH_SCENE, () => {
+      this.currentScene.on(Countdown.events.BREAK_START, (data) => {
+        this.switchScene(
+          Break,
+          { scene: 'break' },
+          { data, preserveScene: true }
+        );
+        this._previousScene.visible = false;
+      });
+
+      this.currentScene.on(Countdown.events.COUNTDOWN_END, () => {
+        this.switchScene(Setup, { scene: 'countdown' });
+      });
+
+      this.currentScene.on(Break.events.BREAK_END, () => {
+        this._previousScene.visible = true;
+        this.currentScene = this._previousScene;
+        this.currentScene.continue();
+      });
+    });
   }
 
   /**
