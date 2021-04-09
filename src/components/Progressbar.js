@@ -193,4 +193,20 @@ export default class Progress extends Container {
       ease: 'none',
     });
   }
+
+  /**
+   * Pause timeline
+   * @public
+   */
+  pause() {
+    this._tl.pause();
+  }
+
+  /**
+   * Play timeline
+   * @public
+   */
+  play() {
+    this._tl.play();
+  }
 }
