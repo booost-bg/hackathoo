@@ -2,36 +2,59 @@ import Scene from './Scene';
 import Timer from '../components/Timer';
 import Title from '../components/Title';
 import HackathonLogo from '../components/HackathonLogo';
-import Button from '../components/Button';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
+import dayjs from 'dayjs';
+
+const EVENTS = {
+  BREAK_END: 'break_end',
+};
 
 /**
- * Represents the countdown before the hackathon ends.
+ * Represents the break scene of the app.
  * @class
  */
 export default class Break extends Scene {
-  constructor(duration) {
+  /**
+   * @param {Number} duration The break duration value
+   */
+  constructor({ duration }) {
     super();
     this._duration = duration;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._timer = null;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._pg = null;
+    /**
+     * @type {Date}
+     * @private
+     */
+    this._endTime = null;
   }
 
   async onCreated() {
-    this.createProgressBar();
-    this.createBackground();
-    this.createTimer();
-    this.createTitle();
-    this.createLogo();
-    // this.createPauseTimerButton('15 min break', 220, 15);
-    // this.createPauseTimerButton('30 min break', 290, 30);
-    // this.createPauseTimerButton('60 min break', 360, 60);
-    this.timer.pause(this.duration);
+    this._createProgressBar();
+    this._createBackground();
+    this._createTimer();
+    this._createTitle();
+    this._createLogo();
+    this._addEventListeners();
+  }
+
+  static get events() {
+    return EVENTS;
   }
 
   /**
    * @private
    */
-  createProgressBar() {
+  _createProgressBar() {
     const pg = new Progressbar({ initialWidth: 100 });
 
     pg.y = -window.innerHeight / 2;
@@ -43,7 +66,7 @@ export default class Break extends Scene {
   /**
    * @private
    */
-  createBackground() {
+  _createBackground() {
     const background = new Background({
       bgColor1: '#014641',
       bgColor2: '#014641',
@@ -51,35 +74,33 @@ export default class Break extends Scene {
       circleColor2: '#FFE600',
     });
 
-    this._background = background;
-    this._background.addChild(this._pg);
-    this.addChild(this._background);
+    background.addChild(this._pg);
+    this.addChild(background);
   }
 
   /**
    * Renders the timer for the scene.
-   * @method
    * @private
    */
-  createTimer() {
-    const timer = new Timer();
+  _createTimer() {
+    const currentTime = dayjs();
+    this._endTime = currentTime.add(this._duration, 'minute');
+
+    const timer = new Timer(currentTime, this._endTime);
+
     timer.y = -75;
-    this.timer = timer;
-    this.addChild(this.timer);
-    this.startProgressBar();
+    this._timer = timer;
+
+    this.addChild(this._timer);
+    this._startProgressBar();
   }
 
   /**
    * Renders the scene's title/
-   * @method
    * @private
    */
-  createTitle() {
-    const endTime = JSON.parse(localStorage.getItem('hackathonSettings'))
-      .endTime;
-    const parsedEndTime = endTime.replace(/-|T/g, '/');
-
-    const title = new Title(`Ends at ${parsedEndTime}`);
+  _createTitle() {
+    const title = new Title(`Ends at ${this._endTime.format('H:mm')} `);
 
     title.y = 150;
     this.addChild(title);
@@ -87,45 +108,33 @@ export default class Break extends Scene {
 
   /**
    * Renders the hackathon's logo
-   * @method
    * @private
    */
-  createLogo() {
-    const text = JSON.parse(
-      localStorage.getItem('hackathonSettings')
-    ).hackathonName.toUpperCase();
-    const logo = new HackathonLogo(text);
+  _createLogo() {
+    const logo = new HackathonLogo('BREAK TIME');
     this.addChild(logo);
   }
 
   /**
-   * Renders the scene's button
-   * @param {String} text button text
-   * @param {Number} y button y coordinate value
-   * @param {Number} duration pause timer duration
-   * @method
    * @private
    */
-  createPauseTimerButton(text, y, duration) {
-    const button = new Button({
-      width: 300,
-      height: 50,
-      text,
-    });
-
-    button.pivot.x = button.width / 2;
-    button.y = y;
-    button.on('click', () => {
-      this.timer.pause(duration);
-    });
-
-    this.addChild(button);
+  _startProgressBar() {
+    this._pg.start(this._timer.totalTime);
   }
 
   /**
    * @private
    */
-  startProgressBar() {
-    this._pg.start(this.timer.totalTime);
+  _addEventListeners() {
+    this._timer.on(Timer.events.TIMER_END, () => this._finishScene());
+  }
+
+  /**
+   * Emits a finish event
+   * @private
+   */
+  _finishScene() {
+    this.emit(Break.events.BREAK_END);
+    this.destroy();
   }
 }
