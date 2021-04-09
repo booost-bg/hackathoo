@@ -5,7 +5,11 @@ import HackathonLogo from '../components/HackathonLogo';
 import Button from '../components/Button';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
-import Break from '../scenes/Break';
+
+const EVENTS = {
+  BREAK_START: 'break_start',
+  COUNTDOWN_END: 'countdown_end',
+};
 
 /**
  * Represents the countdown before the hackathon ends.
@@ -21,9 +25,11 @@ export default class Countdown extends Scene {
     this.createPauseTimerButton('15 min break', 220, 15);
     this.createPauseTimerButton('30 min break', 290, 30);
     this.createPauseTimerButton('60 min break', 360, 60);
-    // document.addEventListener('click', () => {
-    //   this.parent.parent.children[0].switchScene(Break, { scene: 'break' });
-    // });
+    this.addEventListeners();
+  }
+
+  static get events() {
+    return EVENTS;
   }
 
   /**
@@ -60,7 +66,8 @@ export default class Countdown extends Scene {
    * @private
    */
   createTimer() {
-    const timer = new Timer();
+    const settings = JSON.parse(localStorage.getItem('hackathonSettings'));
+    const timer = new Timer(settings.startTime, settings.endTime);
     timer.y = -75;
     this.timer = timer;
     this.addChild(this.timer);
@@ -78,7 +85,6 @@ export default class Countdown extends Scene {
     const parsedEndTime = endTime.replace(/-|T/g, '/');
 
     const title = new Title(`Ends at ${parsedEndTime}`);
-
     title.y = 150;
     this.addChild(title);
   }
@@ -113,19 +119,58 @@ export default class Countdown extends Scene {
 
     button.pivot.x = button.width / 2;
     button.y = y;
+
     button.on('click', () => {
-      this.timer.pause(duration);
-      this.emit('start', duration);
-      console.log(this);
+      this.emit(Countdown.events.BREAK_START, { duration });
+      this.pause();
     });
 
     this.addChild(button);
   }
 
   /**
+   * Pause scene
+   * @method
+   * @private
+   */
+  pause() {
+    this.timer.pause();
+    this._pg.pause();
+  }
+
+  /**
+   * Continue scene after pause
+   * @method
+   * @public
+   */
+  continue() {
+    this.timer.play();
+    this._pg.play();
+  }
+
+  /**
+   * @method
    * @private
    */
   startProgressBar() {
     this._pg.start(this.timer.totalTime);
+  }
+
+  /**
+   * @private
+   */
+  addEventListeners() {
+    this.timer.on(Timer.events.TIMER_END, () => {
+      this.finishScene();
+    });
+  }
+
+  /**
+   * Emits a finish event
+   * @method
+   * @private
+   */
+  finishScene() {
+    this.emit(Countdown.events.COUNTDOWN_END);
   }
 }
