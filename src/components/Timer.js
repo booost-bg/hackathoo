@@ -6,6 +6,7 @@ dayjs.extend(duration);
 
 const EVENTS = {
   TIMER_END: 'timer_end',
+  LAST_TEN_SECONDS: 'last_ten_seconds',
 };
 
 /**
@@ -87,9 +88,7 @@ export default class Timer extends Container {
     this.totalTime = endDate.diff(startDate);
     this.interval = setInterval(() => {
       const distance = endDate.diff(startDate);
-      if (distance < 1000) {
-        this.onTimerFinish();
-      }
+      this.onUpdate(distance);
       const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
         startDate = dayjs(startDate).add(1, 'second');
@@ -229,11 +228,26 @@ export default class Timer extends Container {
   }
 
   /**
+   * @param {Number} distance Time left in milliseconds.
    * @method
    * @private
    */
-  onTimerFinish() {
+  onUpdate(distance) {
+    if (distance < 11000) {
+      this.emit(Timer.events.LAST_TEN_SECONDS);
+    }
+
+    if (distance < 1000) {
+      this.emit(Timer.events.TIMER_END);
+    }
+  }
+
+  /**
+   * Clear timer interval
+   * @method
+   * @public
+   */
+  clearInterval() {
     window.clearInterval(this.interval);
-    this.emit(Timer.events.TIMER_END);
   }
 }

@@ -44,7 +44,6 @@ export default class Break extends Scene {
     this._createTimer();
     this._createTitle();
     this._createLogo();
-    this._addEventListeners();
   }
 
   static get events() {
@@ -90,6 +89,7 @@ export default class Break extends Scene {
 
     timer.y = -75;
     this._timer = timer;
+    this._timer.on(Timer.events.TIMER_END, () => this._finishScene());
 
     this.addChild(this._timer);
     this._startProgressBar();
@@ -120,13 +120,6 @@ export default class Break extends Scene {
    */
   _startProgressBar() {
     this._pg.start(this._timer.totalTime);
-  }
-
-  /**
-   * @private
-   */
-  _addEventListeners() {
-    this._timer.on(Timer.events.TIMER_END, () => this._finishScene());
   }
 
   /**

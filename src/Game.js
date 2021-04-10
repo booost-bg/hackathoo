@@ -1,6 +1,7 @@
 import config from './config';
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
+import FinalCountdown from './scenes/FinalCountdown';
 import Splash from './scenes/Splash';
 import Play from './scenes/Play';
 import Break from './scenes/Break';
@@ -81,7 +82,10 @@ export default class Game extends Container {
    * @param {Object} data Scene data
    * @param {Boolean} preserveScene Preserve or delete current scene
    */
-  switchScene(constructor, scene, { data, preserveScene = false } = {}) {
+  switchScene(
+    constructor,
+    { scene = '', data = {}, preserveScene = false } = {}
+  ) {
     if (preserveScene) {
       this._previousScene = this.currentScene;
     } else {
@@ -90,7 +94,6 @@ export default class Game extends Container {
     this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
     this.addChild(this.currentScene);
-
     this.emit(Game.events.SWITCH_SCENE, { scene });
 
     return this.currentScene.onCreated();
@@ -102,22 +105,18 @@ export default class Game extends Container {
   _addEventListeners() {
     this.on(Game.events.SWITCH_SCENE, () => {
       this.currentScene.on(Countdown.events.BREAK_START, (data) => {
-        this.switchScene(
-          Break,
-          { scene: 'break' },
-          { data, preserveScene: true }
-        );
+        this.switchScene(Break, { scene: 'break', data, preserveScene: true });
         this._previousScene.visible = false;
-      });
-
-      this.currentScene.on(Countdown.events.COUNTDOWN_END, () => {
-        this.switchScene(Setup, { scene: 'countdown' });
       });
 
       this.currentScene.on(Break.events.BREAK_END, () => {
         this._previousScene.visible = true;
         this.currentScene = this._previousScene;
         this.currentScene.continue();
+      });
+
+      this.currentScene.on(Countdown.events.COUNTDOWN_END, () => {
+        this.switchScene(FinalCountdown, { scene: 'finalCountdown' });
       });
     });
   }

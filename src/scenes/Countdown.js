@@ -25,7 +25,6 @@ export default class Countdown extends Scene {
     this.createPauseTimerButton('15 min break', 220, 15);
     this.createPauseTimerButton('30 min break', 290, 30);
     this.createPauseTimerButton('60 min break', 360, 60);
-    this.addEventListeners();
   }
 
   static get events() {
@@ -70,6 +69,10 @@ export default class Countdown extends Scene {
     const timer = new Timer(settings.startTime, settings.endTime);
     timer.y = -75;
     this.timer = timer;
+    this.timer.on(Timer.events.LAST_TEN_SECONDS, () => {
+      this.timer.clearInterval();
+      this.finishScene();
+    });
     this.addChild(this.timer);
     this.startProgressBar();
   }
@@ -116,10 +119,8 @@ export default class Countdown extends Scene {
       height: 50,
       text,
     });
-
     button.pivot.x = button.width / 2;
     button.y = y;
-
     button.on('click', () => {
       this.emit(Countdown.events.BREAK_START, { duration });
       this.pause();
@@ -154,15 +155,6 @@ export default class Countdown extends Scene {
    */
   startProgressBar() {
     this._pg.start(this.timer.totalTime);
-  }
-
-  /**
-   * @private
-   */
-  addEventListeners() {
-    this.timer.on(Timer.events.TIMER_END, () => {
-      this.finishScene();
-    });
   }
 
   /**
