@@ -85,10 +85,9 @@ export default class Game extends Container {
    * @memberof Game
    */
   initDebug() {
-    const that = this;
     const debug = new Debug();
-    debug.on('scene_changed', (constructor, scene) => {
-      that.switchScene(constructor, scene);
+    debug.on(Debug.events.SCENE_CHANGED, (constructor, scene) => {
+      this.switchScene(constructor, scene);
     });
   }
 
