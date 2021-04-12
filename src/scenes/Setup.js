@@ -1,128 +1,53 @@
 import Scene from "./Scene";
-import { Sprite } from "pixi.js";
 import config from "../config";
 import Button from "../components/Button";
 import Background from "../components/Background";
+import Form from "../components/Form";
 
 /**
  * Represents the setup scene of the app.
  */
 export default class Setup extends Scene {
+  static get events() {
+    return { FINISH_SCENE: "finish-scene" };
+  }
+
   constructor() {
     super();
-    this.inputs = config.scenes.Setup.inputs;
-    this.inputElements = {};
+    this.forms = [];
+    this.formsConfig = config.scenes.Setup.forms;
+    this.currentFormIndex = 0;
   }
 
   async onCreated() {
     this.renderBackground();
-    this.createFormElement();
-    this.colorInputListener();
-
     this.drawButton();
+    this.createForm();
+    this.colorInputListener();
   }
 
   /**
-   * Creates a dom input element.
-   * @param {string} element
-   * @param {string} type
-   * @param {string} text
-   * @returns DOM element.
+   * Creates a form.
    * @method
    * @private
    */
-  createInputElement(element, type, text, id) {
-    const label = document.createElement("label");
-    label.htmlFor = id;
-    label.innerText = text;
-    const input = document.createElement(element);
-    input.id = id;
-    if (element !== "textarea") input.type = type;
-    else {
-      input.rows = "20";
-    }
-
-    Object.assign(label.style, {
-      "font-family": "Raleway",
-      "font-weight": "600",
-      "margin-top": "4px",
-      color: "white",
-      "background-color": "black",
-      "box-sizing": "border-box",
-      display: "inline-flex",
-      padding: "10px",
-    });
-
-    Object.assign(input.style, {
-      "box-sizing": "border-box",
-      width: "100%",
-      resize: "none",
-      padding: "15px",
-      "font-size": "16px",
-      "min-height": "54px",
-    });
-
-    return { label, input };
+  createForm() {
+    if (this.form) this.form.domElement.style.display = "none";
+    this.form = new Form(this.formsConfig[this.currentFormIndex]);
+    this.forms = [...this.forms, this.form];
   }
 
   /**
-   * Creates dom form element.
-   * @method
-   * @private
-   */
-  createFormElement() {
-    const form = document.createElement("form");
-    Object.assign(form.style, {
-      "align-self": "center",
-      "justify-self": "center",
-      display: "flex",
-      "flex-direction": "column",
-      height: "550px",
-      width: "420px",
-      position: "relative",
-      top: "-97vh",
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
-    });
-
-    form.classList.add("setup-form");
-    document.body.appendChild(form);
-    this.inputs.forEach((input) => {
-      const element = this.createInputElement(
-        input.element,
-        input.type,
-        input.text,
-        input.id
-      );
-      form.appendChild(element.label);
-      form.appendChild(element.input);
-      this.inputElements[element.input.id] = element.input;
-    });
-  }
-
-  /**
-   * @returns {Object} Hakcathon's settings.
+   * @returns {Object} Hakcathon's settings data.
    */
   get submittedSettings() {
-    const settings = {
-      hackathonName: this.inputElements["hackathon-name"].value,
-
-      mainColor: this.inputElements["main-color"].value,
-
-      accentColor: this.inputElements["accent-color"].value,
-
-      fxColor: this.inputElements["fx-color"].value,
-
-      teams: this.inputElements["teams"].value.split(","),
-
-      topics: this.inputElements["topics"].value.split(","),
-
-      startTime: this.inputElements["start-time"].value,
-
-      endTime: this.inputElements["end-time"].value,
-    };
-    return settings;
+    let settingsObject = {};
+    this.forms.forEach((form) => {
+      for (let setting in form.inputElements) {
+        settingsObject[setting] = form.inputElements[setting].value;
+      }
+    });
+    return settingsObject;
   }
 
   /**
@@ -139,13 +64,12 @@ export default class Setup extends Scene {
       curveSize: 13,
       y: 375,
     };
-    const button = new Button(buttonConfig);
-    button.pivot.x = buttonConfig.width / 2;
-    button.pivot.y = buttonConfig.height / 2;
-    button.y += buttonConfig.y;
-    this.addChild(button);
-
-    button.once("click", () => this.buttonClickHandler());
+    this.button = new Button(buttonConfig);
+    this.button.pivot.x = buttonConfig.width / 2;
+    this.button.pivot.y = buttonConfig.height / 2;
+    this.button.y += buttonConfig.y;
+    this.addChild(this.button);
+    this.button.on("click", () => this.buttonClickHandler());
   }
 
   /**
@@ -154,11 +78,17 @@ export default class Setup extends Scene {
    * @private
    */
   buttonClickHandler() {
-    localStorage.setItem(
-      "hackathonSettings",
-      JSON.stringify(this.submittedSettings)
-    );
-    this.finishScene();
+    if (this.currentFormIndex >= this.formsConfig.length - 1) {
+      console.log(this.submittedSettings);
+      localStorage.setItem(
+        "hackathonSettings",
+        JSON.stringify(this.submittedSettings)
+      );
+      this.finishScene();
+    } else {
+      this.currentFormIndex++;
+      this.createForm();
+    }
   }
 
   /**
@@ -167,7 +97,7 @@ export default class Setup extends Scene {
    * @private
    */
   finishScene() {
-    this.emit("finishScene", { settings: this.submittedSettings });
+    this.emit(Setup.events.FINISH_SCENE, { settings: this.submittedSettings });
   }
 
   /**
@@ -186,25 +116,29 @@ export default class Setup extends Scene {
    * @private
    */
   colorInputListener() {
-    const bg1 = this.inputElements["main-color"];
-    const bg2 = this.inputElements["accent-color"];
-    const fx = this.inputElements["fx-color"];
+    const bg1 = this.forms[0].inputElements["mainColor"];
+    const bg2 = this.forms[0].inputElements["accentColor"];
+    const fx1 = this.forms[0].inputElements["fx1Color"];
+    const fx2 = this.forms[0].inputElements["fx2Color"];
     bg1.addEventListener("change", () => {
       this.background.changeColors({
         bgColor1: bg1.value,
-        bgColor2: this.background._colors.bgColor2,
       });
     });
     bg2.addEventListener("change", () => {
       this.background.changeColors({
-        bgColor1: this.background._colors.bgColor1,
         bgColor2: bg2.value,
       });
     });
-    fx.addEventListener("change", () => {
+    fx1.addEventListener("change", () => {
       this.background.changeColors({
-        circleColor1: fx.value,
-        circleColor2: fx.value,
+        circleColor1: fx1.value,
+      });
+    });
+    fx2.addEventListener("change", () => {
+      this.background.changeColors({
+        circleColor1: fx1.value,
+        circleColor2: fx2.value,
       });
     });
   }

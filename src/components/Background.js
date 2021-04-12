@@ -14,10 +14,10 @@ export default class Background extends Container {
    * @param {String} colors.bgColor2 Rightmost background gradient color
    */
   constructor({
-    circleColor1 = '#FF00C7',
-    circleColor2 = '#FFE600',
-    bgColor1 = '#5200FF',
-    bgColor2 = '#A80080',
+    circleColor1 = "#FF00C7",
+    circleColor2 = "#FFE600",
+    bgColor1 = "#5200FF",
+    bgColor2 = "#A80080",
   } = {}) {
     super();
 
@@ -36,7 +36,7 @@ export default class Background extends Container {
       colorTransitionDuration: 1,
     };
 
-    this.name = 'background';
+    this.name = "background";
     this.sortableChildren = true;
     this._background = this._addGradientBackground();
     this._circles = this._addCircles();
@@ -52,7 +52,12 @@ export default class Background extends Container {
    * @param {String} colors.bgColor1 Leftmost color of the background gradient
    * @param {String} colors.bgColor2 Rightmost color of the background gradient
    */
-  changeColors({ circleColor1, circleColor2, bgColor1, bgColor2 }) {
+  changeColors({
+    circleColor1 = this._colors.circleColor1,
+    circleColor2 = this._colors.circleColor2,
+    bgColor1 = this._colors.bgColor1,
+    bgColor2 = this._colors.bgColor2,
+  }) {
     if (circleColor1 && circleColor2) {
       this._transitionCircleColors(circleColor1, circleColor2);
     }
@@ -145,8 +150,8 @@ export default class Background extends Container {
    * @private
    */
   _updateBgColor(
-    color1 = '#FF00C7',
-    color2 = '#FFE600',
+    color1 = "#FF00C7",
+    color2 = "#FFE600",
     bg = this._background
   ) {
     const gradientTexture = this._getGradientTexture(color1, color2);
@@ -167,7 +172,7 @@ export default class Background extends Container {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     const gradient = ctx.createLinearGradient(
       0,
       window.innerHeight,
