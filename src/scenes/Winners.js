@@ -3,6 +3,8 @@ import Background from '../components/Background';
 import Team from '../components/Team';
 import gsap from 'gsap/gsap-core';
 import { filters, Sprite } from 'pixi.js';
+import { delay } from '../core/utils';
+import config from '../config';
 
 /**
  * Class representing the Topics scene
@@ -20,10 +22,7 @@ export default class Winners extends Scene {
     
     this._winners = winners;
 
-    this._config = {
-      startDelay: 1,
-      teamDelay: 5,
-    };
+    this._config = config.scenes.Winners;
   }
 
   async onCreated() {
@@ -56,26 +55,13 @@ export default class Winners extends Scene {
   }
 
   /**
-   * Async delay
-   * @param {Number} seconds seconds to delay
-   * @returns {Promise}
-   */
-  delay(seconds) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, seconds * 1000);
-    });
-  }
-
-  /**
    * Sorts the winner array by team place and starts the teams animation
    * @private
    */
   async _initTeams() {
     this._winners.sort((a, b) => parseInt(b.place, 10) - parseInt(a.place, 10));
 
-    await this.delay(this._config.startDelay);
+    await delay(this._config.startDelay * 1000);
 
     this._startTeamVisualization();
   }
@@ -100,7 +86,7 @@ export default class Winners extends Scene {
       // Don't continue if it's the team in first place
       if (parseInt(teamInfo.place, 10) === 1) return;
 
-      await this.delay(this._config.teamDelay);
+      await delay(this._config.betweenTeamsDelay * 1000);
 
       await team.leaveAnimation();
 
@@ -134,13 +120,13 @@ export default class Winners extends Scene {
       pixi: {
         scale: 10,
       },
-      duration: 3,
+      duration: this._config.shockwaveDuration,
     });
     
     this.removeChild(displacementSprite);
     this.filters = [];
 
-    // TODO: REMOVE THIS
+    // TODO: REMOVE THIS AFTER THE ISSUE MENTIONED IN THE COMMENT ABOVE IS RESOLVED
     this.position.x = 0;
     this.position.y = 0;
   }
