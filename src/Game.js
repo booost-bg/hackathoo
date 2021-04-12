@@ -10,6 +10,7 @@ import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
 import Server from './components/Server';
+import Scene from './scenes/Scene';
 import Debug from '../src/components/Debug';
 import NotificationManager from '../src/components/NotificationManager';
 
@@ -104,23 +105,37 @@ export default class Game extends Container {
    */
   _addEventListeners() {
     this.on(Game.events.SWITCH_SCENE, () => {
-      this.currentScene.on(Countdown.events.BREAK_START, (data) => {
-        this.switchScene(Break, { scene: 'break', data, preserveScene: true });
-        this._previousScene.visible = false;
+      this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
+        this.switchScene(this.parseScene(to), { scene: to, data });
       });
+      // this.currentScene.on(Countdown.events.BREAK_START, (data) => {
+      //   this.switchScene(Break, { scene: 'break', data, preserveScene: true });
+      //   this._previousScene.visible = false;
+      // });
 
-      this.currentScene.on(Break.events.BREAK_END, () => {
-        this._previousScene.visible = true;
-        this.currentScene = this._previousScene;
-        this.currentScene.continue();
-      });
+      // this.currentScene.on(Break.events.BREAK_END, () => {
+      //   this._previousScene.visible = true;
+      //   this.currentScene = this._previousScene;
+      //   this.currentScene.continue();
+      // });
 
-      this.currentScene.on(Countdown.events.COUNTDOWN_END, () => {
-        this.switchScene(FinalCountdown, { scene: 'finalCountdown' });
-      });
+      // this.currentScene.on(Countdown.events.COUNTDOWN_END, () => {
+      //   this.switchScene(FinalCountdown, { scene: 'finalCountdown' });
+      // });
     });
   }
 
+  parseScene(name) {
+    const scenes = {
+      intro: Intro,
+      setup: Setup,
+      finalCountdown: FinalCountdown,
+      countdown: Countdown,
+      break: Break,
+    };
+
+    return scenes[name];
+  }
   /**
    * Hook called by the application when the browser window is resized.
    * Use this to re-arrange the game elements according to the window size

@@ -18,7 +18,7 @@ export default class Break extends Scene {
   /**
    * @param {Number} duration The break duration value
    */
-  constructor({ duration }) {
+  constructor({ duration, progress }) {
     super();
     this._duration = duration;
     /**
@@ -36,6 +36,7 @@ export default class Break extends Scene {
      * @private
      */
     this._endTime = null;
+    this._progress = progress;
   }
 
   async onCreated() {
@@ -127,7 +128,14 @@ export default class Break extends Scene {
    * @private
    */
   _finishScene() {
-    this.emit(Break.events.BREAK_END);
+    this.emit(Scene.events.EXIT, {
+      to: 'countdown',
+      data: {
+        progress: this._progress,
+      },
+    });
+    // this.emit(Break.events.BREAK_END);
+    this._timer.clearInterval();
     this.destroy();
   }
 }

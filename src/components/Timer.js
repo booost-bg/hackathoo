@@ -8,6 +8,8 @@ const EVENTS = {
   TIMER_END: 'timer_end',
   LAST_TEN_SECONDS: 'last_ten_seconds',
 };
+const TIME_BEFORE_FINAL_COUNTDOWN = 11000;
+const MIN_VALUE = 1000;
 
 /**
  * Represents the timer for the countdown scene.
@@ -84,14 +86,16 @@ export default class Timer extends Container {
    */
   createCountdown() {
     const { endDate } = this.getDates();
-    let { startDate } = this.getDates();
-    this.totalTime = endDate.diff(startDate);
+    const { startDate } = this.getDates();
+    this.startDate = startDate;
+    this.totalTime = endDate.diff(this.startDate);
     this.interval = setInterval(() => {
-      const distance = endDate.diff(startDate);
+      const distance = endDate.diff(this.startDate);
       this.onUpdate(distance);
       const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
-        startDate = dayjs(startDate).add(1, 'second');
+        this.startDate = dayjs(this.startDate).add(1, 'second');
+        // console.log(this.startDate);
         this.removeChildren();
         this.timer = `${hours}:${minutes}:${seconds}`;
         this.drawTexts();
@@ -99,6 +103,9 @@ export default class Timer extends Container {
     }, 1000);
   }
 
+  getProgress() {
+    return this.startDate;
+  }
   /**
    * Parses the distance between two dates from milliseconds to h m s.
    * @param {number} distance - miliseconds
@@ -233,11 +240,11 @@ export default class Timer extends Container {
    * @private
    */
   onUpdate(distance) {
-    if (distance < 11000) {
+    if (distance < TIME_BEFORE_FINAL_COUNTDOWN) {
       this.emit(Timer.events.LAST_TEN_SECONDS);
     }
 
-    if (distance < 1000) {
+    if (distance < MIN_VALUE) {
       this.emit(Timer.events.TIMER_END);
     }
   }

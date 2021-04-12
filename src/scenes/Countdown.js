@@ -6,23 +6,26 @@ import Button from '../components/Button';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 
-const EVENTS = {
-  BREAK_START: 'break_start',
-  COUNTDOWN_END: 'countdown_end',
-};
-
 /**
  * Represents the countdown before the hackathon ends.
  * @class
  */
 export default class Countdown extends Scene {
+  constructor() {
+    super();
+    this._startTime = sessionStorage.getItem('currentTime');
+
+    this._progress = sessionStorage.getItem('progress');
+    // this._endTime = endTime;
+  }
+
   async onCreated() {
     this.createProgressBar();
     this.createBackground();
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton('15 min break', 220, 15);
+    this.createPauseTimerButton('15 min break', 220, 0.1);
     this.createPauseTimerButton('30 min break', 290, 30);
     this.createPauseTimerButton('60 min break', 360, 60);
   }
@@ -30,12 +33,18 @@ export default class Countdown extends Scene {
   static get events() {
     return EVENTS;
   }
-
+  // Number(this._progress - 50) ||
   /**
    * @private
    */
   createProgressBar() {
-    const pg = new Progressbar({ initialWidth: 100 });
+    console.log(this._progress + ' progressBAR');
+    if (this._progress) {
+      console.log(this._progress + ' ifa v progressa');
+    }
+    const pg = new Progressbar({
+      initialWidth: 100,
+    });
 
     pg.y = -window.innerHeight / 2;
     pg.x = -window.innerWidth / 2;
@@ -66,9 +75,15 @@ export default class Countdown extends Scene {
    */
   createTimer() {
     const settings = JSON.parse(localStorage.getItem('hackathonSettings'));
-    const timer = new Timer(settings.startTime, settings.endTime);
+    console.log(this._startTime + ' v create timer');
+    const timer = new Timer(
+      this._startTime || settings.startTime,
+      settings.endTime
+    );
     timer.y = -75;
+
     this.timer = timer;
+    // this.timer.distance(this._startTime);
     this.timer.on(Timer.events.LAST_TEN_SECONDS, () => {
       this.timer.clearInterval();
       this.finishScene();
@@ -122,8 +137,11 @@ export default class Countdown extends Scene {
     button.pivot.x = button.width / 2;
     button.y = y;
     button.on('click', () => {
-      this.emit(Countdown.events.BREAK_START, { duration });
+      const { right } = this._pg.getBounds();
+      window.sessionStorage.setItem('currentTime', this.timer.getProgress());
+      window.sessionStorage.setItem('progress', Math.floor(right));
       this.pause();
+      this.emit(Scene.events.EXIT, { to: 'break', data: { duration } });
     });
 
     this.addChild(button);
@@ -163,6 +181,7 @@ export default class Countdown extends Scene {
    * @private
    */
   finishScene() {
-    this.emit(Countdown.events.COUNTDOWN_END);
+    // this.emit(Scene.events.COUNTDOWN_END);
+    // this.emit(Scene.events.EXIT, { to: 'finalCountdown' });
   }
 }
