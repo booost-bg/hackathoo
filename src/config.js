@@ -20,6 +20,19 @@ export default {
   musicPlayer: {
     playlist: "https://open.spotify.com/embed/playlist/4GYLwf8CfJ7Csi0Dm2CeLU",
   },
+  background: {
+    numberOfCircles: 6,
+    minCircleRadius: 15,
+    maxCircleRadius: 250,
+    circleAnimationDuration: 50,
+    colorTransitionDuration: 1,
+    defaultColors: {
+      circleColor1: '#FF00C7',
+      circleColor2: '#FFE600',
+      bgColor1: '#5200FF',
+      bgColor2: '#A80080',
+    }
+  },
   scenes: {
     Splash: {
       hideDelay: 0,
@@ -108,6 +121,20 @@ export default {
       startDelay: 1,
       betweenTeamsDelay: 5,
       shockwaveDuration: 3,
+    },
+    Topics: {
+      arrowAnimationOffset: 10,
+      arrowPositionOffset: 470,
+      topicGap: 6,
+      topicsScale: 0.9,
+      topicWidth: 820,
+      topicHeight: 250,
+      minSpinSpeed: 12,
+      maxSpinSpeed: 18,
+      startButton: {
+        width: 300,
+        height: 50,
+      }
     },
   },
 

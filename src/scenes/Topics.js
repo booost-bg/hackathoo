@@ -3,6 +3,7 @@ import { Sprite } from 'pixi.js';
 import Button from '../components/Button';
 import Background from '../components/Background';
 import TopicsContainer from '../components/TopicsContainer';
+import config from '../config';
 
 /**
  * Class representing the Topics scene
@@ -14,20 +15,7 @@ export default class Topics extends Scene {
   constructor(topics = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX']) {
     super();
     
-    this._config = {
-      arrowAnimationOffset: 10,
-      arrowPositionOffset: 470,
-      topicGap: 6,
-      topicsScale: 0.9,
-      topicWidth: 820,
-      topicHeight: 250,
-      minSpinSpeed: 12,
-      maxSpinSpeed: 18,
-      startButton: {
-        width: 300,
-        height: 50,
-      }
-    };
+    this._config = config.scenes.Topics;
     
     this._topicsContainer = new TopicsContainer({ topics, config: this._config });
     this._init();
