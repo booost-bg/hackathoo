@@ -9,8 +9,8 @@ export default class Notification extends Container {
     this.infoTextMessage = infoTextMessage;
     this.timeDuration = 5;
 
-    this.notificationHeight = 180;
-    this.notificationWidth = 870;
+    this.baseHeight = 180;
+    this.baseWidth = 870;
 
     this.yellowLineHeight = 180;
     this.yellowLineWidth = 12;
@@ -22,7 +22,7 @@ export default class Notification extends Container {
 
     this.notification.interactive = true;
     this.notification.buttonMode = true;
-    this.notification.on('click', this._hideNotification);
+    this.notification.on('click', () => this._hideNotification());
     this._playEnterAnimation();
     this.startNotificationTimer(this.timeDuration);
 
@@ -35,29 +35,29 @@ export default class Notification extends Container {
    */
   init() {
     this.notification = new Container();
-    this.notification.x = - this.notificationWidth;
+    this.notification.x = - this.baseWidth;
     this.notificationMask = new Graphics();
     this.notificationMask.beginFill(0xFFFFFF, 1);
-    this.notificationMask.drawRect(0, 0, this.notificationWidth, this.notificationHeight);
+    this.notificationMask.drawRect(0, 0, this.baseWidth, this.baseHeight);
 
     const background = new Graphics();
     this.background = background;
     this.background.beginFill(0xFFFFFF, 1);
-    this.background.drawRect(0, 0, this.notificationWidth, this.notificationHeight);
+    this.background.drawRect(0, 0, this.baseWidth, this.baseHeight);
     this.notification.addChild(this.background);
 
     const yellowVerticalLine = new Graphics();
     this.yellowVerticalLine = yellowVerticalLine;
     this.yellowVerticalLine.beginFill(0xFFE500, 1);
     this.yellowVerticalLine.drawRect(0, 0, this.yellowLineWidth, this.yellowLineHeight);
-    this.yellowVerticalLine.x = this.notificationWidth - this.yellowLineWidth;
+    this.yellowVerticalLine.x = this.baseWidth - this.yellowLineWidth;
     this.notification.addChild(this.yellowVerticalLine);
 
     const horizontalTimerLine = new Graphics();
     this.horizontalTimerLine = horizontalTimerLine;
     this.horizontalTimerLine.beginFill(0x000000, 1);
     this.horizontalTimerLine.drawRect(0, 0, this.horizontalTimerLineWidth, this.horizontalTimerLineHeight);
-    this.horizontalTimerLine.y = this.notificationHeight - this.horizontalTimerLineHeight;
+    this.horizontalTimerLine.y = this.baseHeight - this.horizontalTimerLineHeight;
     this.notification.addChild(this.horizontalTimerLine);
 
     const headerText = new Text(this.headerTextMessage.toUpperCase(), {
@@ -83,7 +83,7 @@ export default class Notification extends Container {
   }
 
   startNotificationTimer(timerDuration) {
-    gsap.to(this.horizontalTimerLine, { pixi: { width: this.notificationWidth - this.yellowLineWidth }, duration: timerDuration, ease: Linear.easeNone }).then(() => {
+    gsap.to(this.horizontalTimerLine, { pixi: { width: this.baseWidth - this.yellowLineWidth }, duration: timerDuration, ease: Linear.easeNone }).then(() => {
       this._hideNotification();
     });
   }
