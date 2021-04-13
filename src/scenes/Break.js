@@ -26,7 +26,7 @@ export default class Break extends Scene {
      * @type {PIXI.Container}
      * @private
      */
-    this._pg = null;
+    this._progressBar = null;
     /**
      * @type {Date}
      * @private
@@ -51,7 +51,7 @@ export default class Break extends Scene {
     pg.y = -window.innerHeight / 2;
     pg.x = -window.innerWidth / 2;
 
-    this._pg = pg;
+    this._progressBar = pg;
   }
 
   /**
@@ -65,7 +65,7 @@ export default class Break extends Scene {
       circleColor2: '#FFE600',
     });
 
-    background.addChild(this._pg);
+    background.addChild(this._progressBar);
     this.addChild(background);
   }
 
@@ -112,7 +112,7 @@ export default class Break extends Scene {
    * @private
    */
   _startProgressBar() {
-    this._pg.start(this._timer.totalTime);
+    this._progressBar.start(this._timer.totalTime);
   }
 
   /**

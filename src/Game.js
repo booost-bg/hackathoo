@@ -11,8 +11,8 @@ import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
 import Server from './components/Server';
 import Scene from './scenes/Scene';
-import Debug from '../src/components/Debug';
-import NotificationManager from '../src/components/NotificationManager';
+import Debug from './components/Debug';
+import NotificationManager from './components/NotificationManager';
 
 /**
  * Main game stage, manages scenes/levels.

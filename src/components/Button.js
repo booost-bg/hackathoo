@@ -1,6 +1,6 @@
-import { Elastic } from 'gsap/all';
-import gsap from 'gsap/gsap-core';
-import { Container, Graphics, Text } from 'pixi.js';
+import { Elastic } from "gsap/all";
+import gsap from "gsap/gsap-core";
+import { Container, Graphics, Text } from "pixi.js";
 
 export default class Button extends Container {
   /**
@@ -11,7 +11,7 @@ export default class Button extends Container {
    * @param {Number} curveSize The button onclick curve size
    */
   constructor({
-    text = 'Example',
+    text = "Example",
     fontSize = 18,
     width = 0,
     height = 0,
@@ -66,11 +66,11 @@ export default class Button extends Container {
    */
   _createText() {
     const buttonText = new Text(this._text, {
-      fill: '0xffffff',
-      fontFamily: 'Raleway',
+      fill: "0xffffff",
+      fontFamily: "Raleway",
       fontSize: this._fontSize,
       fontWeight: 700,
-      align: 'center',
+      align: "center",
     });
 
     buttonText.resolution = 2;
@@ -162,15 +162,15 @@ export default class Button extends Container {
    * @private
    */
   _addEventListener() {
-    this.on('pointerdown', () => {
+    this.on("pointerdown", () => {
       this._contractAnimation();
     });
 
-    this.on('pointerup', () => {
+    this.on("pointerup", () => {
       this._resetAnimation();
     });
 
-    this.on('pointerout', () => {
+    this.on("pointerout", () => {
       this._resetAnimation();
     });
   }

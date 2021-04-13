@@ -31,13 +31,13 @@ export default class Countdown extends Scene {
      * @type {Number}
      * @private
      */
-    this._pgInitialWidth = 100;
+    this._progressBarInitialWidth = 100;
 
     /**
      * @type {PIXI.Container}
      * @private
      */
-    this._pg = null;
+    this._progressBar = null;
     /**
      * @type {PIXI.Container}
      * @private
@@ -70,7 +70,7 @@ export default class Countdown extends Scene {
     const progress = JSON.parse(sessionStorage.getItem('progress'));
     if (progress) {
       this._startTime = progress.startTime;
-      this._pgInitialWidth = progress.barPosition;
+      this._progressBarInitialWidth = progress.barPosition;
     }
   }
 
@@ -79,13 +79,13 @@ export default class Countdown extends Scene {
    */
   createProgressBar() {
     const pg = new Progressbar({
-      initialWidth: this._pgInitialWidth,
+      initialWidth: this._progressBarInitialWidth,
     });
 
     pg.y = -window.innerHeight / 2;
     pg.x = -window.innerWidth / 2;
 
-    this._pg = pg;
+    this._progressBar = pg;
   }
 
   /**
@@ -100,7 +100,7 @@ export default class Countdown extends Scene {
     });
 
     this._background = background;
-    this._background.addChild(this._pg);
+    this._background.addChild(this._progressBar);
     this.addChild(this._background);
   }
 
@@ -184,7 +184,7 @@ export default class Countdown extends Scene {
   saveProgress() {
     const progress = {
       startTime: this.timer.getProgress(),
-      barPosition: this._pg.getProgress(),
+      barPosition: this._progressBar.getProgress(),
     };
     sessionStorage.setItem('progress', JSON.stringify(progress));
   }
@@ -194,7 +194,7 @@ export default class Countdown extends Scene {
    * @private
    */
   startProgressBar() {
-    this._pg.start(this.timer.totalTime);
+    this._progressBar.start(this.timer.totalTime);
   }
 
   /**
