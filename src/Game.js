@@ -1,10 +1,11 @@
+
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import Splash from './scenes/Splash';
-import Play from './scenes/Play';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
+import Debug from '../src/components/Debug';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -27,6 +28,7 @@ export default class Game extends Container {
     this._background = background;
     this.currentScene = null;
     this._registerPlugins();
+    this.initDebug();
   }
 
   /**
@@ -45,7 +47,7 @@ export default class Game extends Container {
 
     // this.switchScene(Play, { scene: "play" });
     this.switchScene(Setup, { scene: 'setup' });
-    // this.switchScene(Intro, { scene: "intro" });
+    // this.switchScene(Intro, { scene: 'intro' });
   }
 
   /**
@@ -75,4 +77,18 @@ export default class Game extends Container {
 
     this.currentScene.onResize(width, height);
   }
+
+
+  /**
+   * Method called to initialize an instance of the Debug class that handles the dat.gui scene change in the app.
+   *
+   * @memberof Game
+   */
+  initDebug() {
+    const debug = new Debug();
+    debug.on(Debug.events.SCENE_CHANGED, (constructor, scene) => {
+      this.switchScene(constructor, scene);
+    });
+  }
+
 }
