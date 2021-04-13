@@ -17,20 +17,20 @@ export default class CountdownStart extends Scene {
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createCriteriaRulesButton('CRITERIA', 190);
-    this.createCriteriaRulesButton('RULES', 122);
+    this.createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
+    this.createCriteriaRulesButton('RULES', 122, 'rulesButton');
   }
 
   /**
    * @private
    */
   createProgressBar() {
-    const pg = new Progressbar({ initialWidth: 100 });
+    const progressBar = new Progressbar({ initialWidth: 100 });
 
-    pg.y = -window.innerHeight / 2;
-    pg.x = -window.innerWidth / 2;
+    progressBar.y = -window.innerHeight / 2;
+    progressBar.x = -window.innerWidth / 2;
 
-    this._pg = pg;
+    this._progressBar = progressBar;
   }
 
   /**
@@ -45,7 +45,7 @@ export default class CountdownStart extends Scene {
     });
 
     this._background = background;
-    this._background.addChild(this._pg);
+    this._background.addChild(this._progressBar);
     this.addChild(this._background);
   }
 
@@ -91,19 +91,20 @@ export default class CountdownStart extends Scene {
     this.addChild(logo);
   }
 
-  createCriteriaRulesButton(text, y) {
-    const that = this;
+  createCriteriaRulesButton(text, y, key) {
     const button = new Button({
       width: 172,
       height: 55,
       text,
     });
 
+    button.key = key;
     button.pivot.x = window.innerWidth / 2 - 100;
     button.y = window.innerHeight / 2 - y;
     button.on('pointerdown', () => {
-      that.emit(text === 'CRITERIA' ? CountdownStart.events.CRITERIA_CLICKED : CountdownStart.events.RULES_CLICKED);
+      this.emit(CountdownStart.events.BUTTON_CLICKED, button.key);
     });
+
     this.addChild(button);
   }
 
@@ -111,13 +112,12 @@ export default class CountdownStart extends Scene {
    * @private
    */
   startProgressBar() {
-    this._pg.start(this.timer.totalTime);
+    this._progressBar.start(this.timer.totalTime);
   }
 
   static get events() {
     return {
-      CRITERIA_CLICKED: 'criteria_clicked',
-      RULES_CLICKED: 'rules_clicked'
+      BUTTON_CLICKED: 'button_clicked',
     };
   }
 }
