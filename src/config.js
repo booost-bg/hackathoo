@@ -104,6 +104,11 @@ export default {
         },
       ],
     },
+    Winners: {
+      startDelay: 1,
+      betweenTeamsDelay: 5,
+      shockwaveDuration: 3,
+    },
   },
 
   assets: {

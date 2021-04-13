@@ -54,3 +54,16 @@ export function random(min, max) {
 export function pad(num) {
   return num < 10 ? "0" + num.toString() : num.toString();
 }
+
+/**
+ * Async delay
+ * @param {Number} time milliseconds to delay
+ * @returns {Promise} promise
+ */
+export function delay(time) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });
+}

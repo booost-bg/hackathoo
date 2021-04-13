@@ -39,6 +39,7 @@ export default class Splash extends Scene {
     const images = {
       logo: Assets.images.logo,
       topicsMask: Assets.images.topicsMask,
+      displacement: Assets.images.displacement,
     };
     const sounds = {
       
