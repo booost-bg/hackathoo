@@ -1,6 +1,7 @@
-import { Container, Graphics, Texture } from "pixi.js";
-import { gsap } from "gsap/all";
-import { random } from "../core/utils";
+import { Container, Graphics, Texture } from 'pixi.js';
+import { gsap } from 'gsap/all';
+import { random } from '../core/utils';
+import config from '../config';
 
 /**
  * Class representing the background and background effects
@@ -14,29 +15,23 @@ export default class Background extends Container {
    * @param {String} colors.bgColor2 Rightmost background gradient color
    */
   constructor({
-    circleColor1 = "#FF00C7",
-    circleColor2 = "#FFE600",
-    bgColor1 = "#5200FF",
-    bgColor2 = "#A80080",
+    circleColor1,
+    circleColor2,
+    bgColor1,
+    bgColor2,
   } = {}) {
     super();
+    
+    this._config = config.background;
 
     this._colors = {
-      bgColor1,
-      bgColor2,
-      circleColor1,
-      circleColor2,
+      bgColor1: bgColor2 || this._config.defaultColors.bgColor1,
+      bgColor2: bgColor1 || this._config.defaultColors.bgColor2,
+      circleColor1: circleColor1 || this._config.defaultColors.circleColor1,
+      circleColor2: circleColor2 || this._config.defaultColors.circleColor2,
     };
 
-    this._config = {
-      numberOfCircles: 6,
-      minCircleRadius: 15,
-      maxCircleRadius: 250,
-      circleAnimationDuration: 50,
-      colorTransitionDuration: 1,
-    };
-
-    this.name = "background";
+    this.name = 'background';
     this.sortableChildren = true;
     this._background = this._addGradientBackground();
     this._circles = this._addCircles();
@@ -168,7 +163,7 @@ export default class Background extends Container {
    * @returns {PIXI.Texture} Gradient texture
    */
   _getGradientTexture(fromColor, toColor) {
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -200,12 +195,12 @@ export default class Background extends Container {
   _checkCircleOverlap(circle1, circle2) {
     if (
       Math.sqrt(
-        (circle2.position.x - circle1.position.x) *
-          (circle2.position.x - circle1.position.x) +
-          (circle2.position.y - circle1.position.y) *
-            (circle2.position.y - circle1.position.y)
-      ) <
-      circle1.radius + circle2.radius
+        (circle2.position.x - circle1.position.x)
+          * (circle2.position.x - circle1.position.x)
+          + (circle2.position.y - circle1.position.y)
+            * (circle2.position.y - circle1.position.y)
+      )
+      < circle1.radius + circle2.radius
     ) {
       return true;
     }
@@ -229,8 +224,8 @@ export default class Background extends Container {
         overlap = false;
         const pos = {
           x:
-            random(window.innerWidth / 3, window.innerWidth / 2) *
-            (Math.random() > 0.5 ? -1 : 1),
+            random(window.innerWidth / 3, window.innerWidth / 2)
+            * (Math.random() > 0.5 ? -1 : 1),
           y: random(-window.innerHeight / 2, window.innerHeight / 2),
         };
 
@@ -268,8 +263,8 @@ export default class Background extends Container {
     this._circles.forEach(async (circle) => {
       const posTop = -window.innerHeight / random(2, 3);
       const posBottom = window.innerHeight / random(2, 3);
-      const duration =
-        this._config.circleAnimationDuration * (1 + circle.radius / 100);
+      const duration
+        = this._config.circleAnimationDuration * (1 + circle.radius / 100);
 
       await gsap.to(circle, {
         y: posTop,
@@ -279,7 +274,7 @@ export default class Background extends Container {
       gsap.to(circle, {
         y: posBottom,
         duration,
-        ease: "power1.inOut",
+        ease: 'power1.inOut',
         repeat: -1,
         yoyo: true,
       });
