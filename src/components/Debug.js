@@ -5,7 +5,7 @@ import Splash from '../scenes/Splash';
 import Topics from '../scenes/Topics';
 import Countdown from '../scenes/Countdown';
 import Play from '../scenes/Play';
-import CountdownStart from '../scenes/CountdownStart';
+// import CountdownStart from '../scenes/CountdownStart';
 import EventEmitter from 'eventemitter3';
 
 export default class Debug extends EventEmitter {
@@ -37,7 +37,7 @@ export default class Debug extends EventEmitter {
       Setup: 'setup',
       Splash: 'splash',
       Topics: 'topics',
-      CountdownStart: 'countdownStart'
+      // CountdownStart: 'countdownStart'
     };
 
     // Scene name - Scene constructor pairs
@@ -48,7 +48,7 @@ export default class Debug extends EventEmitter {
       play: Play,
       splash: Splash,
       topics: Topics,
-      countdownStart: CountdownStart
+      // countdownStart: CountdownStart
     };
 
     gui.add(sceneSelector, 'Select scene', dropDownListItems)

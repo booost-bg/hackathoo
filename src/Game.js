@@ -6,6 +6,7 @@ import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
 import Debug from '../src/components/Debug';
+import NotificationManager from '../src/components/NotificationManager';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -25,10 +26,14 @@ export default class Game extends Container {
   constructor({ background } = {}) {
     super();
 
+    this.sortableChildren = true;
+
     this._background = background;
     this.currentScene = null;
     this._registerPlugins();
     this.initDebug();
+
+    this.initNotifications();
   }
 
   /**
@@ -91,4 +96,20 @@ export default class Game extends Container {
     });
   }
 
+  /**
+   * Adds notification manager to the Game. 
+   * Use the notification manager to display notifications on all scenes
+   *
+   * @memberof Game
+   */
+  initNotifications() {
+
+    const notificationManager = new NotificationManager();
+    this.notificationManager = notificationManager;
+    this.notificationManager.zIndex = 100;
+    this.notificationManager.pivot.x = window.innerWidth / 2;
+    this.notificationManager.y = -window.innerHeight / 2 + 80;
+
+    this.addChild(notificationManager);
+  }
 }
