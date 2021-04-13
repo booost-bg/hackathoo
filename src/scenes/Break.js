@@ -6,10 +6,6 @@ import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 import dayjs from 'dayjs';
 
-const EVENTS = {
-  BREAK_END: 'break_end',
-};
-
 /**
  * Represents the break scene of the app.
  * @class
@@ -18,7 +14,7 @@ export default class Break extends Scene {
   /**
    * @param {Number} duration The break duration value
    */
-  constructor({ duration, progress }) {
+  constructor({ duration }) {
     super();
     this._duration = duration;
     /**
@@ -36,7 +32,6 @@ export default class Break extends Scene {
      * @private
      */
     this._endTime = null;
-    this._progress = progress;
   }
 
   async onCreated() {
@@ -45,10 +40,6 @@ export default class Break extends Scene {
     this._createTimer();
     this._createTitle();
     this._createLogo();
-  }
-
-  static get events() {
-    return EVENTS;
   }
 
   /**
@@ -113,6 +104,7 @@ export default class Break extends Scene {
    */
   _createLogo() {
     const logo = new HackathonLogo('BREAK TIME');
+
     this.addChild(logo);
   }
 
@@ -130,12 +122,6 @@ export default class Break extends Scene {
   _finishScene() {
     this.emit(Scene.events.EXIT, {
       to: 'countdown',
-      data: {
-        progress: this._progress,
-      },
     });
-    // this.emit(Break.events.BREAK_END);
-    this._timer.clearInterval();
-    this.destroy();
   }
 }

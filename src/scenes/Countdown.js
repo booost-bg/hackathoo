@@ -13,37 +13,73 @@ import Progressbar from '../components/Progressbar';
 export default class Countdown extends Scene {
   constructor() {
     super();
-    this._startTime = sessionStorage.getItem('currentTime');
+    const { startTime, endTime } = JSON.parse(
+      localStorage.getItem('hackathonSettings')
+    );
 
-    this._progress = sessionStorage.getItem('progress');
-    // this._endTime = endTime;
+    /**
+     * @type {Date}
+     * @private
+     */
+    this._startTime = startTime;
+    /**
+     * @type {Date}
+     * @private
+     */
+    this._endTime = endTime;
+    /**
+     * @type {Number}
+     * @private
+     */
+    this._pgInitialWidth = 100;
+
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._pg = null;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._background = null;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this.timer = null;
   }
 
   async onCreated() {
+    this.getProgress();
     this.createProgressBar();
     this.createBackground();
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton('15 min break', 220, 0.1);
+    this.createPauseTimerButton('15 min break', 220, 15);
     this.createPauseTimerButton('30 min break', 290, 30);
     this.createPauseTimerButton('60 min break', 360, 60);
   }
 
-  static get events() {
-    return EVENTS;
+  /**
+   * Get progress, if any, from session storage.
+   * @private
+   */
+  getProgress() {
+    const progress = JSON.parse(sessionStorage.getItem('progress'));
+    if (progress) {
+      this._startTime = progress.startTime;
+      this._pgInitialWidth = progress.barPosition;
+    }
   }
-  // Number(this._progress - 50) ||
+
   /**
    * @private
    */
   createProgressBar() {
-    console.log(this._progress + ' progressBAR');
-    if (this._progress) {
-      console.log(this._progress + ' ifa v progressa');
-    }
     const pg = new Progressbar({
-      initialWidth: 100,
+      initialWidth: this._pgInitialWidth,
     });
 
     pg.y = -window.innerHeight / 2;
@@ -74,18 +110,11 @@ export default class Countdown extends Scene {
    * @private
    */
   createTimer() {
-    const settings = JSON.parse(localStorage.getItem('hackathonSettings'));
-    console.log(this._startTime + ' v create timer');
-    const timer = new Timer(
-      this._startTime || settings.startTime,
-      settings.endTime
-    );
+    const timer = new Timer(this._startTime, this._endTime);
     timer.y = -75;
 
     this.timer = timer;
-    // this.timer.distance(this._startTime);
     this.timer.on(Timer.events.LAST_TEN_SECONDS, () => {
-      this.timer.clearInterval();
       this.finishScene();
     });
     this.addChild(this.timer);
@@ -98,9 +127,7 @@ export default class Countdown extends Scene {
    * @private
    */
   createTitle() {
-    const endTime = JSON.parse(localStorage.getItem('hackathonSettings'))
-      .endTime;
-    const parsedEndTime = endTime.replace(/-|T/g, '/');
+    const parsedEndTime = this._endTime.replace(/-|T/g, '/');
 
     const title = new Title(`Ends at ${parsedEndTime}`);
     title.y = 150;
@@ -137,34 +164,29 @@ export default class Countdown extends Scene {
     button.pivot.x = button.width / 2;
     button.y = y;
     button.on('click', () => {
-      const { right } = this._pg.getBounds();
-      window.sessionStorage.setItem('currentTime', this.timer.getProgress());
-      window.sessionStorage.setItem('progress', Math.floor(right));
-      this.pause();
-      this.emit(Scene.events.EXIT, { to: 'break', data: { duration } });
+      this.saveProgress();
+      this.timer.clearInterval();
+      this.emit(Scene.events.EXIT, {
+        to: 'break',
+        data: {
+          duration,
+        },
+      });
     });
 
     this.addChild(button);
   }
 
   /**
-   * Pause scene
-   * @method
+   * Save progress to session storage
    * @private
    */
-  pause() {
-    this.timer.pause();
-    this._pg.pause();
-  }
-
-  /**
-   * Continue scene after pause
-   * @method
-   * @public
-   */
-  continue() {
-    this.timer.play();
-    this._pg.play();
+  saveProgress() {
+    const progress = {
+      startTime: this.timer.getProgress(),
+      barPosition: this._pg.getProgress(),
+    };
+    sessionStorage.setItem('progress', JSON.stringify(progress));
   }
 
   /**
@@ -181,7 +203,8 @@ export default class Countdown extends Scene {
    * @private
    */
   finishScene() {
-    // this.emit(Scene.events.COUNTDOWN_END);
-    // this.emit(Scene.events.EXIT, { to: 'finalCountdown' });
+    sessionStorage.removeItem('progress');
+    this.timer.clearInterval();
+    this.emit(Scene.events.EXIT, { to: 'finalCountdown' });
   }
 }

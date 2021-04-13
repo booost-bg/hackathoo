@@ -8,7 +8,7 @@ const EVENTS = {
   TIMER_END: 'timer_end',
   LAST_TEN_SECONDS: 'last_ten_seconds',
 };
-const TIME_BEFORE_FINAL_COUNTDOWN = 11000;
+const TIME_FOR_FINAL_COUNTDOWN = 11000;
 const MIN_VALUE = 1000;
 
 /**
@@ -27,8 +27,21 @@ export default class Timer extends Container {
     /**
      * Represents the timer total value.
      * @type {Number}
+     * @public
      */
     this.totalTime = 0;
+    /**
+     * Represents the timer update interval.
+     * @type {Number}
+     * @private
+     */
+    this.interval = null;
+    /**
+     * Represents the timer dynamic start value.
+     * @type {Date}
+     * @public
+     */
+    this.startDate = null;
     this.drawInitial();
     this.createCountdown();
     /**
@@ -36,17 +49,11 @@ export default class Timer extends Container {
      * @var
      */
     this.timer = null;
-    /**
-     * Represents the break interval.
-     * @type {Function}
-     */
-    this.breakInterval = null;
     this.blueX = 3;
     this.redX = -3;
     this.sortableChildren = true;
     this.isPaused = false;
     this.parallax();
-    this.breakTimer = null;
   }
 
   static get events() {
@@ -95,7 +102,6 @@ export default class Timer extends Container {
       const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
         this.startDate = dayjs(this.startDate).add(1, 'second');
-        // console.log(this.startDate);
         this.removeChildren();
         this.timer = `${hours}:${minutes}:${seconds}`;
         this.drawTexts();
@@ -103,9 +109,15 @@ export default class Timer extends Container {
     }, 1000);
   }
 
+  /**
+   * Timer progress
+   * @public
+   * @returns {Date}
+   */
   getProgress() {
     return this.startDate;
   }
+
   /**
    * Parses the distance between two dates from milliseconds to h m s.
    * @param {number} distance - miliseconds
@@ -240,11 +252,12 @@ export default class Timer extends Container {
    * @private
    */
   onUpdate(distance) {
-    if (distance < TIME_BEFORE_FINAL_COUNTDOWN) {
+    if (distance < TIME_FOR_FINAL_COUNTDOWN) {
       this.emit(Timer.events.LAST_TEN_SECONDS);
     }
 
     if (distance < MIN_VALUE) {
+      this.clearInterval();
       this.emit(Timer.events.TIMER_END);
     }
   }

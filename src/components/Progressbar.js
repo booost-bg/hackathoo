@@ -29,7 +29,7 @@ export default class Progress extends Container {
     this._bubbleSpawnInterval = bubbleSpawnInterval;
     this._bubbleRadiusMin = bubbleRadiusMin;
     this._bubbleRadiusMax = bubbleRadiusMax;
-    console.log(this._initialWidth + ' V PROGRESBARA VUTRE');
+
     /**
      * @type {Function}
      * @private
@@ -186,14 +186,11 @@ export default class Progress extends Container {
    * @public
    */
   start(duration) {
-    // console.log(duration);
     this._tl.to(this._bar, {
       x: window.innerWidth - this._initialWidth,
       duration: duration / 1000,
       ease: 'none',
     });
-    // console.log(this._progress);
-    // this._tl.progress(this._progress);
   }
 
   /**
@@ -212,10 +209,11 @@ export default class Progress extends Container {
     this._tl.play();
   }
 
+  /**
+   * @public
+   * @returns {Number} bar position on screen
+   */
   getProgress() {
-    return this._tl.progress();
+    return this._bar.getBounds().right - this._amplitude / 2;
   }
-  // setProgress(time) {
-  //   this._tl.progress(time);
-  // }
 }
