@@ -1,10 +1,10 @@
-
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import Splash from './scenes/Splash';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
+import Server from './components/Server';
 import Debug from '../src/components/Debug';
 import NotificationManager from '../src/components/NotificationManager';
 
@@ -27,12 +27,12 @@ export default class Game extends Container {
     super();
 
     this.sortableChildren = true;
-
+    this._server = null;
     this._background = background;
     this.currentScene = null;
     this._registerPlugins();
+    this._createServer();
     this.initDebug();
-
     this.initNotifications();
   }
 
@@ -44,6 +44,15 @@ export default class Game extends Container {
     gsap.registerPlugin(MotionPathPlugin);
     // Prevent timeline pause when tab is not on focus
     gsap.ticker.lagSmoothing(false);
+  }
+
+  /**
+   * @private
+   */
+  async _createServer() {
+    const server = new Server();
+
+    this._server = server;
   }
 
   async start() {
@@ -83,7 +92,6 @@ export default class Game extends Container {
     this.currentScene.onResize(width, height);
   }
 
-
   /**
    * Method called to initialize an instance of the Debug class that handles the dat.gui scene change in the app.
    *
@@ -97,13 +105,12 @@ export default class Game extends Container {
   }
 
   /**
-   * Adds notification manager to the Game. 
+   * Adds notification manager to the Game.
    * Use the notification manager to display notifications on all scenes
    *
    * @memberof Game
    */
   initNotifications() {
-
     const notificationManager = new NotificationManager();
     this.notificationManager = notificationManager;
     this.notificationManager.zIndex = 100;

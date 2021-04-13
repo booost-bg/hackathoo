@@ -20,6 +20,9 @@ export default {
   musicPlayer: {
     playlist: "https://open.spotify.com/embed/playlist/4GYLwf8CfJ7Csi0Dm2CeLU",
   },
+  server: {
+    url: "https://607598a60baf7c0017fa6890.mockapi.io/hackathons",
+  },
   background: {
     numberOfCircles: 6,
     minCircleRadius: 15,
@@ -27,11 +30,11 @@ export default {
     circleAnimationDuration: 50,
     colorTransitionDuration: 1,
     defaultColors: {
-      circleColor1: '#FF00C7',
-      circleColor2: '#FFE600',
-      bgColor1: '#5200FF',
-      bgColor2: '#A80080',
-    }
+      circleColor1: "#FF00C7",
+      circleColor2: "#FFE600",
+      bgColor1: "#5200FF",
+      bgColor2: "#A80080",
+    },
   },
   scenes: {
     Splash: {
@@ -134,7 +137,7 @@ export default {
       startButton: {
         width: 300,
         height: 50,
-      }
+      },
     },
   },
 
