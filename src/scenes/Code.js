@@ -4,11 +4,24 @@ import { Container, Sprite, Texture, Text } from "pixi.js";
 import HackathonLogo from "../components/HackathonLogo";
 import Button from "../components/Button";
 
+/**
+ * Represents the Code scene.
+ * @class
+ */
 export default class Code extends Scene {
+  /**
+   * Events of the scene.
+   * @returns {string}
+   */
   static get events() {
     return { FINISH_SCENE: "finish-scene" };
   }
 
+  /**
+   * Initializes the class.
+   * @method
+   * @public
+   */
   onCreated() {
     this._drawBackground();
     this._drawLogo();
@@ -17,16 +30,33 @@ export default class Code extends Scene {
     this._drawDisplay();
   }
 
+  /**
+   * Draws the background of the scene.
+   * @method
+   * @private
+   */
   _drawBackground() {
     const background = new Background();
     this.addChild(background);
   }
+
+  /**
+   * Draws the logo of the scene.
+   * @method
+   * @private
+   */
   _drawLogo() {
     const logo = new HackathonLogo(
       JSON.parse(localStorage.getItem("hackathonSettings")).hackathonName
     );
     this.addChild(logo);
   }
+
+  /**
+   * Draws the continue button.
+   * @method
+   * @private
+   */
   _drawButton() {
     const buttonConfig = {
       text: "CONTINUE",
@@ -47,6 +77,11 @@ export default class Code extends Scene {
     });
   }
 
+  /**
+   * Draws the title of the scene.
+   * @method
+   * @private
+   */
   _drawTitle() {
     const container = new Container();
     const rectangle = new Sprite.from(Texture.WHITE);
@@ -74,6 +109,11 @@ export default class Code extends Scene {
     this.addChild(container);
   }
 
+  /**
+   * Displays a code for the user.
+   * @method
+   * @private
+   */
   _drawDisplay() {
     const container = new Container();
     const rectangle = new Sprite.from(Texture.WHITE);
