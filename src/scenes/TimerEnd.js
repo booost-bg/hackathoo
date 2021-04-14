@@ -3,6 +3,9 @@ import { Text } from 'pixi.js';
 import Title from '../components/Title';
 import Background from '../components/Background';
 import Firework from '../components/Firework';
+import * as PIXI from 'pixi.js';
+import gsap from 'gsap';
+import PixiPlugin from 'gsap/PixiPlugin';
 
 export default class TimerEnd extends Scene {
   constructor() {
@@ -16,28 +19,52 @@ export default class TimerEnd extends Scene {
     this._drawTitle();
   }
 
+  /**
+   * @private
+   */
   _drawBackground() {
     const background = new Background();
     this.addChild(background);
   }
 
+  /**
+   * @private
+   */
   _drawFirework() {
     const firework = new Firework();
     this.addChild(firework);
   }
 
+  /**
+   * @private
+   */
   _addText() {
     const text = new Text('Time\'s UP!', {
-      fill: ['#FFFFFF', '#000000'],
-      fillGradientType: 1,
+      fill: '#FFFFFF',
       fontFamily: 'Raleway',
       fontSize: 200,
       fontWeight: 600,
     });
     text.anchor.set(0.5);
+
+    gsap.registerPlugin(PixiPlugin);
+    PixiPlugin.registerPIXI(PIXI);
+
+    const tl = gsap.timeline({ repeat: 3 })
+      .to(text, {
+        pixi: {
+          tint: 0x000000,
+        },
+        duration: 1.5,
+        ease: 'steps(1)',
+      });
+
     this.addChild(text);
   }
 
+  /**
+   * @private
+   */
   _drawTitle() {
     const title = new Title('Please wait while the tasks are rated');
     title.y = 200;
