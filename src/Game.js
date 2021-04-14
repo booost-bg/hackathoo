@@ -1,3 +1,4 @@
+import config from './config';
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import Splash from './scenes/Splash';
@@ -27,9 +28,12 @@ export default class Game extends Container {
     super();
 
     this.sortableChildren = true;
+
+    this._config = config;
     this._server = null;
     this._background = background;
     this.currentScene = null;
+
     this._registerPlugins();
     this._createServer();
     this.initDebug();
@@ -49,8 +53,8 @@ export default class Game extends Container {
   /**
    * @private
    */
-  async _createServer() {
-    const server = new Server();
+  _createServer() {
+    const server = new Server(this._config.server);
 
     this._server = server;
   }

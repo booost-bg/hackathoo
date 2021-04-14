@@ -1,5 +1,4 @@
 /* eslint-disable consistent-return */
-import config from '../config';
 import axios from 'axios';
 
 /**
@@ -7,12 +6,11 @@ import axios from 'axios';
  * @class
  */
 export default class Server {
-  constructor() {
-    /**
-     * @type {Object}
-     * @private
-     */
-    this._config = config.server;
+  /**
+   * @param {Object} config The server connection configuration
+   */
+  constructor(config) {
+    this._config = config;
   }
 
   /**
