@@ -65,8 +65,6 @@ export default class Game extends Container {
   }
 
   async start() {
-    this._addEventListeners();
-
     await this.switchScene(Splash, { scene: 'splash' });
     await this.currentScene.finish;
 
@@ -87,37 +85,15 @@ export default class Game extends Container {
 
     this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
+    this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
+      this.switchScene(to, { scene: to.name }, data);
+    });
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
 
     return this.currentScene.onCreated();
   }
 
-  /**
-   * @private
-   */
-  _addEventListeners() {
-    this.on(Game.events.SWITCH_SCENE, () => {
-      this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
-        this.switchScene(this._parseScene(to), { scene: to }, data);
-      });
-    });
-  }
-
-  /**
-   * @private
-   */
-  _parseScene(name) {
-    const scenes = {
-      intro: Intro,
-      setup: Setup,
-      countdown: Countdown,
-      break: Break,
-      finalCountdown: FinalCountdown,
-    };
-
-    return scenes[name];
-  }
   /**
    * Hook called by the application when the browser window is resized.
    * Use this to re-arrange the game elements according to the window size

@@ -5,6 +5,7 @@ import HackathonLogo from '../components/HackathonLogo';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 import dayjs from 'dayjs';
+import Countdown from './Countdown';
 
 /**
  * Represents the break scene of the app.
@@ -121,7 +122,7 @@ export default class Break extends Scene {
    */
   _finishScene() {
     this.emit(Scene.events.EXIT, {
-      to: 'countdown',
+      to: Countdown,
     });
   }
 }
