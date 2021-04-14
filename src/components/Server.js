@@ -23,7 +23,7 @@ export default class Server {
   async create(entity) {
     try {
       const response = await axios.post(`${this._config.url}`, entity);
-      const data = await response.data;
+      const data = response.data;
 
       return data;
     } catch (error) {
@@ -40,8 +40,7 @@ export default class Server {
   async update(id, entity) {
     try {
       const response = await axios.put(`${this._config.url}/${id}`, entity);
-
-      const data = await response.data;
+      const data = response.data;
 
       return data;
     } catch (error) {
@@ -56,8 +55,8 @@ export default class Server {
    */
   async status(id) {
     try {
-      const response = await axios.get(`${this._config.url}/:${id}`);
-      const data = await response.data;
+      const response = await axios.get(`${this._config.url}/${id}`);
+      const data = response.data;
 
       return data;
     } catch (error) {
