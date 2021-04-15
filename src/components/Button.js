@@ -218,4 +218,45 @@ export default class Button extends Container {
       },
     });
   }
+
+  /**
+   * @public
+   * Method which hides the text of the button and adds loader
+   */
+  startLoading() {
+    this._buttonText.alpha = 0;
+
+    this._innerLoader = new Graphics();
+    this._innerLoader.beginFill(0x000000);
+    this._innerLoader.drawCircle(this.width / 2, 10, 10);
+    this._innerLoader.endFill();
+
+    this._outerLoader = new Graphics();
+    this._outerLoader.beginFill(0xffffff);
+    this._outerLoader.drawCircle(this.width / 2, this.height / 2, this.height / 2);
+    this._outerLoader.endFill();
+
+    this.addChild(this._outerLoader);
+    this.addChild(this._innerLoader);
+
+    const tl = gsap.timeline();
+    tl.to(this._innerLoader, {
+      repeat: -1,
+      duration: 1,
+      ease: 'none',
+      motionPath: {
+        curviness: 1.8,
+        path: [{ x: 10, y: 10 }, { x: 0, y: 26 }, { x: -10, y: 10 }, { x: 0, y: 0 }],
+      },
+    });
+  }
+
+  /**
+   * @public
+   * Used to show the text for the button and removes the loader
+   */
+  stopLoading() {
+    this.removeChild(this._innerLoader, this._outerLoader);
+    this._buttonText.alpha = 1;
+  }
 }
