@@ -39,6 +39,7 @@ export default class Intro extends Scene {
    */
   drawTitle() {
     const title = new Title("The missing hackathon app");
+    title.y += 200;
     this.addChild(title);
   }
 
