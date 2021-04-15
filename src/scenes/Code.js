@@ -3,6 +3,7 @@ import Background from "../components/Background";
 import { Container, Sprite, Texture, Text } from "pixi.js";
 import HackathonLogo from "../components/HackathonLogo";
 import Button from "../components/Button";
+import gsap from "gsap/all";
 
 /**
  * Represents the Code scene.
@@ -28,6 +29,7 @@ export default class Code extends Scene {
     this._drawButton();
     this._drawTitle();
     this._drawDisplay();
+    this._drawClipboardMessage();
   }
 
   /**
@@ -123,9 +125,9 @@ export default class Code extends Scene {
     rectangle.anchor.set(0.5);
     rectangle.alpha = 0.3;
 
-    const text = "VB54G";
+    this.code = "VB54G";
 
-    const pixiText = new Text(text, {
+    const pixiText = new Text(this.code, {
       fill: "#ffffff",
       fontFamily: "Raleway",
       fontStyle: "italic",
@@ -142,10 +144,40 @@ export default class Code extends Scene {
     container.interactive = true;
 
     container.on("click", () => {
-      navigator.clipboard.writeText(text);
+      this._copyCode();
     });
 
     this.addChild(container);
+  }
+
+  /**
+   * Copies the displayed code to the user's clipboard.
+   * @method
+   * @private
+   */
+  _copyCode() {
+    navigator.clipboard.writeText(this.code);
+    this._animateClipboardMessage();
+  }
+
+  /**
+   * Animates the clipboard message container.
+   * @method
+   * @private
+   */
+  _animateClipboardMessage() {
+    const tl = gsap.timeline();
+    tl.to(this.clipboardMessageContainer, {
+      alpha: 1,
+      duration: 0.5,
+    }).to(
+      this.clipboardMessageContainer,
+      {
+        alpha: 0,
+        duration: 0.5,
+      },
+      "+=1.5"
+    );
   }
 
   /**
@@ -155,5 +187,44 @@ export default class Code extends Scene {
    */
   _finishScene() {
     this.emit(Code.events.FINISH_SCENE);
+  }
+
+  /**
+   * Draws the copy code to clipboard message container.
+   * @method
+   * @private
+   */
+  _drawClipboardMessage() {
+    this.clipboardMessageContainer = new Container();
+    const rectangle = new Sprite.from(Texture.WHITE);
+    rectangle.width = 300;
+    rectangle.height = 55;
+    rectangle.tint = 0xffffff;
+    rectangle.anchor.set(0.5);
+    rectangle.alpha = 0.3;
+
+    const text = "Copied to clipboard!";
+
+    const pixiText = new Text(text, {
+      fill: "#ffffff",
+      fontFamily: "Raleway",
+      fontSize: 28,
+      padding: 20,
+    });
+    pixiText.anchor.set(0.5, 0.5);
+
+    this.clipboardMessageContainer.addChild(rectangle);
+    this.clipboardMessageContainer.addChild(pixiText);
+    this.clipboardMessageContainer.y += 265;
+
+    this.clipboardMessageContainer.interactive = true;
+
+    this.clipboardMessageContainer.on("click", () => {
+      navigator.clipboard.writeText(text);
+    });
+
+    this.clipboardMessageContainer.alpha = 0;
+
+    this.addChild(this.clipboardMessageContainer);
   }
 }
