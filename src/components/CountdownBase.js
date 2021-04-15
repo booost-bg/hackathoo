@@ -3,6 +3,7 @@ import HackathonLogo from '../components/HackathonLogo';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 import Scene from '../scenes/Scene';
+import dayjs from 'dayjs';
 
 export default class CountdownBase extends Scene {
   async onCreated() {
@@ -85,7 +86,7 @@ export default class CountdownBase extends Scene {
   createTitle() {
     const startTime = JSON.parse(localStorage.getItem('hackathonSettings'))
       .startTime;
-    const parsedStartTime = startTime.replace(/-|T/g, '/');
+    const parsedStartTime = dayjs(startTime).format('YYYY/MM/DD HH:MM');
 
     const title = new Title(`Starts at ${parsedStartTime}`);
 
