@@ -5,6 +5,7 @@ import FinalCountdown from './scenes/FinalCountdown';
 import Splash from './scenes/Splash';
 import Play from './scenes/Play';
 import Break from './scenes/Break';
+import Winners from './scenes/Winners';
 import Countdown from './scenes/Countdown';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
@@ -13,6 +14,7 @@ import Server from './components/Server';
 import Scene from './scenes/Scene';
 import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
+import Topics from './scenes/Topics';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -37,12 +39,28 @@ export default class Game extends Container {
     this._config = config;
     this._server = null;
     this._background = background;
+    this._scenes = [];
     this.currentScene = null;
 
+    this._registerScenes();
     this._registerPlugins();
     this._createServer();
     this.initDebug();
     this.initNotifications();
+  }
+
+  /**
+   * @private
+   */
+  _registerScenes() {
+    this._scenes.push({ scene: Splash, name: 'splash' });
+    this._scenes.push({ scene: Intro, name: 'intro' });
+    this._scenes.push({ scene: Setup, name: 'setup' });
+    this._scenes.push({ scene: Topics, name: 'topics' });
+    this._scenes.push({ scene: Countdown, name: 'countdown' });
+    this._scenes.push({ scene: Break, name: 'break' });
+    this._scenes.push({ scene: FinalCountdown, name: 'finalCountdown' });
+    this._scenes.push({ scene: Winners, name: 'winners' });
   }
 
   /**
@@ -65,33 +83,42 @@ export default class Game extends Container {
   }
 
   async start() {
-    await this.switchScene(Splash, { scene: 'splash' });
+    await this.switchScene({ scene: 'splash' });
     await this.currentScene.finish;
 
     // this.switchScene(Play, { scene: "play" });
     // this.switchScene(Setup, { scene: 'setup' });
     // this.switchScene(Break, { scene: 'setup' });
-    this.switchScene(Countdown, { scene: 'setup' });
+    this.switchScene({ scene: 'countdown' });
     // this.switchScene(Intro, { scene: 'intro' });
   }
 
   /**
-   * @param {Function} constructor
    * @param {String} scene
    * @param {Object} data Scene data
    */
-  switchScene(constructor, scene, data = {}) {
-    this.removeChild(this.currentScene);
-
+  switchScene({ scene, data = {} }) {
+    const constructor = this._getScene(scene);
     this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
     this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
-      this.switchScene(to, { scene: to.name }, data);
+      this.switchScene({ scene: to, data });
     });
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
 
     return this.currentScene.onCreated();
+  }
+
+  /**
+   * @param {String} name Scene name
+   * @returns {Function} constructor
+   * @private
+   */
+  _getScene(name) {
+    const { scene } = this._scenes.find((scene) => scene.name === name);
+
+    return scene;
   }
 
   /**
@@ -114,8 +141,8 @@ export default class Game extends Container {
    */
   initDebug() {
     const debug = new Debug();
-    debug.on(Debug.events.SCENE_CHANGED, (constructor, scene) => {
-      this.switchScene(constructor, scene);
+    debug.on(Debug.events.SCENE_CHANGED, (scene) => {
+      this.switchScene(scene);
     });
   }
 
