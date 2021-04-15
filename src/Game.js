@@ -98,6 +98,7 @@ export default class Game extends Container {
    * @param {Object} data Scene data
    */
   switchScene({ scene, data = {} }) {
+    this.removeChild(this.currentScene);
     const constructor = this._getScene(scene);
     this.currentScene = new constructor(data);
     this.currentScene.background = this._background;
