@@ -11,9 +11,9 @@ export default class CountdownStart extends CountdownBase {
   constructor() {
     super();
     this.onCreated().then(() => {
-      this.createTimer();
-      this.createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
-      this.createCriteriaRulesButton('RULES', 122, 'rulesButton');
+      this._createTimer();
+      this._createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
+      this._createCriteriaRulesButton('RULES', 122, 'rulesButton');
     });
   }
 
@@ -23,7 +23,7 @@ export default class CountdownStart extends CountdownBase {
  * @method
  * @private
  */
-  createTimer() {
+  _createTimer() {
     this._startTime = dayjs();
     this._endTime = dayjs().add(3, 'hour');
 
@@ -31,10 +31,19 @@ export default class CountdownStart extends CountdownBase {
     timer.y = -75;
     this.timer = timer;
     this.addChild(this.timer);
-    this.startProgressBar();
+    this._startProgressBar();
   }
 
-  createCriteriaRulesButton(text, y, key) {
+  /**
+   * Initializes a Button in the scene, based on the passed parameters
+   * @method
+   * @private
+   * @param {Sting} text - The text of the button
+   * @param {Number} y - Vertical position
+   * @param {String} key - Unique identifier of the Button type
+   * @memberof CountdownStart
+   */
+  _createCriteriaRulesButton(text, y, key) {
     const button = new Button({
       width: 172,
       height: 55,
@@ -51,6 +60,13 @@ export default class CountdownStart extends CountdownBase {
     this.addChild(button);
   }
 
+  /**
+   * The events the CountDownStart class can emit
+   *
+   * @readonly
+   * @static
+   * @memberof CountdownStart
+   */
   static get events() {
     return {
       BUTTON_CLICKED: 'button_clicked',

@@ -8,20 +8,28 @@ import dayjs from 'dayjs';
 export default class CountdownBase extends Scene {
   async onCreated() {
 
-    const { startTime, endTime } = JSON.parse(
+    const { startTime, endTime, text } = JSON.parse(
       localStorage.getItem('hackathonSettings')
     );
 
     /**
-     * @type {Date}
+     * @type {Date} - The start date of the Hackathon
      * @private
      */
     this._startTime = startTime;
+
     /**
-     * @type {Date}
+     * @type {Date} - The end date of the Hackathon
      * @private
      */
     this._endTime = endTime;
+
+    /**
+     * @type {String} - The name of the Hackathon
+     * @private
+     */
+    this._text = text;
+
     /**
      * @type {Number}
      * @private
@@ -33,27 +41,31 @@ export default class CountdownBase extends Scene {
      * @private
      */
     this._progressBar = null;
+
     /**
      * @type {PIXI.Container}
      * @private
      */
     this._background = null;
+
     /**
      * @type {PIXI.Container}
      * @private
      */
     this.timer = null;
 
-    this.createProgressBar();
-    this.createBackground();
-    this.createTitle();
-    this.createLogo();
+    this._createProgressBar();
+    this._createBackground();
+    this._createTitle();
+    this._createLogo();
   }
 
   /**
-* @private
-*/
-  createProgressBar() {
+   * Initializes Progressbar 
+  * @method 
+  * @private
+  */
+  _createProgressBar() {
     const progressBar = new Progressbar({ initialWidth: 100 });
 
     progressBar.y = -window.innerHeight / 2;
@@ -63,9 +75,11 @@ export default class CountdownBase extends Scene {
   }
 
   /**
+   * Renders background
+   * @method
    * @private
    */
-  createBackground() {
+  _createBackground() {
     const background = new Background({
       bgColor1: '#0C59EB',
       bgColor2: '#0C59EB',
@@ -83,10 +97,8 @@ export default class CountdownBase extends Scene {
    * @method
    * @private
    */
-  createTitle() {
-    const startTime = JSON.parse(localStorage.getItem('hackathonSettings'))
-      .startTime;
-    const parsedStartTime = dayjs(startTime).format('YYYY/MM/DD HH:MM');
+  _createTitle() {
+    const parsedStartTime = dayjs(this.startTime).format('YYYY/MM/DD HH:MM');
 
     const title = new Title(`Starts at ${parsedStartTime}`);
 
@@ -99,7 +111,7 @@ export default class CountdownBase extends Scene {
    * @method
    * @private
    */
-  createLogo() {
+  _createLogo() {
     const text = JSON.parse(
       localStorage.getItem('hackathonSettings')
     ).hackathonName.toUpperCase();
@@ -108,9 +120,11 @@ export default class CountdownBase extends Scene {
   }
 
   /**
- * @private
- */
-  startProgressBar() {
+  * Renders Progressbar
+  * @method
+  * @private
+  */
+  _startProgressBar() {
     this._progressBar.start(this.timer.totalTime);
   }
 }

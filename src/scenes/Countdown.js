@@ -12,6 +12,13 @@ export default class Countdown extends CountdownBase {
   constructor() {
     super();
 
+    this.onCreated().then(() => {
+      this._getProgress();
+      this._createTimer();
+      this._createPauseTimerButton('15 min break', 220, 15);
+      this._createPauseTimerButton('30 min break', 290, 30);
+      this._createPauseTimerButton('60 min break', 360, 60);
+    });
   }
 
   /**
@@ -27,8 +34,8 @@ export default class Countdown extends CountdownBase {
    * Get progress, if any, from session storage.
    * @private
    */
-  getProgress() {
-    const progress = JSON.parse(sessionStorage.getItem("progress"));
+  _getProgress() {
+    const progress = JSON.parse(sessionStorage.getItem('progress'));
     if (progress) {
       this._startTime = progress.startTime;
       this._progressBarInitialWidth = progress.barPosition;
@@ -40,16 +47,16 @@ export default class Countdown extends CountdownBase {
    * @method
    * @private
    */
-  createTimer() {
+  _createTimer() {
     const timer = new Timer(this._startTime, this._endTime);
     timer.y = -75;
 
     this.timer = timer;
     this.timer.on(Timer.events.LAST_TEN_SECONDS, () => {
-      this.finishScene();
+      this._finishScene();
     });
     this.addChild(this.timer);
-    this.startProgressBar();
+    this._startProgressBar();
   }
 
   /**
@@ -60,7 +67,7 @@ export default class Countdown extends CountdownBase {
    * @method
    * @private
    */
-  createPauseTimerButton(text, y, duration) {
+  _createPauseTimerButton(text, y, duration) {
     const button = new Button({
       width: 300,
       height: 50,
@@ -68,8 +75,8 @@ export default class Countdown extends CountdownBase {
     });
     button.pivot.x = button.width / 2;
     button.y = y;
-    button.on("click", () => {
-      this.saveProgress();
+    button.on('click', () => {
+      this._saveProgress();
       this.timer.clearInterval();
       this.emit(Scene.events.EXIT, {
         to: "break",
@@ -86,7 +93,7 @@ export default class Countdown extends CountdownBase {
    * Save progress to session storage
    * @private
    */
-  saveProgress() {
+  _saveProgress() {
     const progress = {
       startTime: this.timer.getProgress(),
       barPosition: this._progressBar.getProgress(),
@@ -99,8 +106,8 @@ export default class Countdown extends CountdownBase {
    * @method
    * @private
    */
-  finishScene() {
-    sessionStorage.removeItem("progress");
+  _finishScene() {
+    sessionStorage.removeItem('progress');
     this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
       to: "finalCountdown",

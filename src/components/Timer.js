@@ -92,7 +92,6 @@ export default class Timer extends Container {
    * @private
    */
   createCountdown() {
-    const now = dayjs();
     const { endDate } = this.getDates();
     const { startDate } = this.getDates();
     this.startDate = startDate;
