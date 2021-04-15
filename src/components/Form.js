@@ -17,7 +17,7 @@ export default class Form extends EventEmitter {
    * @method
    * @private
    */
-  createInputElement(element, type, text, id) {
+  createInputElement(element, type, text, id, format) {
     const label = document.createElement("label");
     label.htmlFor = id;
     label.innerText = text;
@@ -26,6 +26,9 @@ export default class Form extends EventEmitter {
     if (element !== "textarea") input.type = type;
     else {
       input.rows = "20";
+    }
+    if (format) {
+      input.setAttribute("data-format", format);
     }
 
     Object.assign(label.style, {
@@ -79,7 +82,8 @@ export default class Form extends EventEmitter {
         input.element,
         input.type,
         input.text,
-        input.id
+        input.id,
+        input.format
       );
       this.domElement.appendChild(element.label);
       this.domElement.appendChild(element.input);

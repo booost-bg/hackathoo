@@ -44,7 +44,17 @@ export default class Setup extends Scene {
     let settingsObject = {};
     this.forms.forEach((form) => {
       for (let setting in form.inputElements) {
-        settingsObject[setting] = form.inputElements[setting].value;
+        const input = form.inputElements[setting];
+
+        switch (input.getAttribute("data-format")) {
+          case "list":
+            settingsObject[setting] = input.value
+              .split(",")
+              .map((x) => x.trim());
+            break;
+          default:
+            settingsObject[setting] = input.value;
+        }
       }
     });
     return settingsObject;
