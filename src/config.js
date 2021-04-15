@@ -97,18 +97,21 @@ export default {
               type: "text-area",
               text: "Teams (separated by comas):",
               id: "teams",
+              format: "list",
             },
             {
               element: "textarea",
               type: "text-area",
               text: "Topics (separated by comas):",
               id: "topics",
+              format: "list",
             },
             {
               element: "textarea",
               type: "text-area",
               text: "Rules (separated by comas):",
               id: "rules",
+              format: "list",
             },
             {
               element: "textarea",
