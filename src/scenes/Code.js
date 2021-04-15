@@ -123,7 +123,9 @@ export default class Code extends Scene {
     rectangle.anchor.set(0.5);
     rectangle.alpha = 0.3;
 
-    const text = new Text("VB54G", {
+    const text = "VB54G";
+
+    const pixiText = new Text(text, {
       fill: "#ffffff",
       fontFamily: "Raleway",
       fontStyle: "italic",
@@ -131,11 +133,17 @@ export default class Code extends Scene {
       fontWeight: 1000,
       padding: 20,
     });
-    text.anchor.set(0.55, 0.5);
+    pixiText.anchor.set(0.55, 0.5);
 
     container.addChild(rectangle);
-    container.addChild(text);
+    container.addChild(pixiText);
     container.y += 35;
+
+    container.interactive = true;
+
+    container.on("click", () => {
+      navigator.clipboard.writeText(text);
+    });
 
     this.addChild(container);
   }
