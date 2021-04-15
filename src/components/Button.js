@@ -169,6 +169,10 @@ export default class Button extends Container {
     this.on("pointerup", () => {
       this._resetAnimation();
     });
+
+    this.on("pointerout", () => {
+      this._resetAnimation();
+    });
   }
 
   /**

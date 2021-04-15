@@ -3,17 +3,45 @@ import { pad } from '../core/utils';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
+
+const EVENTS = {
+  TIMER_END: 'timer_end',
+  LAST_TEN_SECONDS: 'last_ten_seconds',
+};
+const TIME_FOR_FINAL_COUNTDOWN = 11000;
+const MIN_VALUE = 1000;
+
 /**
  * Represents the timer for the countdown scene.
  */
 export default class Timer extends Container {
-  constructor() {
+  /**
+   * @param {Date} startTime The timer start value
+   * @param {Date} endTime The timer end value
+   */
+  constructor(startTime = dayjs(), endTime = dayjs().add(1, 'hour')) {
     super();
+    this.startTime = startTime;
+    this.endTime = endTime;
+
     /**
      * Represents the timer total value.
      * @type {Number}
+     * @public
      */
     this.totalTime = 0;
+    /**
+     * Represents the timer update interval.
+     * @type {Number}
+     * @private
+     */
+    this.interval = null;
+    /**
+     * Represents the timer dynamic start value.
+     * @type {Date}
+     * @public
+     */
+    this.startDate = null;
     this.drawInitial();
     this.createCountdown();
     /**
@@ -21,17 +49,15 @@ export default class Timer extends Container {
      * @var
      */
     this.timer = null;
-    /**
-     * Represents the break interval.
-     * @type {Function}
-     */
-    this.breakInterval = null;
     this.blueX = 3;
     this.redX = -3;
     this.sortableChildren = true;
     this.isPaused = false;
     this.parallax();
-    this.breakTimer = null;
+  }
+
+  static get events() {
+    return EVENTS;
   }
 
   /**
@@ -41,9 +67,9 @@ export default class Timer extends Container {
    * @private
    */
   getDates() {
-    const settings = JSON.parse(localStorage.getItem('hackathonSettings'));
-    const startDate = dayjs(settings.startTime);
-    const endDate = dayjs(settings.endTime);
+    const startDate = dayjs(this.startTime);
+    const endDate = dayjs(this.endTime);
+
     return { startDate, endDate };
   }
 
@@ -67,18 +93,29 @@ export default class Timer extends Container {
    */
   createCountdown() {
     const { endDate } = this.getDates();
-    let { startDate } = this.getDates();
-    this.totalTime = endDate.diff(startDate);
-    setInterval(() => {
-      const distance = endDate.diff(startDate);
+    const { startDate } = this.getDates();
+    this.startDate = startDate;
+    this.totalTime = endDate.diff(this.startDate);
+    this.interval = setInterval(() => {
+      const distance = endDate.diff(this.startDate);
+      this.onUpdate(distance);
       const { hours, minutes, seconds } = this.parseDistanceHours(distance);
       if (!this.isPaused) {
-        startDate = dayjs(startDate).add(1, 'second');
+        this.startDate = dayjs(this.startDate).add(1, 'second');
         this.removeChildren();
         this.timer = `${hours}:${minutes}:${seconds}`;
         this.drawTexts();
       }
     }, 1000);
+  }
+
+  /**
+   * Timer progress
+   * @public
+   * @returns {Date}
+   */
+  getProgress() {
+    return this.startDate;
   }
 
   /**
@@ -193,45 +230,44 @@ export default class Timer extends Container {
 
   /**
    * Pauses the timer.
-   * @param {number} time - Minutes.
+   * @method
+   * @public
+   */
+  pause() {
+    this.isPaused = true;
+  }
+
+  /**
+   * Resumes the timer.
+   * @method
+   * @public
+   */
+  play() {
+    this.isPaused = false;
+  }
+
+  /**
+   * @param {Number} distance Time left in milliseconds.
    * @method
    * @private
    */
-  pause(time) {
-    if (this.breakInterval) clearInterval(this.breakInterval);
-    this.isPaused = true;
-    this.createBreakTimer(time);
-    setTimeout(() => {
-      this.isPaused = false;
-    }, time * 60000);
+  onUpdate(distance) {
+    if (distance < TIME_FOR_FINAL_COUNTDOWN) {
+      this.emit(Timer.events.LAST_TEN_SECONDS);
+    }
+
+    if (distance < MIN_VALUE) {
+      this.clearInterval();
+      this.emit(Timer.events.TIMER_END);
+    }
   }
 
-  createBreakTimer(time) {
-    let timeMilliseconds = dayjs.duration(time * 60000).asMilliseconds();
-    this.breakInterval = setInterval(() => {
-      if (timeMilliseconds !== 0) {
-        const { minutes, seconds } = this.parseDistanceMinutes(
-          timeMilliseconds
-        );
-        this.breakTimer = `${minutes}:${seconds}`;
-        this.drawBreakTimerText();
-        timeMilliseconds -= 1000;
-      } else {
-        clearInterval(this.breakInterval);
-      }
-    }, 1000);
-  }
-
-  drawBreakTimerText() {
-    this.removeChild(this.breakTimerText);
-    this.breakTimerText = new Text(`Break: ${this.breakTimer}`, {
-      fill: '#000000',
-      fontFamily: 'Raleway, sans-serif',
-      fontSize: 50,
-      fontWeight: 300,
-    });
-    this.breakTimerText.anchor.set(0.5);
-    this.breakTimerText.y = -100;
-    this.addChild(this.breakTimerText);
+  /**
+   * Clear timer interval
+   * @method
+   * @public
+   */
+  clearInterval() {
+    window.clearInterval(this.interval);
   }
 }

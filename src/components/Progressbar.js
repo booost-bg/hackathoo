@@ -51,7 +51,6 @@ export default class Progress extends Container {
      * @private
      */
     this._tl = new gsap.timeline();
-
     this._init();
   }
 
@@ -192,5 +191,29 @@ export default class Progress extends Container {
       duration: duration / 1000,
       ease: 'none',
     });
+  }
+
+  /**
+   * Pause timeline
+   * @public
+   */
+  pause() {
+    this._tl.pause();
+  }
+
+  /**
+   * Play timeline
+   * @public
+   */
+  play() {
+    this._tl.play();
+  }
+
+  /**
+   * @public
+   * @returns {Number} bar position on screen
+   */
+  getProgress() {
+    return this._bar.getBounds().right - this._amplitude / 2;
   }
 }

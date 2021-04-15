@@ -85,7 +85,7 @@ export default {
               element: "input",
               type: "datetime-local",
               text: "End time:",
-              id: "endDime",
+              id: "endTime",
             },
           ],
         },

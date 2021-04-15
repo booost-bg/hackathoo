@@ -1,11 +1,4 @@
 import * as DAT from 'dat.gui';
-import Setup from '../scenes/Setup';
-import Intro from '../scenes/Intro';
-import Splash from '../scenes/Splash';
-import Topics from '../scenes/Topics';
-import Countdown from '../scenes/Countdown';
-import Play from '../scenes/Play';
-// import CountdownStart from '../scenes/CountdownStart';
 import EventEmitter from 'eventemitter3';
 
 export default class Debug extends EventEmitter {
@@ -15,15 +8,15 @@ export default class Debug extends EventEmitter {
   }
 
   /**
- * Dev purposes only
- * Provides convenient scene changing approach for easier debuggin 
- * 
- * To add new scenes to the DropDownList of the dat.gui window 
- * 
- * @method 
- * @return {dat.GUI} 
- * @memberof Game
- */
+   * Dev purposes only
+   * Provides convenient scene changing approach for easier debuggin
+   *
+   * To add new scenes to the DropDownList of the dat.gui window
+   *
+   * @method
+   * @return {dat.GUI}
+   * @memberof Game
+   */
   initGUI() {
     const that = this;
     const gui = new DAT.GUI();
@@ -40,20 +33,10 @@ export default class Debug extends EventEmitter {
       // CountdownStart: 'countdownStart'
     };
 
-    // Scene name - Scene constructor pairs
-    const scenes = {
-      setup: Setup,
-      intro: Intro,
-      countdown: Countdown,
-      play: Play,
-      splash: Splash,
-      topics: Topics,
-      // countdownStart: CountdownStart
-    };
-
-    gui.add(sceneSelector, 'Select scene', dropDownListItems)
+    gui
+      .add(sceneSelector, 'Select scene', dropDownListItems)
       .onChange((selectedValue) => {
-        that.emit(Debug.events.SCENE_CHANGED, scenes[selectedValue], { scene: selectedValue });
+        that.emit(Debug.events.SCENE_CHANGED, { scene: selectedValue });
       });
   }
 
@@ -66,7 +49,7 @@ export default class Debug extends EventEmitter {
    */
   static get events() {
     return {
-      SCENE_CHANGED: 'scene_changed'
+      SCENE_CHANGED: 'scene_changed',
     };
   }
 }

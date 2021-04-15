@@ -11,7 +11,47 @@ import Progressbar from '../components/Progressbar';
  * @class
  */
 export default class Countdown extends Scene {
+  constructor() {
+    super();
+    const { startTime, endTime } = JSON.parse(
+      localStorage.getItem('hackathonSettings')
+    );
+
+    /**
+     * @type {Date}
+     * @private
+     */
+    this._startTime = startTime;
+    /**
+     * @type {Date}
+     * @private
+     */
+    this._endTime = endTime;
+    /**
+     * @type {Number}
+     * @private
+     */
+    this._progressBarInitialWidth = 100;
+
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._progressBar = null;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this._background = null;
+    /**
+     * @type {PIXI.Container}
+     * @private
+     */
+    this.timer = null;
+  }
+
   async onCreated() {
+    this.getProgress();
     this.createProgressBar();
     this.createBackground();
     this.createTimer();
@@ -23,15 +63,29 @@ export default class Countdown extends Scene {
   }
 
   /**
+   * Get progress, if any, from session storage.
+   * @private
+   */
+  getProgress() {
+    const progress = JSON.parse(sessionStorage.getItem('progress'));
+    if (progress) {
+      this._startTime = progress.startTime;
+      this._progressBarInitialWidth = progress.barPosition;
+    }
+  }
+
+  /**
    * @private
    */
   createProgressBar() {
-    const pg = new Progressbar({ initialWidth: 100 });
+    const pg = new Progressbar({
+      initialWidth: this._progressBarInitialWidth,
+    });
 
     pg.y = -window.innerHeight / 2;
     pg.x = -window.innerWidth / 2;
 
-    this._pg = pg;
+    this._progressBar = pg;
   }
 
   /**
@@ -46,7 +100,7 @@ export default class Countdown extends Scene {
     });
 
     this._background = background;
-    this._background.addChild(this._pg);
+    this._background.addChild(this._progressBar);
     this.addChild(this._background);
   }
 
@@ -56,9 +110,13 @@ export default class Countdown extends Scene {
    * @private
    */
   createTimer() {
-    const timer = new Timer();
+    const timer = new Timer(this._startTime, this._endTime);
     timer.y = -75;
+
     this.timer = timer;
+    this.timer.on(Timer.events.LAST_TEN_SECONDS, () => {
+      this.finishScene();
+    });
     this.addChild(this.timer);
     this.startProgressBar();
   }
@@ -69,12 +127,9 @@ export default class Countdown extends Scene {
    * @private
    */
   createTitle() {
-    const endTime = JSON.parse(localStorage.getItem('hackathonSettings'))
-      .endTime;
-    const parsedEndTime = endTime.replace(/-|T/g, '/');
+    const parsedEndTime = this._endTime.replace(/-|T/g, '/');
 
     const title = new Title(`Ends at ${parsedEndTime}`);
-
     title.y = 150;
     this.addChild(title);
   }
@@ -106,20 +161,52 @@ export default class Countdown extends Scene {
       height: 50,
       text,
     });
-
     button.pivot.x = button.width / 2;
     button.y = y;
     button.on('click', () => {
-      this.timer.pause(duration);
+      this.saveProgress();
+      this.timer.clearInterval();
+      this.emit(Scene.events.EXIT, {
+        to: 'break',
+        data: {
+          duration,
+        },
+      });
     });
 
     this.addChild(button);
   }
 
   /**
+   * Save progress to session storage
+   * @private
+   */
+  saveProgress() {
+    const progress = {
+      startTime: this.timer.getProgress(),
+      barPosition: this._progressBar.getProgress(),
+    };
+    sessionStorage.setItem('progress', JSON.stringify(progress));
+  }
+
+  /**
+   * @method
    * @private
    */
   startProgressBar() {
-    this._pg.start(this.timer.totalTime);
+    this._progressBar.start(this.timer.totalTime);
+  }
+
+  /**
+   * Emits a finish event
+   * @method
+   * @private
+   */
+  finishScene() {
+    sessionStorage.removeItem('progress');
+    this.timer.clearInterval();
+    this.emit(Scene.events.EXIT, {
+      to: 'finalCountdown',
+    });
   }
 }
