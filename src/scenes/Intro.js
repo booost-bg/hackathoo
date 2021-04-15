@@ -116,7 +116,9 @@ export default class Intro extends Scene {
    * @private
    */
   finishScene() {
-    this.emit('finishScene');
+    this.emit(Scene.events.EXIT, {
+      to: "setup",
+    });
   }
 
   /**

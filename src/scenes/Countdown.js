@@ -2,6 +2,10 @@ import Scene from './Scene';
 import Timer from '../components/Timer';
 import Button from '../components/Button';
 import CountdownBase from './CountdownBase';
+import Title from "../components/Title";
+import HackathonLogo from "../components/HackathonLogo";
+import Background from "../components/Background";
+import Progressbar from "../components/Progressbar";
 
 /**
  * Represents the countdown before the hackathon ends.
@@ -67,7 +71,7 @@ export default class Countdown extends CountdownBase {
       this._saveProgress();
       this.timer.clearInterval();
       this.emit(Scene.events.EXIT, {
-        to: 'break',
+        to: "break",
         data: {
           duration,
         },
@@ -86,7 +90,7 @@ export default class Countdown extends CountdownBase {
       startTime: this.timer.getProgress(),
       barPosition: this._progressBar.getProgress(),
     };
-    sessionStorage.setItem('progress', JSON.stringify(progress));
+    sessionStorage.setItem("progress", JSON.stringify(progress));
   }
 
   /**
@@ -98,7 +102,8 @@ export default class Countdown extends CountdownBase {
     sessionStorage.removeItem('progress');
     this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
-      to: 'finalCountdown',
+      to: "finalCountdown",
+      data: this.apiData,
     });
   }
 }

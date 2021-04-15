@@ -10,12 +10,10 @@ import gsap from "gsap/all";
  * @class
  */
 export default class Code extends Scene {
-  /**
-   * Events of the scene.
-   * @returns {string}
-   */
-  static get events() {
-    return { FINISH_SCENE: "finish-scene" };
+  constructor(apiData) {
+    super();
+    this.apiData = apiData;
+    this.code = apiData.code;
   }
 
   /**
@@ -125,8 +123,6 @@ export default class Code extends Scene {
     rectangle.anchor.set(0.5);
     rectangle.alpha = 0.3;
 
-    this.code = "VB54G";
-
     const pixiText = new Text(this.code, {
       fill: "#ffffff",
       fontFamily: "Raleway",
@@ -186,7 +182,10 @@ export default class Code extends Scene {
    * @private
    */
   _finishScene() {
-    this.emit(Code.events.FINISH_SCENE);
+    this.emit(Scene.events.EXIT, {
+      to: "topics",
+      data: this.apiData,
+    });
   }
 
   /**

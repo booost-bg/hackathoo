@@ -1,9 +1,9 @@
-import Scene from './Scene';
-import { Sprite } from 'pixi.js';
-import Button from '../components/Button';
-import Background from '../components/Background';
-import TopicsContainer from '../components/TopicsContainer';
-import config from '../config';
+import Scene from "./Scene";
+import { Sprite } from "pixi.js";
+import Button from "../components/Button";
+import Background from "../components/Background";
+import TopicsContainer from "../components/TopicsContainer";
+import config from "../config";
 
 /**
  * Class representing the Topics scene
@@ -12,12 +12,17 @@ export default class Topics extends Scene {
   /**
    * @param {String[]} topics Topics array
    */
-  constructor(topics = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX']) {
+  constructor(apiData) {
     super();
-    
+
+    this.apiData = apiData;
+
     this._config = config.scenes.Topics;
-    
-    this._topicsContainer = new TopicsContainer({ topics, config: this._config });
+
+    this._topicsContainer = new TopicsContainer({
+      topics: apiData.hackathonSettings.topics,
+      config: this._config,
+    });
     this._init();
   }
 
@@ -46,7 +51,7 @@ export default class Topics extends Scene {
    * @private
    */
   _addLogo() {
-    const logo = new Sprite.from('logo');
+    const logo = new Sprite.from("logo");
 
     logo.anchor.set(0.5);
     logo.scale.x = 0.4;
@@ -61,19 +66,28 @@ export default class Topics extends Scene {
    * @private
    */
   _addButton() {
-    this._startButton = new Button({ 
-      text: 'START',
+    this._startButton = new Button({
+      text: "START",
       width: this._config.startButton.width,
       height: this._config.startButton.height,
     });
-    this._startButton.position.y = window.innerHeight / 2 - this._config.startButton.height - 20;
+    this._startButton.position.y =
+      window.innerHeight / 2 - this._config.startButton.height - 20;
     this._startButton.position.x = -this._config.startButton.width / 2;
 
-    this._startButton.once('pointerup', () => { 
-      this._topicsContainer.spinWheel(); 
+    this._startButton.once("pointerup", async () => {
+      await this._topicsContainer.spinWheel();
+      this._finishScene();
     });
 
     this.addChild(this._startButton);
+  }
+
+  _finishScene() {
+    this.emit(Scene.events.EXIT, {
+      to: "countdown",
+      data: this.apiData,
+    });
   }
 
   /**
@@ -83,7 +97,7 @@ export default class Topics extends Scene {
    * @param  {Number} width  Window width
    * @param  {Number} height Window height
    */
-  onResize(width, height) { // eslint-disable-line no-unused-vars
-
+  onResize(width, height) {
+    // eslint-disable-line no-unused-vars
   }
 }

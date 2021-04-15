@@ -1,5 +1,5 @@
-import { Container, Graphics, Sprite, Text } from 'pixi.js';
-import gsap, { random } from 'gsap/gsap-core';
+import { Container, Graphics, Sprite, Text } from "pixi.js";
+import gsap, { random } from "gsap/gsap-core";
 
 export default class TopicsContainer extends Container {
   constructor({ topics, config }) {
@@ -30,31 +30,36 @@ export default class TopicsContainer extends Container {
       topic.position.y += speed;
       const topicBounds = topic.getBounds();
 
-      if ((this._arrowPoint > (topicBounds.y - this._config.topicGap / 2))
-          && (this._arrowPoint < (topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1))) {
-        topic.children[0].tint = 0xFFFFFF;
+      if (
+        this._arrowPoint > topicBounds.y - this._config.topicGap / 2 &&
+        this._arrowPoint <
+          topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1
+      ) {
+        topic.children[0].tint = 0xffffff;
 
         if (this._selectedTopic !== topic) {
           this._playArrowAnimation();
           this._selectedTopic = topic;
         }
       } else {
-        topic.children[0].tint = 0xFF00C7;
+        topic.children[0].tint = 0xff00c7;
       }
 
-      topic.position.y = topic.position.y % (this._topicsContainerHeight + this._config.topicGap);
+      topic.position.y =
+        topic.position.y %
+        (this._topicsContainerHeight + this._config.topicGap);
     });
   }
 
   /**
    * Starts the topic spin animation
    */
-  spinWheel() {
+  async spinWheel() {
     if (this._spinning) return;
 
     const arrowBounds = this._leftArrow.getBounds();
 
-    this._arrowPoint = arrowBounds.y + (arrowBounds.height / 2);
+    this._arrowPoint = arrowBounds.y + arrowBounds.height / 2;
     this._spinning = true;
     this._selectedTopic = null;
 
@@ -62,13 +67,17 @@ export default class TopicsContainer extends Container {
       speed: random(this._config.minSpinSpeed, this._config.maxSpinSpeed),
     };
 
-    gsap.to(dummyObj, {
+    await gsap.to(dummyObj, {
       speed: 0,
-      ease: 'power2.inOut',
+      ease: "power2.inOut",
       duration: random(10, 15),
-      onComplete: this._onSpinComplete.bind(this),
-      onUpdate: () => { this._updateTopicPos(dummyObj.speed); },
+
+      onUpdate: () => {
+        this._updateTopicPos(dummyObj.speed);
+      },
     });
+
+    return this._onSpinComplete();
   }
 
   /**
@@ -80,29 +89,37 @@ export default class TopicsContainer extends Container {
 
     const topics = this.topicsContainer.children;
     const bounds = this._selectedTopic.getBounds();
-    const offset = (window.innerHeight / 2) - (bounds.y + (bounds.height / 2));
+    const offset = window.innerHeight / 2 - (bounds.y + bounds.height / 2);
 
-    gsap.timeline()
-      .to([
-        this._arrows, 
-        this._startButton, 
-        ...topics.filter((t) => t !== this._selectedTopic),
-      ], {
-        alpha: 0,
-      })
+    return gsap
+      .timeline()
+      .to(
+        [
+          this._arrows,
+          this._startButton,
+          ...topics.filter((t) => t !== this._selectedTopic),
+        ],
+        {
+          alpha: 0,
+        }
+      )
       .to(this.topicsContainer.mask, {
         pixi: {
           scale: 2,
-        }
+        },
       })
-      .to(this._selectedTopic, {
-        duration: 1,
-        ease: 'back',
-        pixi: {
-          scale: 1.5,
-          y: `+=${offset}`,
-        }
-      }, '<');
+      .to(
+        this._selectedTopic,
+        {
+          duration: 1,
+          ease: "back",
+          pixi: {
+            scale: 1.5,
+            y: `+=${offset}`,
+          },
+        },
+        "<"
+      );
   }
 
   /**
@@ -110,47 +127,49 @@ export default class TopicsContainer extends Container {
    * @private
    */
   _addTopics() {
-    const mask = new Sprite.from('topicsMask');
+    const mask = new Sprite.from("topicsMask");
     mask.anchor.set(0.5);
     this.topicsContainer = new Container();
     this.topicsContainer.mask = mask;
-  
+
     // to fix pop in
-    if (this._topics.length < 6) this._topics = [...this._topics, ...this._topics];
-      
+    if (this._topics.length < 6)
+      this._topics = [...this._topics, ...this._topics];
+
     for (let i = 0; i < this._topics.length; i++) {
       const topicContainer = new Container();
-  
+
       const topicBackground = new Graphics();
-      topicBackground.beginFill(0xFFFFFF);
-  
+      topicBackground.beginFill(0xffffff);
+
       topicBackground.drawRect(
         -this._config.topicWidth / 2,
         -this._config.topicHeight / 2,
         this._config.topicWidth,
         this._config.topicHeight
       );
-  
+
       topicBackground.endFill();
-      topicBackground.tint = 0xFF00C7;
-  
+      topicBackground.tint = 0xff00c7;
+
       const topicText = new Text(this._topics[i], {
-        fontFamily: 'Raleway',
+        fontFamily: "Raleway",
         fontSize: 94,
         fontWeight: 900,
-        align: 'center',
-        fontStyle: 'italic',
-        padding: 20
+        align: "center",
+        fontStyle: "italic",
+        padding: 20,
       });
-  
+
       topicText.anchor.set(0.5);
       topicText.resolution = 2;
       topicContainer.addChild(topicBackground, topicText);
-      topicContainer.position.y = (i + 1) * (this._config.topicHeight + this._config.topicGap);
-  
+      topicContainer.position.y =
+        (i + 1) * (this._config.topicHeight + this._config.topicGap);
+
       this.topicsContainer.addChild(topicContainer);
     }
-  
+
     this._topicsContainerHeight = this.topicsContainer.height;
     this.topicsContainer.y = -this.topicsContainer.height / 2;
     this.addChild(this.topicsContainer);
@@ -164,21 +183,27 @@ export default class TopicsContainer extends Container {
   _playArrowAnimation() {
     gsap.to(this._arrows, {
       keyframes: [
-        { x: (_, target) => {
-          return target.startPos + (this._config.arrowAnimationOffset * target.scale.x);
-        },
-        pixi: {
-          tint: 0xFFF7B3
-        },
-        ease: 'power1.inOut',
-        duration: 0.1 }, 
-        { x: (_, target) => target.startPos,
-          pixi: {
-            tint: 0xFFE500,
+        {
+          x: (_, target) => {
+            return (
+              target.startPos +
+              this._config.arrowAnimationOffset * target.scale.x
+            );
           },
-          ease: 'power1.inOut',
-          duration: 0.15 
-        }
+          pixi: {
+            tint: 0xfff7b3,
+          },
+          ease: "power1.inOut",
+          duration: 0.1,
+        },
+        {
+          x: (_, target) => target.startPos,
+          pixi: {
+            tint: 0xffe500,
+          },
+          ease: "power1.inOut",
+          duration: 0.15,
+        },
       ],
     });
   }
@@ -192,7 +217,7 @@ export default class TopicsContainer extends Container {
     this._arrows = [];
 
     this._leftArrow = new Graphics();
-    this._leftArrow.beginFill(0xFFFFFF);
+    this._leftArrow.beginFill(0xffffff);
     this._leftArrow.moveTo(0, 0);
     this._leftArrow.lineTo(arrowHeight / 2.5, arrowHeight / 2);
     this._leftArrow.lineTo(0, arrowHeight);
@@ -221,10 +246,15 @@ export default class TopicsContainer extends Container {
     this._rightArrowSmall.scale.set(-0.5, 0.5);
     this._rightArrowSmall.pivot.y = arrowHeight / 2;
 
-    this._arrows.push(this._leftArrow, this._leftArrowSmall, this._rightArrow, this._rightArrowSmall);
+    this._arrows.push(
+      this._leftArrow,
+      this._leftArrowSmall,
+      this._rightArrow,
+      this._rightArrowSmall
+    );
 
     this._arrows.forEach((arrow) => {
-      arrow.tint = 0xFFE500;
+      arrow.tint = 0xffe500;
       this.addChild(arrow);
     });
   }

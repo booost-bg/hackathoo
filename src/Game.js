@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import config from './config';
 import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
@@ -16,6 +17,26 @@ import Scene from './scenes/Scene';
 import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
+=======
+import config from "./config";
+import Setup from "./scenes/Setup";
+import Intro from "./scenes/Intro";
+import FinalCountdown from "./scenes/FinalCountdown";
+import Splash from "./scenes/Splash";
+import Play from "./scenes/Play";
+import Break from "./scenes/Break";
+import Winners from "./scenes/Winners";
+import Countdown from "./scenes/Countdown";
+import { Container } from "pixi.js";
+import gsap from "gsap";
+import MotionPathPlugin from "gsap/MotionPathPlugin";
+import Server from "./components/Server";
+import Scene from "./scenes/Scene";
+import Debug from "./components/Debug";
+import NotificationManager from "./components/NotificationManager";
+import Topics from "./scenes/Topics";
+import Code from "./scenes/Code";
+>>>>>>> 445f460... feat: integrate some scenes
 
 /**
  * Main game stage, manages scenes/levels.
@@ -25,7 +46,7 @@ import Topics from './scenes/Topics';
 export default class Game extends Container {
   static get events() {
     return {
-      SWITCH_SCENE: 'switch_scene',
+      SWITCH_SCENE: "switch_scene",
     };
   }
 
@@ -47,7 +68,7 @@ export default class Game extends Container {
     this._registerPlugins();
     this._createServer();
     this.initDebug();
-    this.initNotifications();
+    // this.initNotifications();
   }
 
   /**
@@ -85,14 +106,9 @@ export default class Game extends Container {
   }
 
   async start() {
-    await this.switchScene({ scene: 'splash' });
+    await this.switchScene({ scene: "splash" });
     await this.currentScene.finish;
-
-    // this.switchScene(Play, { scene: "play" });
-    // this.switchScene(Setup, { scene: 'setup' });
-    // this.switchScene(Break, { scene: 'setup' });
-    this.switchScene({ scene: 'countdown' });
-    // this.switchScene(Intro, { scene: 'intro' });
+    this.switchScene({ scene: "intro" });
   }
 
   /**
@@ -109,8 +125,16 @@ export default class Game extends Container {
     });
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
-
+    this.eventListeners();
     return this.currentScene.onCreated();
+  }
+
+  eventListeners() {
+    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
+      this.apiData = await this._server.create(hackathonSettings);
+      this.switchScene({ scene: "code", data: this.apiData });
+      // this.switchScene({ scene: "countdown", data: post.hackathonSettings });
+    });
   }
 
   /**
