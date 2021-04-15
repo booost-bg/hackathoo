@@ -7,6 +7,7 @@ import Play from './scenes/Play';
 import Break from './scenes/Break';
 import Winners from './scenes/Winners';
 import Countdown from './scenes/Countdown';
+import CountdownStart from './scenes/CountdownStart';
 import { Container } from 'pixi.js';
 import gsap from 'gsap';
 import MotionPathPlugin from 'gsap/MotionPathPlugin';
@@ -58,6 +59,7 @@ export default class Game extends Container {
     this._scenes.push({ scene: Setup, name: 'setup' });
     this._scenes.push({ scene: Topics, name: 'topics' });
     this._scenes.push({ scene: Countdown, name: 'countdown' });
+    this._scenes.push({ scene: CountdownStart, name: 'countdownStart' });
     this._scenes.push({ scene: Break, name: 'break' });
     this._scenes.push({ scene: FinalCountdown, name: 'finalCountdown' });
     this._scenes.push({ scene: Winners, name: 'winners' });
