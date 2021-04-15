@@ -1,67 +1,17 @@
-import Scene from "./Scene";
-import Timer from "../components/Timer";
-import Title from "../components/Title";
-import HackathonLogo from "../components/HackathonLogo";
-import Button from "../components/Button";
-import Background from "../components/Background";
-import Progressbar from "../components/Progressbar";
+import Scene from './Scene';
+import Timer from '../components/Timer';
+import Button from '../components/Button';
+import CountdownBase from '../components/CountdownBase';
 import RulesCriteria from "../components/RulesCriteria";
 
 /**
  * Represents the countdown before the hackathon ends.
  * @class
  */
-export default class Countdown extends Scene {
+export default class Countdown extends CountdownBase {
   constructor() {
     super();
-    const { startTime, endTime } = JSON.parse(
-      localStorage.getItem("hackathonSettings")
-    );
 
-    /**
-     * @type {Date}
-     * @private
-     */
-    this._startTime = startTime;
-    /**
-     * @type {Date}
-     * @private
-     */
-    this._endTime = endTime;
-    /**
-     * @type {Number}
-     * @private
-     */
-    this._progressBarInitialWidth = 100;
-
-    /**
-     * @type {PIXI.Container}
-     * @private
-     */
-    this._progressBar = null;
-    /**
-     * @type {PIXI.Container}
-     * @private
-     */
-    this._background = null;
-    /**
-     * @type {PIXI.Container}
-     * @private
-     */
-    this.timer = null;
-  }
-
-  async onCreated() {
-    this.getProgress();
-    this.createProgressBar();
-    this.createBackground();
-    this.createTimer();
-    this.createTitle();
-    this.createLogo();
-    this.createPauseTimerButton("15 min break", 220, 15);
-    this.createPauseTimerButton("30 min break", 290, 30);
-    this.createPauseTimerButton("60 min break", 360, 60);
-    this._initRulesCriteria();
   }
 
   /**
@@ -73,7 +23,6 @@ export default class Countdown extends Scene {
     const rulesCriteria = new RulesCriteria();
     this.addChild(rulesCriteria);
   }
-
   /**
    * Get progress, if any, from session storage.
    * @private
@@ -84,36 +33,6 @@ export default class Countdown extends Scene {
       this._startTime = progress.startTime;
       this._progressBarInitialWidth = progress.barPosition;
     }
-  }
-
-  /**
-   * @private
-   */
-  createProgressBar() {
-    const pg = new Progressbar({
-      initialWidth: this._progressBarInitialWidth,
-    });
-
-    pg.y = -window.innerHeight / 2;
-    pg.x = -window.innerWidth / 2;
-
-    this._progressBar = pg;
-  }
-
-  /**
-   * @private
-   */
-  createBackground() {
-    const background = new Background({
-      bgColor1: "#0C59EB",
-      bgColor2: "#0C59EB",
-      circleColor1: "#FFE600",
-      circleColor2: "#FFE600",
-    });
-
-    this._background = background;
-    this._background.addChild(this._progressBar);
-    this.addChild(this._background);
   }
 
   /**
@@ -131,34 +50,6 @@ export default class Countdown extends Scene {
     });
     this.addChild(this.timer);
     this.startProgressBar();
-  }
-
-  /**
-   * Renders the scene's title/
-   * @method
-   * @private
-   */
-  createTitle() {
-    const endTime = JSON.parse(localStorage.getItem("hackathonSettings"))
-      .endTime;
-    const parsedEndTime = endTime.replace(/-|T/g, "/");
-
-    const title = new Title(`Ends at ${parsedEndTime}`);
-    title.y = 150;
-    this.addChild(title);
-  }
-
-  /**
-   * Renders the hackathon's logo
-   * @method
-   * @private
-   */
-  createLogo() {
-    const text = JSON.parse(
-      localStorage.getItem("hackathonSettings")
-    ).hackathonName.toUpperCase();
-    const logo = new HackathonLogo(text);
-    this.addChild(logo);
   }
 
   /**
@@ -201,14 +92,6 @@ export default class Countdown extends Scene {
       barPosition: this._progressBar.getProgress(),
     };
     sessionStorage.setItem("progress", JSON.stringify(progress));
-  }
-
-  /**
-   * @method
-   * @private
-   */
-  startProgressBar() {
-    this._progressBar.start(this.timer.totalTime);
   }
 
   /**
