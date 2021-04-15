@@ -25,7 +25,6 @@ export default class Debug extends EventEmitter {
    * @memberof Game
    */
   initGUI() {
-    const that = this;
     const gui = new DAT.GUI();
     const sceneSelector = { 'Select scene': '' };
 
@@ -40,20 +39,9 @@ export default class Debug extends EventEmitter {
       CountdownStart: 'countdownStart'
     };
 
-    // Scene name - Scene constructor pairs
-    const scenes = {
-      setup: Setup,
-      intro: Intro,
-      countdown: Countdown,
-      play: Play,
-      splash: Splash,
-      topics: Topics,
-      countdownStart: CountdownStart
-    };
-
     gui.add(sceneSelector, 'Select scene', dropDownListItems)
       .onChange((selectedValue) => {
-        that.emit(Debug.events.SCENE_CHANGED, { scene: selectedValue });
+        this.emit(Debug.events.SCENE_CHANGED, { scene: selectedValue });
       });
   }
 
