@@ -18,6 +18,11 @@ export default class RulesCriteria extends Container {
     this._eventListeners();
   }
 
+  /**
+   * Initializes event listeners for buttons.
+   * @method
+   * @private
+   */
   _eventListeners() {
     this.rulesButton.on("click", () => {
       this._handleDomElementInAnimation("RULES", this.rules);
@@ -28,6 +33,13 @@ export default class RulesCriteria extends Container {
     });
   }
 
+  /**
+   * Handles the "opening" animation of the dom element.
+   * @param {string} title
+   * @param {string} content
+   * @method
+   * @private
+   */
   _handleDomElementInAnimation(title, content) {
     this._generateDomElement(title, content);
 
@@ -36,6 +48,11 @@ export default class RulesCriteria extends Container {
     });
   }
 
+  /**
+   * Draws the buttons.
+   * @method
+   * @private
+   */
   _drawButtons() {
     this.rulesButton = new Button({
       text: "RULES",
@@ -63,6 +80,14 @@ export default class RulesCriteria extends Container {
 
     this.addChild(this.criteriaButton);
   }
+
+  /**
+   * Generates a dom element.
+   * @param {string} title
+   * @param {string} content
+   * @method
+   * @private
+   */
 
   _generateDomElement(title, content) {
     this.title = document.createElement("h1");
