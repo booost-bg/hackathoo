@@ -53,6 +53,7 @@ export default class Panel {
    */
   _generateTextArea() {
     this._textArea = document.createElement("textarea");
+    this._textArea.readOnly = true;
     Object.assign(this._textArea.style, {
       outline: "none",
       display: "flex",
