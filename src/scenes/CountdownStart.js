@@ -8,15 +8,13 @@ import dayjs from 'dayjs';
  * @class
  */
 export default class CountdownStart extends CountdownBase {
-  constructor() {
-    super();
-    this.onCreated().then(() => {
-      this._createTimer();
-      this._createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
-      this._createCriteriaRulesButton('RULES', 122, 'rulesButton');
-    });
-  }
+  async onCreated() {
+    super.onCreated();
 
+    this._createTimer();
+    this._createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
+    this._createCriteriaRulesButton('RULES', 122, 'rulesButton');
+  }
 
   /**
  * Renders the timer for the scene.

@@ -9,16 +9,14 @@ import CountdownBase from './CountdownBase';
  * @class
  */
 export default class Countdown extends CountdownBase {
-  constructor() {
-    super();
+  async onCreated() {
+    super.onCreated();
 
-    this.onCreated().then(() => {
-      this._getProgress();
-      this._createTimer();
-      this._createPauseTimerButton('15 min break', 220, 15);
-      this._createPauseTimerButton('30 min break', 290, 30);
-      this._createPauseTimerButton('60 min break', 360, 60);
-    });
+    this._getProgress();
+    this._createTimer();
+    this._createPauseTimerButton('15 min break', 220, 15);
+    this._createPauseTimerButton('30 min break', 290, 30);
+    this._createPauseTimerButton('60 min break', 360, 60);
   }
 
   /**
