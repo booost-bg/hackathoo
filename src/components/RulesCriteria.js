@@ -1,6 +1,7 @@
 import { Container } from "pixi.js";
 import Button from "./Button";
 import gsap from "gsap/all";
+import Panel from "./Panel";
 
 export default class RulesCriteria extends Container {
   constructor() {
@@ -41,9 +42,8 @@ export default class RulesCriteria extends Container {
    * @private
    */
   _handleDomElementInAnimation(title, content) {
-    this._generateDomElement(title, content);
-
-    this._tl.from(this.domElement, {
+    const panel = new Panel(title, content);
+    this._tl.from(panel.domElement, {
       x: 1000,
     });
   }
@@ -79,114 +79,5 @@ export default class RulesCriteria extends Container {
     this.criteriaButton.y += 330;
 
     this.addChild(this.criteriaButton);
-  }
-
-  /**
-   * Generates a dom element.
-   * @param {string} title
-   * @param {string} content
-   * @method
-   * @private
-   */
-
-  _generateDomElement(title, content) {
-    this.title = document.createElement("h1");
-
-    Object.assign(this.title.style, {
-      display: "flex",
-      "flex-direction": "column",
-      "font-family": "Raleway",
-      "font-size": "60px",
-      "font-weight": "800",
-      position: "absolute",
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
-      top: "50px",
-      left: `1150px`,
-      "z-index": "1",
-    });
-
-    this.title.innerText = title;
-
-    this.textArea = document.createElement("textarea");
-    Object.assign(this.textArea.style, {
-      outline: "none",
-      display: "flex",
-      "flex-direction": "column",
-      "font-family": "Raleway",
-      "font-size": "18px",
-      padding: "68px",
-      "padding-top": "180px",
-      height: `${window.innerHeight}px`,
-      width: `${window.innerWidth / 2.3}px`,
-      position: "absolute",
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
-      left: `1085px`,
-      "z-index": "0",
-    });
-
-    this.textArea.innerText = content;
-
-    this.exitButton = document.createElement("button");
-
-    Object.assign(this.exitButton.style, {
-      outline: "none",
-      border: "none",
-      display: "flex",
-      "flex-direction": "column",
-      "font-family": "Raleway",
-      "font-size": "50px",
-      "font-weight": "800",
-      height: `70px`,
-      width: `70px`,
-      color: "white",
-      "background-color": "black",
-      position: "absolute",
-      "justify-content": "center",
-      "box-sizing": "border-box",
-      "align-items": "center",
-      left: `${window.innerWidth - 70}px`,
-      cursor: "pointer",
-      "z-index": "1",
-    });
-
-    this.exitButton.innerHTML = "x";
-
-    this.exitButton.addEventListener(
-      "click",
-      () => {
-        this._tl
-          .to(this.domElement, {
-            x: 1000,
-          })
-          .to(this.domElement, {
-            display: "none",
-          });
-      },
-      {
-        once: true,
-      }
-    );
-
-    this.domElement = document.createElement("div");
-    Object.assign(this.domElement.style, {
-      "font-family": "Raleway",
-      width: "100%",
-      height: "100%",
-      margin: "0",
-      padding: "0",
-      overflow: "hidden",
-      display: "flex",
-      position: "absolute",
-      "flex-direction": "column",
-    });
-    this.domElement.appendChild(this.textArea);
-    this.domElement.appendChild(this.title);
-    this.domElement.appendChild(this.exitButton);
-
-    document.body.appendChild(this.domElement);
   }
 }
