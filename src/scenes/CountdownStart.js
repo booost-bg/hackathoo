@@ -1,5 +1,5 @@
 import Button from '../components/Button';
-import CountdownBase from '../components/CountdownBase';
+import CountdownBase from './CountdownBase';
 import Timer from '../components/Timer';
 import dayjs from 'dayjs';
 

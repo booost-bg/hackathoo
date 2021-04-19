@@ -2,7 +2,7 @@ import Title from '../components/Title';
 import HackathonLogo from '../components/HackathonLogo';
 import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
-import Scene from '../scenes/Scene';
+import Scene from './Scene';
 import dayjs from 'dayjs';
 
 export default class CountdownBase extends Scene {

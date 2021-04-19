@@ -1,8 +1,8 @@
 import Scene from './Scene';
 import Timer from '../components/Timer';
 import Button from '../components/Button';
-import CountdownBase from '../components/CountdownBase';
 import RulesCriteria from "../components/RulesCriteria";
+import CountdownBase from './CountdownBase';
 
 /**
  * Represents the countdown before the hackathon ends.
