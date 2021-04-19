@@ -98,19 +98,24 @@ export default class Game extends Container {
    * @param {String} scene
    * @param {Object} data Scene data
    */
+    await this._fadeOut();
   switchScene({ scene }) {
     this.removeChild(this.currentScene);
+
     const constructor = this._getScene(scene);
     this.currentScene = new constructor(this.apiData);
     this.currentScene.background = this._background;
     this.currentScene.on(Scene.events.EXIT, ({ to }) => {
       this.switchScene({ scene: to });
     });
+    this.currentScene.alpha = 0;
+
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
     this.eventListeners();
 
-    return this.currentScene.onCreated();
+    await this.currentScene.onCreated();
+    await this._fadeIn();
   }
 
   eventListeners() {
@@ -147,6 +152,40 @@ export default class Game extends Container {
       } else if (currentTime > parsedEndTime && this.apiData.winners) {
         this.switchScene({scene: 'winners'});
       }
+    });
+  }
+
+  /**
+   * Clears scene children except background before fade out
+   * @private
+   */
+  _clearChildren() {
+    for (let i = this.currentScene.children.length - 1; i >= 1; i--) {
+      const child = this.currentScene.children[i];
+
+      this.currentScene.removeChild(child);
+    }
+  }
+
+  /**
+   * Scene fade out animation
+   * @private
+   */
+  async _fadeOut() {
+    await gsap.to(this.currentScene, {
+      alpha: 0,
+      duration: 0.2,
+    });
+  }
+
+  /**
+   * Scene fade in animation
+   * @private
+   */
+  async _fadeIn() {
+    await gsap.to(this.currentScene, {
+      alpha: 1,
+      duration: 0.2,
     });
   }
 
