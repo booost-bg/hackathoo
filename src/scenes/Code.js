@@ -14,6 +14,7 @@ export default class Code extends Scene {
     super();
     this.apiData = apiData;
     this.code = apiData.code;
+    console.log(apiData);
   }
 
   /**
@@ -36,7 +37,18 @@ export default class Code extends Scene {
    * @private
    */
   _drawBackground() {
-    const background = new Background();
+    const {
+      fx1Color,
+      fx2Color,
+      mainColor,
+      accentColor,
+    } = this.apiData.hackathonSettings;
+    const background = new Background({
+      circleColor1: fx1Color,
+      circleColor2: fx2Color,
+      bgColor1: mainColor,
+      bgColor2: accentColor,
+    });
     this.addChild(background);
   }
 

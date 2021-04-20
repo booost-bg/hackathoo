@@ -153,7 +153,18 @@ export default class FinalCountdown extends Scene {
    * @private
    */
   _addBackground() {
-    const background = new Background();
+    const {
+      fx1Color,
+      fx2Color,
+      mainColor,
+      accentColor,
+    } = this.apiData.hackathonSettings;
+    const background = new Background({
+      circleColor1: fx1Color,
+      circleColor2: fx2Color,
+      bgColor1: mainColor,
+      bgColor2: accentColor,
+    });
 
     this.addChild(background);
   }

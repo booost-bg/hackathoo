@@ -2,10 +2,6 @@ import Scene from './Scene';
 import Timer from '../components/Timer';
 import Button from '../components/Button';
 import CountdownBase from './CountdownBase';
-import Title from "../components/Title";
-import HackathonLogo from "../components/HackathonLogo";
-import Background from "../components/Background";
-import Progressbar from "../components/Progressbar";
 
 /**
  * Represents the countdown before the hackathon ends.
