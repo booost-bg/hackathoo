@@ -15,13 +15,11 @@ import Scene from './scenes/Scene';
 import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
-import Code from './scenes/Code';
-import TimerEnd from './scenes/TimerEnd';
-import dayjs from 'dayjs';
+import Background from './components/Background';
 
 /**
  * Main game stage, manages scenes/levels.
- *
+ 
  * @extends {PIXI.Container}
  */
 export default class Game extends Container {
@@ -41,7 +39,8 @@ export default class Game extends Container {
 
     this._config = config;
     this._server = null;
-    this._background = background;
+    this._background = new Background();
+    this.addChild(this._background);
     this._scenes = [];
     this.currentScene = null;
 
@@ -98,6 +97,7 @@ export default class Game extends Container {
    * @param {String} scene
    * @param {Object} data Scene data
    */
+  async switchScene({ scene, data = {} }) {
     await this._fadeOut();
   switchScene({ scene }) {
     this.removeChild(this.currentScene);
@@ -173,8 +173,13 @@ export default class Game extends Container {
    */
   async _fadeOut() {
     await gsap.to(this.currentScene, {
-      alpha: 0,
-      duration: 0.2,
+      pixi: {
+        scale: 0,
+        alpha: 0,
+        // angle: 270,
+      },
+      duration: 0.8,
+      ease: 'Circ.easeOut',
     });
   }
 
@@ -183,10 +188,22 @@ export default class Game extends Container {
    * @private
    */
   async _fadeIn() {
-    await gsap.to(this.currentScene, {
-      alpha: 1,
-      duration: 0.2,
-    });
+    await gsap.fromTo(
+      this.currentScene,
+      {
+        pixi: {
+          scale: 1,
+          alpha: 0,
+        },
+      },
+      {
+        pixi: {
+          scale: 1,
+          alpha: 1,
+        },
+        duration: 0.8,
+      }
+    );
   }
 
   /**
@@ -198,6 +215,29 @@ export default class Game extends Container {
     const { scene } = this._scenes.find((scene) => scene.name === name);
 
     return scene;
+  }
+
+  eventListeners() {
+    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
+      // this.apiData = await this._server.create(hackathonSettings);
+      // const {
+      //   mainColor,
+      //   accentColor,
+      //   fx1Color,
+      //   fx2Color,
+      // } = this.apiData.hackathonSettings;
+      // console.log(mainColor, accentColor, fx1Color, fx2Color);
+      // #0ce4b9 #d3ed07 #06ef35 #05df01
+      this._background.changeColors({
+        bgColor1: '#0ce4b9',
+        bgColor2: '#d3ed07',
+        circleColor1: '#06ef35',
+        circleColor2: '#05df01',
+      });
+
+      this.switchScene({ scene: 'code' });
+      // this.switchScene({ scene: "countdown", data: post.hackathonSettings });
+    });
   }
 
   /**

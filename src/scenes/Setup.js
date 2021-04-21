@@ -1,8 +1,8 @@
-import Scene from "./Scene";
-import config from "../config";
-import Button from "../components/Button";
-import Background from "../components/Background";
-import Form from "../components/Form";
+import Scene from './Scene';
+import config from '../config';
+import Button from '../components/Button';
+import Background from '../components/Background';
+import Form from '../components/Form';
 
 /**
  * Represents the setup scene of the app.
@@ -20,10 +20,11 @@ export default class Setup extends Scene {
   }
 
   async onCreated() {
-    this.renderBackground();
+    // this.renderBackground();
     this.drawButton();
     this.createForm();
     this.colorInputListener();
+    this.background = new Background();
   }
 
   /**
@@ -32,7 +33,7 @@ export default class Setup extends Scene {
    * @private
    */
   createForm() {
-    if (this.form) this.form.domElement.style.display = "none";
+    if (this.form) this.form.domElement.style.display = 'none';
     this.form = new Form(this.formsConfig[this.currentFormIndex]);
     this.forms = [...this.forms, this.form];
   }
@@ -46,10 +47,10 @@ export default class Setup extends Scene {
       for (let setting in form.inputElements) {
         const input = form.inputElements[setting];
 
-        switch (input.getAttribute("data-format")) {
-          case "list":
+        switch (input.getAttribute('data-format')) {
+          case 'list':
             settingsObject[setting] = input.value
-              .split(",")
+              .split(',')
               .map((x) => x.trim());
             break;
           default:
@@ -67,7 +68,7 @@ export default class Setup extends Scene {
    */
   drawButton() {
     const buttonConfig = {
-      text: "CONTINUE",
+      text: 'CONTINUE',
       fontSize: 24,
       width: 367,
       height: 53,
@@ -79,7 +80,7 @@ export default class Setup extends Scene {
     this.button.pivot.y = buttonConfig.height / 2;
     this.button.y += buttonConfig.y;
     this.addChild(this.button);
-    this.button.on("click", () => this.buttonClickHandler());
+    this.button.on('click', () => this.buttonClickHandler());
   }
 
   /**
@@ -90,7 +91,7 @@ export default class Setup extends Scene {
   buttonClickHandler() {
     if (this.currentFormIndex >= this.formsConfig.length - 1) {
       localStorage.setItem(
-        "hackathonSettings",
+        'hackathonSettings',
         JSON.stringify(this.submittedSettings)
       );
       this.finishScene();
@@ -131,26 +132,26 @@ export default class Setup extends Scene {
    * @private
    */
   colorInputListener() {
-    const bg1 = this.forms[0].inputElements["mainColor"];
-    const bg2 = this.forms[0].inputElements["accentColor"];
-    const fx1 = this.forms[0].inputElements["fx1Color"];
-    const fx2 = this.forms[0].inputElements["fx2Color"];
-    bg1.addEventListener("change", () => {
+    const bg1 = this.forms[0].inputElements['mainColor'];
+    const bg2 = this.forms[0].inputElements['accentColor'];
+    const fx1 = this.forms[0].inputElements['fx1Color'];
+    const fx2 = this.forms[0].inputElements['fx2Color'];
+    bg1.addEventListener('change', () => {
       this.background.changeColors({
         bgColor1: bg1.value,
       });
     });
-    bg2.addEventListener("change", () => {
+    bg2.addEventListener('change', () => {
       this.background.changeColors({
         bgColor2: bg2.value,
       });
     });
-    fx1.addEventListener("change", () => {
+    fx1.addEventListener('change', () => {
       this.background.changeColors({
         circleColor1: fx1.value,
       });
     });
-    fx2.addEventListener("change", () => {
+    fx2.addEventListener('change', () => {
       this.background.changeColors({
         circleColor1: fx1.value,
         circleColor2: fx2.value,

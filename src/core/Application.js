@@ -113,6 +113,6 @@ export default class GameApplication extends Application {
     this.background.anchor.set(0.5);
     this.background.name = 'background';
 
-    this.stage.addChildAt(sprite);
+    this.stage.addChildAt(this.background);
   }
 }

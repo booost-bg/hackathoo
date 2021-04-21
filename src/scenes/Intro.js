@@ -21,7 +21,7 @@ export default class Intro extends Scene {
     super();
   }
   async onCreated() {
-    this.renderBackground();
+    // this.renderBackground();
     this.drawLogo();
     this.drawTitle();
     this.drawCreateButton();

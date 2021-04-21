@@ -22,7 +22,7 @@ export default class Code extends Scene {
    * @public
    */
   onCreated() {
-    this._drawBackground();
+    // this._drawBackground();
     this._drawLogo();
     this._drawButton();
     this._drawTitle();

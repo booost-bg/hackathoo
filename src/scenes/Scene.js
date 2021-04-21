@@ -24,7 +24,9 @@ export default class Scene extends Container {
   static get events() {
     return EVENTS;
   }
-
+  setBackground(background) {
+    this.addChild(background);
+  }
   /**
    * Hook called on the current active scene, when the browser window is resized.
    * Use this to re-arrange the game elements according to the window size
