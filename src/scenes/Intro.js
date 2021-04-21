@@ -1,8 +1,9 @@
-import Scene from "./Scene";
-import { Sprite } from "pixi.js";
-import Title from "../components/Title";
-import Button from "../components/Button";
-import Background from "../components/Background";
+import Scene from './Scene';
+import { Sprite } from 'pixi.js';
+import Title from '../components/Title';
+import Button from '../components/Button';
+import Background from '../components/Background';
+import Join from '../components/Join';
 
 /**
  * Represents the intro scene of the app.
@@ -16,7 +17,8 @@ export default class Intro extends Scene {
     this.renderBackground();
     this.drawLogo();
     this.drawTitle();
-    this.drawButton();
+    this.drawCreateButton();
+    this.drawJoinButton();
   }
 
   /**
@@ -25,7 +27,7 @@ export default class Intro extends Scene {
    * @private
    */
   drawLogo() {
-    const logo = new Sprite.from("logo");
+    const logo = new Sprite.from('logo');
     logo.anchor.set(0.5);
     logo.scale.x = 0.8;
     logo.scale.y = 0.8;
@@ -38,24 +40,24 @@ export default class Intro extends Scene {
    * @private
    */
   drawTitle() {
-    const title = new Title("The missing hackathon app");
+    const title = new Title('The missing hackathon app');
     title.y += 200;
     this.addChild(title);
   }
 
   /**
-   * Draws the button of the scene.
+   * Draws the create button of the scene.
    * @method
    * @private
    */
-  drawButton() {
+  drawCreateButton() {
     const buttonConfig = {
-      text: "CONTINUE",
+      text: 'CREATE',
       fontSize: 24,
       width: 367,
       height: 53,
       curveSize: 13,
-      y: 350,
+      y: 320,
     };
     const button = new Button(buttonConfig);
     button.pivot.x = buttonConfig.width / 2;
@@ -63,17 +65,50 @@ export default class Intro extends Scene {
     button.y += buttonConfig.y;
     this.addChild(button);
 
-    button.once("click", () => this.buttonClickHandler());
+    button.once('click', () => this._createHandler());
   }
 
   /**
-   * Handles the button click.
+ * Draws the join button of the scene.
+ * @method
+ * @private
+ */
+  drawJoinButton() {
+    const buttonConfig = {
+      text: 'JOIN',
+      fontSize: 24,
+      width: 367,
+      height: 53,
+      curveSize: 13,
+      y: 390,
+    };
+    const button = new Button(buttonConfig);
+    button.pivot.x = buttonConfig.width / 2;
+    button.pivot.y = buttonConfig.height / 2;
+    button.y += buttonConfig.y;
+    this.addChild(button);
+
+    button.once('click', () => this._joinHandler());
+  }
+
+  /**
+   * Handles the create button click.
    * @method
    * @private
    */
-  buttonClickHandler() {
+  _createHandler() {
     this.finishScene();
   }
+
+  /**
+   * Handles the join button click.
+   * @method
+   * @private
+   */
+  _joinHandler() {
+    const join = new Join();
+    document.body.appendChild(join.body);
+  };
 
   /**
    * Emits a finish event
@@ -81,7 +116,7 @@ export default class Intro extends Scene {
    * @private
    */
   finishScene() {
-    this.emit("finishScene");
+    this.emit('finishScene');
   }
 
   /**
