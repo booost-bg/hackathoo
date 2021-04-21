@@ -1,10 +1,11 @@
-import Scene from './Scene';
-import Timer from '../components/Timer';
-import Title from '../components/Title';
-import HackathonLogo from '../components/HackathonLogo';
-import Button from '../components/Button';
-import Background from '../components/Background';
-import Progressbar from '../components/Progressbar';
+import Scene from "./Scene";
+import Timer from "../components/Timer";
+import Title from "../components/Title";
+import HackathonLogo from "../components/HackathonLogo";
+import Button from "../components/Button";
+import Background from "../components/Background";
+import Progressbar from "../components/Progressbar";
+import RulesCriteria from "../components/RulesCriteria";
 
 /**
  * Represents the countdown before the hackathon ends.
@@ -14,7 +15,7 @@ export default class Countdown extends Scene {
   constructor() {
     super();
     const { startTime, endTime } = JSON.parse(
-      localStorage.getItem('hackathonSettings')
+      localStorage.getItem("hackathonSettings")
     );
 
     /**
@@ -57,9 +58,20 @@ export default class Countdown extends Scene {
     this.createTimer();
     this.createTitle();
     this.createLogo();
-    this.createPauseTimerButton('15 min break', 220, 15);
-    this.createPauseTimerButton('30 min break', 290, 30);
-    this.createPauseTimerButton('60 min break', 360, 60);
+    this.createPauseTimerButton("15 min break", 220, 15);
+    this.createPauseTimerButton("30 min break", 290, 30);
+    this.createPauseTimerButton("60 min break", 360, 60);
+    this._initRulesCriteria();
+  }
+
+  /**
+   * Initializes the rules & criteria component
+   * @method
+   * @private
+   */
+  _initRulesCriteria() {
+    const rulesCriteria = new RulesCriteria();
+    this.addChild(rulesCriteria);
   }
 
   /**
@@ -67,7 +79,7 @@ export default class Countdown extends Scene {
    * @private
    */
   getProgress() {
-    const progress = JSON.parse(sessionStorage.getItem('progress'));
+    const progress = JSON.parse(sessionStorage.getItem("progress"));
     if (progress) {
       this._startTime = progress.startTime;
       this._progressBarInitialWidth = progress.barPosition;
@@ -93,10 +105,10 @@ export default class Countdown extends Scene {
    */
   createBackground() {
     const background = new Background({
-      bgColor1: '#0C59EB',
-      bgColor2: '#0C59EB',
-      circleColor1: '#FFE600',
-      circleColor2: '#FFE600',
+      bgColor1: "#0C59EB",
+      bgColor2: "#0C59EB",
+      circleColor1: "#FFE600",
+      circleColor2: "#FFE600",
     });
 
     this._background = background;
@@ -127,7 +139,9 @@ export default class Countdown extends Scene {
    * @private
    */
   createTitle() {
-    const parsedEndTime = this._endTime.replace(/-|T/g, '/');
+    const endTime = JSON.parse(localStorage.getItem("hackathonSettings"))
+      .endTime;
+    const parsedEndTime = endTime.replace(/-|T/g, "/");
 
     const title = new Title(`Ends at ${parsedEndTime}`);
     title.y = 150;
@@ -141,7 +155,7 @@ export default class Countdown extends Scene {
    */
   createLogo() {
     const text = JSON.parse(
-      localStorage.getItem('hackathonSettings')
+      localStorage.getItem("hackathonSettings")
     ).hackathonName.toUpperCase();
     const logo = new HackathonLogo(text);
     this.addChild(logo);
@@ -163,11 +177,11 @@ export default class Countdown extends Scene {
     });
     button.pivot.x = button.width / 2;
     button.y = y;
-    button.on('click', () => {
+    button.on("click", () => {
       this.saveProgress();
       this.timer.clearInterval();
       this.emit(Scene.events.EXIT, {
-        to: 'break',
+        to: "break",
         data: {
           duration,
         },
@@ -186,7 +200,7 @@ export default class Countdown extends Scene {
       startTime: this.timer.getProgress(),
       barPosition: this._progressBar.getProgress(),
     };
-    sessionStorage.setItem('progress', JSON.stringify(progress));
+    sessionStorage.setItem("progress", JSON.stringify(progress));
   }
 
   /**
@@ -203,10 +217,10 @@ export default class Countdown extends Scene {
    * @private
    */
   finishScene() {
-    sessionStorage.removeItem('progress');
+    sessionStorage.removeItem("progress");
     this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
-      to: 'finalCountdown',
+      to: "finalCountdown",
     });
   }
 }
