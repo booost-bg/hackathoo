@@ -7,6 +7,8 @@ export default class FireworkParticle extends Container {
     super();
 
     this.colors = ['0x3295A8', '0xFF00C7', '0xFFE600'];
+    this._particles = [];
+    this._color = this._getColor;
 
     this.onCreated();
   }
@@ -16,60 +18,68 @@ export default class FireworkParticle extends Container {
     this._launchParticle();
   }
 
+  get _getColor() {
+    return this.colors[Math.round(random(0, this.colors.length - 1))];
+  }
+
+  static get events() {
+    return {
+      launched: 'LAUNCHED',
+    }
+  }
+
   /**
    * @private
    * draws the launching particle
    */
   _draw() {
-    this.circle = new Graphics();
-    this.color = this.colors[Math.round(random(0, this.colors.length - 1))];
-    this.circle.beginFill(this.color);
-    this.circle.drawCircle(0, 0, 10);
-    this.circle.endFill();
+    this._circle = new Graphics();
+    this._circle.beginFill(this._color);
+    this._circle.drawCircle(0, 0, 2);
+    this._circle.endFill();
 
-    this.addChild(this.circle);
+    this.addChild(this._circle);
   }
 
   /**
    * @private
    * method used to launch particle
    */
-  _launchParticle() {
+  async _launchParticle() {
     const positonTop = -window.innerHeight / random(2, 5);
 
-    gsap.timeline({ onComplete: this._explode, onCompleteParams: [this.color, this] })
-      .to(this.circle, {
+    await gsap.timeline({ onComplete: () => this._explode() })
+      .to(this._circle, {
         y: positonTop,
         duration: 0.5,
       });
+
+    this.emit(FireworkParticle.events.launched, positonTop)
   }
 
   /**
    * @private
    * @param {String} color 
-   * @param {*} self 
    */
-  _explode(color, self) {
-    self.particles = []
-
-    for (let index = 0; index < 30; index++) {
+  _explode() {
+    for (let index = 0; index < 80; index++) {
       const circle = new Graphics();
-      circle.beginFill(color);
-      circle.drawCircle(0, self.circle.y, 10);
+      circle.beginFill(this._color);
+      circle.drawCircle(0, this._circle.y, 2);
       circle.endFill();
-      self.addChild(circle);
+      this.addChild(circle);
       const filter = new PIXI.filters.ColorMatrixFilter();
       circle.filters = [filter];
       gsap.to(filter, {
         brightness: 10, duration: 1,
       });
-      self.particles.push(circle);
+      this._particles.push(circle);
     }
 
-    const half = Math.ceil(self.particles.length / 2);
+    const half = Math.ceil(this._particles.length / 2);
 
-    const firstHalf = self.particles.splice(0, half)
-    const secondHalf = self.particles.splice(-half)
+    const firstHalf = this._particles.splice(0, half)
+    const secondHalf = this._particles.splice(-half)
 
     const tl = gsap.timeline();
     const dotIncrement = Math.PI * 2 / firstHalf.length;
@@ -88,6 +98,6 @@ export default class FireworkParticle extends Container {
         duration: 0.6,
       }, 'fire')
       .to([secondHalf, firstHalf], { alpha: 0, duration: 0.4 }, '<')
-      .to(self.circle, { alpha: 0, duration: 0.3 }, '<-1');
+      .to(this._circle, { alpha: 0, duration: 0.3 }, '<-1');
   }
 }

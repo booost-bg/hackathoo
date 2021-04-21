@@ -11,9 +11,20 @@ export default class Title extends Container {
    */
   constructor(text) {
     super();
+
+    this.sortableChildren = true;
     this.text = text;
-    this.drawTitleBox();
     this.createTitleText();
+    this._width = this._getBoxWidth;
+    this.drawTitleBox();
+  }
+
+  /**
+   * @private
+   */
+  get _getBoxWidth() {
+    const width = this.getChildByName('titleText').width;
+    return width + 80;
   }
 
   /**
@@ -24,8 +35,9 @@ export default class Title extends Container {
   drawTitleBox() {
     const box = new Graphics();
     box.beginFill(0xffffff);
-    box.drawRect(0, 0, 400, 50);
-    box.pivot.x = 200;
+    box.drawRect(0, 0, this._width, 50);
+
+    box.pivot.x = this._width / 2;
     box.pivot.y = 50 / 2;
     box.y = 0;
     this.addChild(box);
@@ -44,6 +56,8 @@ export default class Title extends Container {
       fontWeight: 400,
     });
     text.anchor.set(0.5);
+    text.zIndex = 2;
+    text.name = 'titleText';
     this.addChild(text);
   }
 }

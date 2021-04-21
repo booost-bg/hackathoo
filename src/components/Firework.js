@@ -9,6 +9,14 @@ export default class Firework extends Container {
         this._addParticle();
     }
 
+
+    static get events() {
+        return {
+            firework: 'NEW_FIREWORK',
+            launched: 'LAUNCHED',
+        }
+    }
+
     /**
      * @private
      * creating particles 
@@ -22,8 +30,13 @@ export default class Firework extends Container {
 
         particle.position.set(position.x, position.y);
         this.addChild(particle);
+
+        particle.on(Firework.events.launched, (_y) => {
+            this.emit(Firework.events.firework, { x: particle.position.x, y: _y });
+        })
+
         setTimeout(() => {
             this._addParticle()
-        }, random(200, 500));
+        }, random(1200, 1500));
     }
 }

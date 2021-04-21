@@ -1,5 +1,5 @@
 import Scene from './Scene';
-import { Text } from 'pixi.js';
+import { Text, Sprite } from 'pixi.js';
 import Title from '../components/Title';
 import Background from '../components/Background';
 import Firework from '../components/Firework';
@@ -19,6 +19,12 @@ export default class TimerEnd extends Scene {
     this._drawTitle();
   }
 
+  static get events() {
+    return {
+      firework: 'NEW_FIREWORK',
+    }
+  }
+
   /**
    * @private
    */
@@ -33,6 +39,33 @@ export default class TimerEnd extends Scene {
   _drawFirework() {
     const firework = new Firework();
     this.addChild(firework);
+
+    firework.on(TimerEnd.events.firework, (position) => this._addShockwave(position));
+  }
+
+  /**
+   * Adding shockwave effect to the firework
+   * @param {Object} position 
+   */
+  async _addShockwave(position) {
+    const displacementSprite = new Sprite.from('displacement');
+    const displacementFilter = new PIXI.filters.DisplacementFilter(displacementSprite);
+
+    this.addChild(displacementSprite);
+    this.filters = [displacementFilter];
+
+    displacementSprite.anchor.set(0.5);
+    displacementSprite.position.set(position.x, position.y);
+    displacementSprite.scale.set(0);
+
+    await gsap.to(displacementSprite, {
+      pixi: {
+        scale: 4,
+      },
+      duration: 0.8,
+    });
+
+    this.removeChild(displacementSprite);
   }
 
   /**
