@@ -125,6 +125,7 @@ export default class Timer extends Container {
    */
   parseDistanceHours(distance) {
     const distances = dayjs.duration(distance).$d;
+
     return {
       hours: pad(distances.days * 24 + distances.hours),
       minutes: pad(distances.minutes),
