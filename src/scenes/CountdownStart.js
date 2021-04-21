@@ -1,6 +1,7 @@
 import Button from '../components/Button';
 import CountdownBase from './CountdownBase';
 import Timer from '../components/Timer';
+import RulesCriteria from '../components/RulesCriteria';
 import dayjs from 'dayjs';
 
 /**
@@ -14,6 +15,34 @@ export default class CountdownStart extends CountdownBase {
     this._createTimer();
     this._createCriteriaRulesButton('CRITERIA', 190, 'criteriaButton');
     this._createCriteriaRulesButton('RULES', 122, 'rulesButton');
+    this._initRulesCriteria();
+  }
+
+  /**
+   * Initializes the rules & criteria component
+   * @method
+   * @private
+   */
+  _initRulesCriteria() {
+    const rulesCriteria = new RulesCriteria();
+    this.rulesCriteria = rulesCriteria;
+    this.addChild(rulesCriteria);
+    this._eventListeners();
+  }
+
+  /**
+   * Initializes event listeners for buttons.
+   * @method
+   * @private
+   */
+  _eventListeners() {
+    this.on(CountdownStart.events.BUTTON_CLICKED, (key) => {
+      if (key === 'rulesButton') {
+        this.rulesCriteria._handleDomElementInAnimation('RULES', key);
+      } else if (key === 'criteriaButton') {
+        this.rulesCriteria._handleDomElementInAnimation('CRITERIA', key);
+      }
+    });
   }
 
   /**

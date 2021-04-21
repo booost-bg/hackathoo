@@ -1,7 +1,6 @@
 import Scene from './Scene';
 import Timer from '../components/Timer';
 import Button from '../components/Button';
-import RulesCriteria from "../components/RulesCriteria";
 import CountdownBase from './CountdownBase';
 
 /**
@@ -19,15 +18,6 @@ export default class Countdown extends CountdownBase {
     this._createPauseTimerButton('60 min break', 360, 60);
   }
 
-  /**
-   * Initializes the rules & criteria component
-   * @method
-   * @private
-   */
-  _initRulesCriteria() {
-    const rulesCriteria = new RulesCriteria();
-    this.addChild(rulesCriteria);
-  }
   /**
    * Get progress, if any, from session storage.
    * @private
@@ -77,7 +67,7 @@ export default class Countdown extends CountdownBase {
       this._saveProgress();
       this.timer.clearInterval();
       this.emit(Scene.events.EXIT, {
-        to: "break",
+        to: 'break',
         data: {
           duration,
         },
@@ -96,7 +86,7 @@ export default class Countdown extends CountdownBase {
       startTime: this.timer.getProgress(),
       barPosition: this._progressBar.getProgress(),
     };
-    sessionStorage.setItem("progress", JSON.stringify(progress));
+    sessionStorage.setItem('progress', JSON.stringify(progress));
   }
 
   /**
@@ -108,7 +98,7 @@ export default class Countdown extends CountdownBase {
     sessionStorage.removeItem('progress');
     this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
-      to: "finalCountdown",
+      to: 'finalCountdown',
     });
   }
 }
