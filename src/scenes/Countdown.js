@@ -66,7 +66,7 @@ export default class Countdown extends CountdownBase {
       this._saveProgress();
       this.timer.clearInterval();
       this.emit(Scene.events.EXIT, {
-        to: "break",
+        to: 'break',
         data: {
           duration,
         },
@@ -85,7 +85,7 @@ export default class Countdown extends CountdownBase {
       startTime: this.timer.getProgress(),
       barPosition: this._progressBar.getProgress(),
     };
-    sessionStorage.setItem("progress", JSON.stringify(progress));
+    sessionStorage.setItem('progress', JSON.stringify(progress));
   }
 
   /**
@@ -95,10 +95,8 @@ export default class Countdown extends CountdownBase {
    */
   _finishScene() {
     sessionStorage.removeItem('progress');
-    this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
-      to: "finalCountdown",
-      data: this.apiData,
+      to: 'finalCountdown',
     });
   }
 }

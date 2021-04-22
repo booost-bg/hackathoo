@@ -18,12 +18,11 @@ export default class CountdownBase extends Scene {
 
     const {startTime, endTime, hackathonName} = this.apiData.hackathonSettings;
     
-
     /**
      * @type {Date} - The start date of the Hackathon
      * @private
      */
-    this._currentTime = startTime;
+    this._startTime = startTime;
 
     /**
      * @type {Date} - The end date of the Hackathon

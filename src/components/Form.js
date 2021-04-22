@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { EventEmitter } from 'events';
 
 export default class Form extends EventEmitter {
   constructor(formConfig) {
@@ -18,37 +18,37 @@ export default class Form extends EventEmitter {
    * @private
    */
   createInputElement(element, type, text, id, format) {
-    const label = document.createElement("label");
+    const label = document.createElement('label');
     label.htmlFor = id;
     label.innerText = text;
     const input = document.createElement(element);
     input.id = id;
-    if (element !== "textarea") input.type = type;
+    if (element !== 'textarea') input.type = type;
     else {
-      input.rows = "20";
+      input.rows = '20';
     }
     if (format) {
-      input.setAttribute("data-format", format);
+      input.setAttribute('data-format', format);
     }
 
     Object.assign(label.style, {
-      "font-family": "Raleway",
-      "font-weight": "600",
-      "margin-top": "4px",
-      color: "white",
-      "background-color": "black",
-      "box-sizing": "border-box",
-      display: "inline-flex",
-      padding: "10px",
+      'font-family': 'Raleway',
+      'font-weight': '600',
+      'margin-top': '4px',
+      color: 'white',
+      'background-color': 'black',
+      'box-sizing': 'border-box',
+      display: 'inline-flex',
+      padding: '10px',
     });
 
     Object.assign(input.style, {
-      "box-sizing": "border-box",
-      width: "100%",
-      resize: "none",
-      padding: "15px",
-      "font-size": "16px",
-      "min-height": "54px",
+      'box-sizing': 'border-box',
+      width: '100%',
+      resize: 'none',
+      padding: '15px',
+      'font-size': '16px',
+      'min-height': '54px',
     });
 
     return { label, input };
@@ -60,22 +60,22 @@ export default class Form extends EventEmitter {
    * @private
    */
   createFormElement() {
-    this.domElement = document.createElement("form");
+    this.domElement = document.createElement('form');
     Object.assign(this.domElement.style, {
-      "align-self": "center",
-      "justify-self": "center",
-      display: "flex",
-      "flex-direction": "column",
-      height: "550px",
-      width: "420px",
-      position: "relative",
+      'align-self': 'center',
+      'justify-self': 'center',
+      display: 'flex',
+      'flex-direction': 'column',
+      height: '550px',
+      width: '420px',
+      position: 'relative',
       top: this.config.vh,
-      "justify-content": "space-between",
-      "box-sizing": "border-box",
-      "align-items": "flex-start",
+      'justify-content': 'space-between',
+      'box-sizing': 'border-box',
+      'align-items': 'flex-start',
     });
 
-    this.domElement.classList.add("setup-form");
+    this.domElement.classList.add('setup-form');
     document.body.appendChild(this.domElement);
     this.config.inputs.forEach((input) => {
       const element = this.createInputElement(

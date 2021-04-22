@@ -193,7 +193,6 @@ export default class Code extends Scene {
   _finishScene() {
     this.emit(Scene.events.EXIT, {
       to: 'topics',
-      data: this.apiData,
     });
   }
 

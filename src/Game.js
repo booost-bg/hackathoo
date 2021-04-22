@@ -16,6 +16,7 @@ import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
 import Code from './scenes/Code';
+import dayjs from 'dayjs';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -95,10 +96,10 @@ export default class Game extends Container {
    * @param {String} scene
    * @param {Object} data Scene data
    */
-  switchScene({ scene, data = {} }) {
+  switchScene({ scene }) {
     this.removeChild(this.currentScene);
     const constructor = this._getScene(scene);
-    this.currentScene = new constructor(data);
+    this.currentScene = new constructor(this.apiData);
     this.currentScene.background = this._background;
     this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
       this.switchScene({ scene: to, data });
@@ -113,17 +114,22 @@ export default class Game extends Container {
   eventListeners() {
     this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
       this.apiData = await this._server.create(hackathonSettings);
-      this.token = this.apiData.token;
-      this.switchScene({ scene: 'code', data: this.apiData });
+      this.switchScene({ scene: 'code' });
     });
 
     this.currentScene.on(Intro.events.JOIN_SUBMIT, async ({ code }) => {
       try {
         this.apiData = await this._server.status(code);
-        this.switchScene({
-          scene: this.apiData.currentScene,
-          data: this.apiData,
-        });
+        this.currentScene.join.remove();
+
+        const currentTime = dayjs();
+        const parsedStartTime = dayjs(this.apiData.hackathonSettings.startTime);
+        const parsedEndTime = dayjs(this.apiData.hackathonSettings.endTime);
+
+        console.log(currentTime.diff(parsedStartTime), currentTime.diff(parsedEndTime));
+
+        this.switchScene({ scene: this.apiData.currentScene });
+        
       } catch (e) {
         this.currentScene.join.handleInvalidCode();
       }

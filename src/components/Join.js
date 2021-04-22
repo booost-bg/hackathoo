@@ -44,13 +44,14 @@ export default class Join extends EventEmitter {
       background: 'rgba(196, 196, 196, 0.28)',
       'font-size': '72px',
       'text-align': 'center',
+      'text-transform': 'uppercase',
     });
 
-    const button = document.createElement('button');
+    this.button = document.createElement('button');
 
-    button.innerText = 'JOIN';
+    this.button.innerText = 'JOIN';
 
-    Object.assign(button.style, {
+    Object.assign(this.button.style, {
       width: '204px',
       height: '48px',
       color: 'white',
@@ -60,13 +61,27 @@ export default class Join extends EventEmitter {
       'font-size': '24px',
     });
 
-    button.addEventListener('click', () => {
-      this.emit(Join.events.SUMBIT, { code: this.inputField.value });
-    });
+    this.onClickBound = this.onClick.bind(this);
+    this.button.addEventListener('click', this.onClickBound);
 
     this.body.appendChild(title);
     this.body.appendChild(this.inputField);
-    this.body.appendChild(button);
+    this.body.appendChild(this.button);
+  }
+
+  onClick() {
+    this.emit(Join.events.SUMBIT, { code: this.inputField.value.toUpperCase() });
+  }
+
+  /**
+   * Removes the join dom element
+   * @method
+   * @public
+   */
+  remove() {
+    console.log('hi');
+    this.button.removeEventListener('click', this.onClickBound);
+    this.body.remove();
   }
 
   /**
@@ -78,10 +93,10 @@ export default class Join extends EventEmitter {
     this.inputField.style.border = '3px solid red';
     gsap.to(this.body, {
       css: {
-        translateX: '-=5px',
+        translateX: '-=7px',
       },
-      duration: 0.01,
-      repeat: 20,
+      duration: 0.02,
+      repeat: 10,
       yoyo: true,
     });
   }
