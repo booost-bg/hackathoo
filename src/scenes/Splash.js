@@ -32,7 +32,7 @@ export default class Splash extends Scene {
   }
 
   get finish() {
-    return new Promise((res)=>setTimeout(res, this.config.hideDelay));
+    return new Promise((res) => setTimeout(res, this.config.hideDelay));
   }
 
   preload() {
@@ -40,9 +40,10 @@ export default class Splash extends Scene {
       logo: Assets.images.logo,
       topicsMask: Assets.images.topicsMask,
       displacement: Assets.images.displacement,
+      xSign: Assets.images.xSign
     };
     const sounds = {
-      
+
     };
 
     const modelsPromise = this._loadModels();
