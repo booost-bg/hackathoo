@@ -11,7 +11,7 @@ export default class CountdownStart extends CountdownBase {
     super.onCreated();
     this._createTimer();
   }
- 
+
   /**
  * Renders the timer for the scene.
  * @method
