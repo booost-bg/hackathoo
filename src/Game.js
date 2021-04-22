@@ -126,10 +126,21 @@ export default class Game extends Container {
         const parsedStartTime = dayjs(this.apiData.hackathonSettings.startTime);
         const parsedEndTime = dayjs(this.apiData.hackathonSettings.endTime);
 
-        console.log(currentTime.diff(parsedStartTime), currentTime.diff(parsedEndTime));
+        if (currentTime < parsedStartTime) {
+          this.switchScene({ scene: 'countdownStart' });
+        } else if (parsedEndTime - currentTime <= 10000 && parsedEndTime - currentTime > 0) {
+          this.switchScene({ scene: 'finalCountdown' });
+        } else if (
+          currentTime > parsedStartTime 
+          && currentTime < parsedEndTime
+        ) {
+          this.switchScene({ scene: 'countdown' });
+        } else if (currentTime > parsedEndTime && !this.apiData.winners) {
+          console.log('chakame scena');
+        } else if (currentTime > parsedEndTime && this.apiData.winners) {
+          this.switchScene({scene: 'winners'});
+        }
 
-        this.switchScene({ scene: this.apiData.currentScene });
-        
       } catch (e) {
         this.currentScene.join.handleInvalidCode();
       }

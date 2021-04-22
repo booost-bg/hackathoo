@@ -70,7 +70,9 @@ export default class Join extends EventEmitter {
   }
 
   onClick() {
-    this.emit(Join.events.SUMBIT, { code: this.inputField.value.toUpperCase() });
+    this.emit(Join.events.SUMBIT, {
+      code: this.inputField.value.toUpperCase(),
+    });
   }
 
   /**
@@ -79,7 +81,6 @@ export default class Join extends EventEmitter {
    * @public
    */
   remove() {
-    console.log('hi');
     this.button.removeEventListener('click', this.onClickBound);
     this.body.remove();
   }
