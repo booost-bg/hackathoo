@@ -1,11 +1,13 @@
-import gsap from 'gsap/all';
+import { EventEmitter } from 'events';
+import gsap from 'gsap/gsap-core';
 
-export default class Join {
+export default class Join extends EventEmitter {
   static get events() {
-    return { JOIN: 'join' };
+    return { SUMBIT: 'submit' };
   }
 
   constructor() {
+    super();
     this._createComponent();
   }
 
@@ -33,9 +35,9 @@ export default class Join {
 
     title.innerText = 'Join by code';
 
-    const inputField = document.createElement('input');
+    this.inputField = document.createElement('input');
 
-    Object.assign(inputField.style, {
+    Object.assign(this.inputField.style, {
       height: '80px',
       width: '400px',
       border: 'none',
@@ -59,17 +61,28 @@ export default class Join {
     });
 
     button.addEventListener('click', () => {
-      gsap.to(this.body.style, {
-        opacity: 0,
-        onComplete: () => {
-          this.body.style.display = 'none';
-          this.emit(Join.events.JOIN);
-        },
-      });
+      this.emit(Join.events.SUMBIT, { code: this.inputField.value });
     });
 
     this.body.appendChild(title);
-    this.body.appendChild(inputField);
+    this.body.appendChild(this.inputField);
     this.body.appendChild(button);
+  }
+
+  /**
+   * Handles invalid code input animation.
+   * @method
+   * @public
+   */
+  handleInvalidCode() {
+    this.inputField.style.border = '3px solid red';
+    gsap.to(this.body, {
+      css: {
+        translateX: '-=5px',
+      },
+      duration: 0.01,
+      repeat: 20,
+      yoyo: true,
+    });
   }
 }

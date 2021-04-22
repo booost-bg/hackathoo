@@ -21,7 +21,7 @@ export default {
     playlist: 'https://open.spotify.com/embed/playlist/4GYLwf8CfJ7Csi0Dm2CeLU',
   },
   server: {
-    url: 'https://quiet-earth-94911.herokuapp.com/hackathons/',
+    url: 'https://quiet-earth-94911.herokuapp.com/hackathons',
   },
   background: {
     numberOfCircles: 6,

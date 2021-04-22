@@ -64,7 +64,6 @@ export default class Game extends Container {
     this._scenes.push({ scene: FinalCountdown, name: 'finalCountdown' });
     this._scenes.push({ scene: Winners, name: 'winners' });
     this._scenes.push({ scene: Code, name: 'code' });
-
   }
 
   /**
@@ -107,7 +106,7 @@ export default class Game extends Container {
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
     this.eventListeners();
-    
+
     return this.currentScene.onCreated();
   }
 
@@ -116,6 +115,18 @@ export default class Game extends Container {
       this.apiData = await this._server.create(hackathonSettings);
       this.token = this.apiData.token;
       this.switchScene({ scene: 'code', data: this.apiData });
+    });
+
+    this.currentScene.on(Intro.events.JOIN_SUBMIT, async ({ code }) => {
+      try {
+        this.apiData = await this._server.status(code);
+        this.switchScene({
+          scene: this.apiData.currentScene,
+          data: this.apiData,
+        });
+      } catch (e) {
+        this.currentScene.join.handleInvalidCode();
+      }
     });
   }
 

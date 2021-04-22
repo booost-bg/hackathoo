@@ -10,7 +10,6 @@ import CountdownBase from './CountdownBase';
 export default class Countdown extends CountdownBase {
   async onCreated() {
     super.onCreated();
-    console.log('countdown')
     this._getProgress();
     this._createTimer();
     this._createPauseTimerButton('15 min break', 220, 15);
@@ -25,7 +24,7 @@ export default class Countdown extends CountdownBase {
   _getProgress() {
     const progress = JSON.parse(sessionStorage.getItem('progress'));
     if (progress) {
-      this._startTime = progress.startTime;
+      this._currentTime = progress.startTime;
       this._progressBarInitialWidth = progress.barPosition;
     }
   }
@@ -36,7 +35,7 @@ export default class Countdown extends CountdownBase {
    * @private
    */
   _createTimer() {
-    const timer = new Timer(this._startTime, this._endTime);
+    const timer = new Timer(this._currentTime, this._endTime);
     timer.y = -75;
 
     this.timer = timer;
