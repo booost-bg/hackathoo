@@ -96,7 +96,7 @@ export default class Topics extends Scene {
 
   _finishScene() {
     this.emit(Scene.events.EXIT, {
-      to: "countdown",
+      to: "countdownStart",
       data: this.apiData,
     });
   }

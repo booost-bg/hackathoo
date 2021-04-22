@@ -10,7 +10,7 @@ import CountdownBase from './CountdownBase';
 export default class Countdown extends CountdownBase {
   async onCreated() {
     super.onCreated();
-
+    console.log('countdown')
     this._getProgress();
     this._createTimer();
     this._createPauseTimerButton('15 min break', 220, 15);

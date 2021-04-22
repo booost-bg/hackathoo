@@ -8,17 +8,22 @@ import Button from '../components/Button';
 import Panel from '../components/Panel';
 
 export default class CountdownBase extends Scene {
+
+  constructor(apiData) {
+    super();
+    this.apiData = apiData;
+  }
+
   async onCreated() {
 
-    const { startTime, endTime, text } = JSON.parse(
-      localStorage.getItem('hackathonSettings')
-    );
+    const {startTime, endTime, hackathonName} = this.apiData.hackathonSettings;
+    
 
     /**
      * @type {Date} - The start date of the Hackathon
      * @private
      */
-    this._startTime = startTime;
+    this._currentTime = startTime;
 
     /**
      * @type {Date} - The end date of the Hackathon
@@ -30,7 +35,7 @@ export default class CountdownBase extends Scene {
      * @type {String} - The name of the Hackathon
      * @private
      */
-    this._text = text;
+    this._text = hackathonName;
 
     /**
      * @type {Number}
@@ -170,9 +175,7 @@ export default class CountdownBase extends Scene {
    * @private
    */
   _createLogo() {
-    const text = JSON.parse(
-      localStorage.getItem('hackathonSettings')
-    ).hackathonName.toUpperCase();
+    const text = this.apiData.hackathonSettings.hackathonName.toUpperCase();
     const logo = new HackathonLogo(text);
     this.addChild(logo);
   }
