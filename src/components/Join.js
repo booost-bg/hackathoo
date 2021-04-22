@@ -1,4 +1,10 @@
+import gsap from 'gsap/all';
+
 export default class Join {
+  static get events() {
+    return { JOIN: 'join' };
+  }
+
   constructor() {
     this._createComponent();
   }
@@ -20,6 +26,7 @@ export default class Join {
       'justify-content': 'space-around',
       'box-sizing': 'border-box',
       'align-items': 'center',
+      opacity: '0',
     });
 
     const title = document.createElement('h1');
@@ -49,6 +56,16 @@ export default class Join {
       cursor: 'pointer',
       border: 'none',
       'font-size': '24px',
+    });
+
+    button.addEventListener('click', () => {
+      gsap.to(this.body.style, {
+        opacity: 0,
+        onComplete: () => {
+          this.body.style.display = 'none';
+          this.emit(Join.events.JOIN);
+        },
+      });
     });
 
     this.body.appendChild(title);
