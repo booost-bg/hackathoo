@@ -114,10 +114,6 @@ export default class ControlPanel extends Container {
       height: 55,
       curveSize: 14,
     });
-    // this.controlButton.pivot.x = 172 / 2;
-    // this.controlButton.pivot.y = 55 / 2;
-    // this.controlButton.x -= 774;
-    // this.controlButton.y += 314;
 
     this.controlButton.pivot.x = window.innerWidth / 2 - 100;
     this.controlButton.y = window.innerHeight / 2 - 258;
