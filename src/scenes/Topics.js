@@ -1,9 +1,9 @@
-import Scene from "./Scene";
-import { Sprite } from "pixi.js";
-import Button from "../components/Button";
-import Background from "../components/Background";
-import TopicsContainer from "../components/TopicsContainer";
-import config from "../config";
+import Scene from './Scene';
+import { Sprite } from 'pixi.js';
+import Button from '../components/Button';
+import Background from '../components/Background';
+import TopicsContainer from '../components/TopicsContainer';
+import config from '../config';
 
 /**
  * Class representing the Topics scene
@@ -15,14 +15,14 @@ export default class Topics extends Scene {
   constructor(apiData) {
     super();
 
-    this.apiData = apiData;
-
+    this._apiData = apiData;
     this._config = config.scenes.Topics;
-
     this._topicsContainer = new TopicsContainer({
-      topics: apiData.hackathonSettings.topics,
+      topics: this._apiData.hackathonSettings.topics,
       config: this._config,
+      chosenTopic: this._apiData.topic,
     });
+
     this._init();
   }
 
@@ -46,7 +46,7 @@ export default class Topics extends Scene {
       fx2Color,
       mainColor,
       accentColor,
-    } = this.apiData.hackathonSettings;
+    } = this._apiData.hackathonSettings;
     const background = new Background({
       circleColor1: fx1Color,
       circleColor2: fx2Color,
@@ -62,7 +62,7 @@ export default class Topics extends Scene {
    * @private
    */
   _addLogo() {
-    const logo = new Sprite.from("logo");
+    const logo = new Sprite.from('logo');
 
     logo.anchor.set(0.5);
     logo.scale.x = 0.4;
@@ -78,15 +78,15 @@ export default class Topics extends Scene {
    */
   _addButton() {
     this._startButton = new Button({
-      text: "START",
+      text: 'START',
       width: this._config.startButton.width,
       height: this._config.startButton.height,
     });
-    this._startButton.position.y =
-      window.innerHeight / 2 - this._config.startButton.height - 20;
+    this._startButton.position.y
+      = window.innerHeight / 2 - this._config.startButton.height - 20;
     this._startButton.position.x = -this._config.startButton.width / 2;
 
-    this._startButton.once("pointerup", async () => {
+    this._startButton.once('pointerup', async () => {
       await this._topicsContainer.spinWheel();
       this._finishScene();
     });
@@ -96,7 +96,7 @@ export default class Topics extends Scene {
 
   _finishScene() {
     this.emit(Scene.events.EXIT, {
-      to: "countdownStart",
+      to: 'countdownStart',
       data: this.apiData,
     });
   }

@@ -101,8 +101,8 @@ export default class Game extends Container {
     const constructor = this._getScene(scene);
     this.currentScene = new constructor(this.apiData);
     this.currentScene.background = this._background;
-    this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
-      this.switchScene({ scene: to, data });
+    this.currentScene.on(Scene.events.EXIT, ({ to }) => {
+      this.switchScene({ scene: to });
     });
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
@@ -121,28 +121,29 @@ export default class Game extends Container {
       try {
         this.apiData = await this._server.status(code);
         this.currentScene.join.remove();
-
-        const currentTime = dayjs();
-        const parsedStartTime = dayjs(this.apiData.hackathonSettings.startTime);
-        const parsedEndTime = dayjs(this.apiData.hackathonSettings.endTime);
-
-        if (currentTime < parsedStartTime) {
-          this.switchScene({ scene: 'countdownStart' });
-        } else if (parsedEndTime - currentTime <= 10000 && parsedEndTime - currentTime > 0) {
-          this.switchScene({ scene: 'finalCountdown' });
-        } else if (
-          currentTime > parsedStartTime 
-          && currentTime < parsedEndTime
-        ) {
-          this.switchScene({ scene: 'countdown' });
-        } else if (currentTime > parsedEndTime && !this.apiData.winners) {
-          console.log('chakame scena');
-        } else if (currentTime > parsedEndTime && this.apiData.winners) {
-          this.switchScene({scene: 'winners'});
-        }
-
       } catch (e) {
         this.currentScene.join.handleInvalidCode();
+
+        return;
+      }
+
+      const currentTime = dayjs();
+      const parsedStartTime = dayjs(this.apiData.hackathonSettings.startTime);
+      const parsedEndTime = dayjs(this.apiData.hackathonSettings.endTime);
+
+      if (currentTime < parsedStartTime) {
+        this.switchScene({ scene: 'countdownStart' });
+      } else if (parsedEndTime - currentTime <= 10000 && parsedEndTime - currentTime > 0) {
+        this.switchScene({ scene: 'finalCountdown' });
+      } else if (
+        currentTime > parsedStartTime 
+        && currentTime < parsedEndTime
+      ) {
+        this.switchScene({ scene: 'countdown' });
+      } else if (currentTime > parsedEndTime && !this.apiData.winners) {
+        console.log('chakame scena');
+      } else if (currentTime > parsedEndTime && this.apiData.winners) {
+        this.switchScene({scene: 'winners'});
       }
     });
   }

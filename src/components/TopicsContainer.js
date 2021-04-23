@@ -1,12 +1,13 @@
-import { Container, Graphics, Sprite, Text } from "pixi.js";
-import gsap, { random } from "gsap/gsap-core";
+import { Container, Graphics, Sprite, Text } from 'pixi.js';
+import gsap, { random } from 'gsap/gsap-core';
 
 export default class TopicsContainer extends Container {
-  constructor({ topics, config }) {
+  constructor({ topics, config, chosenTopic }) {
     super();
 
     this._topics = topics;
     this._config = config;
+    this._chosenTopic = chosenTopic;
 
     this._spinning = false;
     this._topicsContainerHeight = null;
@@ -31,9 +32,8 @@ export default class TopicsContainer extends Container {
       const topicBounds = topic.getBounds();
 
       if (
-        this._arrowPoint > topicBounds.y - this._config.topicGap / 2 &&
-        this._arrowPoint <
-          topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1
+        this._arrowPoint > topicBounds.y - this._config.topicGap / 2 
+        && this._arrowPoint < topicBounds.y + topicBounds.height + this._config.topicGap / 2 - 1
       ) {
         topic.children[0].tint = 0xffffff;
 
@@ -45,9 +45,7 @@ export default class TopicsContainer extends Container {
         topic.children[0].tint = 0xff00c7;
       }
 
-      topic.position.y =
-        topic.position.y %
-        (this._topicsContainerHeight + this._config.topicGap);
+      topic.position.y = topic.position.y % (this._topicsContainerHeight + this._config.topicGap);
     });
   }
 
@@ -68,8 +66,8 @@ export default class TopicsContainer extends Container {
     };
 
     await gsap.to(dummyObj, {
-      speed: 0,
-      ease: "power2.inOut",
+      speed: 1.5,
+      ease: 'power2.inOut',
       duration: random(10, 15),
 
       onUpdate: () => {
@@ -77,7 +75,43 @@ export default class TopicsContainer extends Container {
       },
     });
 
-    return this._onSpinComplete();
+    await this._spinToChosenTopic();
+    await this._onSpinComplete();
+
+    return;
+  }
+
+  /**
+   * Continues spinning till it reaches the chosen topic
+   * @private
+   */
+  _spinToChosenTopic() {
+    return new Promise((resolve) => {
+      const dummyObj = { speed: 1.5 };
+  
+      if (this._selectedTopic.topic === this._chosenTopic) {
+        resolve();
+      }
+
+      const tween = gsap.to(dummyObj, {
+        speed: 1.5,
+        repeat: -1,
+  
+        onUpdate: async () => {
+          this._updateTopicPos(dummyObj.speed);
+          if (this._selectedTopic.topic === this._chosenTopic) {
+            tween.kill();
+
+            dummyObj.speed = 1.5;
+            await gsap.to(dummyObj, {
+              speed: 0,
+              onUpdate: () => { this._updateTopicPos(dummyObj.speed); }
+            });
+            resolve();
+          }
+        }
+      });
+    });
   }
 
   /**
@@ -112,13 +146,13 @@ export default class TopicsContainer extends Container {
         this._selectedTopic,
         {
           duration: 1,
-          ease: "back",
+          ease: 'back',
           pixi: {
             scale: 1.5,
             y: `+=${offset}`,
           },
         },
-        "<"
+        '<'
       );
   }
 
@@ -127,14 +161,13 @@ export default class TopicsContainer extends Container {
    * @private
    */
   _addTopics() {
-    const mask = new Sprite.from("topicsMask");
+    const mask = new Sprite.from('topicsMask');
     mask.anchor.set(0.5);
     this.topicsContainer = new Container();
     this.topicsContainer.mask = mask;
 
     // to fix pop in
-    if (this._topics.length < 6)
-      this._topics = [...this._topics, ...this._topics];
+    if (this._topics.length < 6) { this._topics = [...this._topics, ...this._topics]; }
 
     for (let i = 0; i < this._topics.length; i++) {
       const topicContainer = new Container();
@@ -153,19 +186,19 @@ export default class TopicsContainer extends Container {
       topicBackground.tint = 0xff00c7;
 
       const topicText = new Text(this._topics[i], {
-        fontFamily: "Raleway",
+        fontFamily: 'Raleway',
         fontSize: 94,
         fontWeight: 900,
-        align: "center",
-        fontStyle: "italic",
+        align: 'center',
+        fontStyle: 'italic',
         padding: 20,
       });
 
       topicText.anchor.set(0.5);
       topicText.resolution = 2;
       topicContainer.addChild(topicBackground, topicText);
-      topicContainer.position.y =
-        (i + 1) * (this._config.topicHeight + this._config.topicGap);
+      topicContainer.position.y = (i + 1) * (this._config.topicHeight + this._config.topicGap);
+      topicContainer.topic = this._topics[i];
 
       this.topicsContainer.addChild(topicContainer);
     }
@@ -186,14 +219,14 @@ export default class TopicsContainer extends Container {
         {
           x: (_, target) => {
             return (
-              target.startPos +
-              this._config.arrowAnimationOffset * target.scale.x
+              target.startPos
+              + this._config.arrowAnimationOffset * target.scale.x
             );
           },
           pixi: {
             tint: 0xfff7b3,
           },
-          ease: "power1.inOut",
+          ease: 'power1.inOut',
           duration: 0.1,
         },
         {
@@ -201,7 +234,7 @@ export default class TopicsContainer extends Container {
           pixi: {
             tint: 0xffe500,
           },
-          ease: "power1.inOut",
+          ease: 'power1.inOut',
           duration: 0.15,
         },
       ],

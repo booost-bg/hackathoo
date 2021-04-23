@@ -16,7 +16,7 @@ export default class Winners extends Scene {
   constructor({winners}) {
     super();
     
-    this._winners = winners.teams;
+    this._winners = winners;
 
     this._config = config.scenes.Winners;
   }
