@@ -1,15 +1,15 @@
 import Scene from './Scene';
 import config from '../config';
 import Button from '../components/Button';
-import Background from '../components/Background';
 import Form from '../components/Form';
+import gsap from 'gsap';
 
 /**
  * Represents the setup scene of the app.
  */
 export default class Setup extends Scene {
   static get events() {
-    return { FINISH_SCENE: "finish-scene", SUBMIT: "submit" };
+    return { SUBMIT: 'submit', CHANGE_COLOR: 'change-color' };
   }
 
   constructor() {
@@ -20,11 +20,9 @@ export default class Setup extends Scene {
   }
 
   async onCreated() {
-    // this.renderBackground();
     this.drawButton();
     this.createForm();
     this.colorInputListener();
-    this.background = new Background();
   }
 
   /**
@@ -35,7 +33,21 @@ export default class Setup extends Scene {
   createForm() {
     if (this.form) this.form.domElement.style.display = 'none';
     this.form = new Form(this.formsConfig[this.currentFormIndex]);
+    this._fadeIn();
     this.forms = [...this.forms, this.form];
+  }
+
+  /**
+   * Form fade in animation
+   * @private
+   */
+  _fadeIn() {
+    gsap.to(this.form.domElement, {
+      css: {
+        opacity: 1,
+      },
+      duration: 0.9,
+    });
   }
 
   /**
@@ -108,22 +120,37 @@ export default class Setup extends Scene {
    */
   async finishScene() {
     this.button.startLoading();
-    this.forms.forEach((form) => {
-      form.domElement.remove();
-    });
+
     this.emit(Setup.events.SUBMIT, {
       hackathonSettings: this.submittedSettings,
     });
   }
 
   /**
-   * Renders the background of the scene.
-   * @method
+   * Form fade out animation
+   * @public
+   */
+  async fadeOut() {
+    await gsap.to('form', {
+      css: {
+        opacity: 0,
+        scale: 0.9,
+      },
+      duration: 0.9,
+      onComplete: () => {
+        this._clearDom();
+      },
+    });
+  }
+
+  /**
+   * Remove dom elements
    * @private
    */
-  renderBackground() {
-    this.background = new Background();
-    this.addChild(this.background);
+  async _clearDom() {
+    this.forms.forEach((form) => {
+      form.domElement.remove();
+    });
   }
 
   /**
@@ -132,29 +159,15 @@ export default class Setup extends Scene {
    * @private
    */
   colorInputListener() {
-    const bg1 = this.forms[0].inputElements['mainColor'];
-    const bg2 = this.forms[0].inputElements['accentColor'];
-    const fx1 = this.forms[0].inputElements['fx1Color'];
-    const fx2 = this.forms[0].inputElements['fx2Color'];
-    bg1.addEventListener('change', () => {
-      this.background.changeColors({
-        bgColor1: bg1.value,
-      });
-    });
-    bg2.addEventListener('change', () => {
-      this.background.changeColors({
-        bgColor2: bg2.value,
-      });
-    });
-    fx1.addEventListener('change', () => {
-      this.background.changeColors({
-        circleColor1: fx1.value,
-      });
-    });
-    fx2.addEventListener('change', () => {
-      this.background.changeColors({
-        circleColor1: fx1.value,
-        circleColor2: fx2.value,
+    const colorInputs = this.forms[0].inputElements;
+    const colorsForm = document.querySelector('form');
+
+    colorsForm.addEventListener('change', () => {
+      this.emit(Setup.events.CHANGE_COLOR, {
+        bgColor1: colorInputs.mainColor.value,
+        bgColor2: colorInputs.accentColor.value,
+        circleColor1: colorInputs.fx1Color.value,
+        circleColor2: colorInputs.fx2Color.value,
       });
     });
   }

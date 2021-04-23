@@ -13,16 +13,18 @@ export default class Form extends EventEmitter {
    * @param {string} element
    * @param {string} type
    * @param {string} text
+   * @param {string} value
    * @returns DOM element.
    * @method
    * @private
    */
-  createInputElement(element, type, text, id, format) {
+  createInputElement(element, type, text, id, format, value = '') {
     const label = document.createElement('label');
     label.htmlFor = id;
     label.innerText = text;
     const input = document.createElement(element);
     input.id = id;
+    input.value = value;
     if (element !== 'textarea') input.type = type;
     else {
       input.rows = '20';
@@ -73,6 +75,7 @@ export default class Form extends EventEmitter {
       'justify-content': 'space-between',
       'box-sizing': 'border-box',
       'align-items': 'flex-start',
+      opacity: 0,
     });
 
     this.domElement.classList.add('setup-form');
@@ -83,7 +86,8 @@ export default class Form extends EventEmitter {
         input.type,
         input.text,
         input.id,
-        input.format
+        input.format,
+        input.value
       );
       this.domElement.appendChild(element.label);
       this.domElement.appendChild(element.input);

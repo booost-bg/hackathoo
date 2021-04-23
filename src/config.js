@@ -56,24 +56,28 @@ export default {
               type: 'color',
               text: 'Main Color:',
               id: 'mainColor',
+              value: '#5200FF',
             },
             {
               element: 'input',
               type: 'color',
               text: 'Accent Color:',
               id: 'accentColor',
+              value: '#A80080',
             },
             {
               element: 'input',
               type: 'color',
               text: 'Fx 1 Color:',
               id: 'fx1Color',
+              value: '#FF00C7',
             },
             {
               element: 'input',
               type: 'color',
               text: 'Fx 2 Color:',
               id: 'fx2Color',
+              value: '#FFE600',
             },
             {
               element: 'input',
