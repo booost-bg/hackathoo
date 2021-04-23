@@ -1,6 +1,5 @@
 import Title from '../components/Title';
 import HackathonLogo from '../components/HackathonLogo';
-import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 import Scene from './Scene';
 import dayjs from 'dayjs';
@@ -61,7 +60,6 @@ export default class CountdownBase extends Scene {
     this.timer = null;
 
     this._createProgressBar();
-    this._createBackground();
     this._createTitle();
     this._createLogo();
     this._createRulesButton();
@@ -137,24 +135,6 @@ export default class CountdownBase extends Scene {
   }
 
   /**
-   * Renders background
-   * @method
-   * @private
-   */
-  _createBackground() {
-    const background = new Background({
-      bgColor1: '#0C59EB',
-      bgColor2: '#0C59EB',
-      circleColor1: '#FFE600',
-      circleColor2: '#FFE600',
-    });
-
-    this._background = background;
-    this._background.addChild(this._progressBar);
-    this.addChild(this._background);
-  }
-
-  /**
    * Renders the scene's title/
    * @method
    * @private
@@ -180,10 +160,10 @@ export default class CountdownBase extends Scene {
   }
 
   /**
-  * Renders Progressbar
-  * @method
-  * @private
-  */
+   * Renders Progressbar
+   * @method
+   * @private
+   */
   _startProgressBar() {
     this._progressBar.start(this.timer.totalTime);
   }

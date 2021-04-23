@@ -1,6 +1,5 @@
 import Assets from '../core/AssetManager';
 import Scene from './Scene';
-import Background from '../components/Background';
 import { Model, Light, LightingEnvironment } from 'pixi3d';
 import gsap from 'gsap/gsap-core';
 import HackathonLogo from '../components/HackathonLogo';
@@ -25,7 +24,6 @@ export default class FinalCountdown extends Scene {
    * @private
    */
   _init() {
-    this._addBackground();
     this._addModels();
     this._addLights();
     this._addHackathonName();
@@ -139,26 +137,5 @@ export default class FinalCountdown extends Scene {
     const name = new HackathonLogo(this._opts.hackathonName);
 
     this.addChild(name);
-  }
-
-  /**
-   * Adds the background fx to the scene
-   * @private
-   */
-  _addBackground() {
-    const {
-      fx1Color,
-      fx2Color,
-      mainColor,
-      accentColor,
-    } = this.apiData.hackathonSettings;
-    const background = new Background({
-      circleColor1: fx1Color,
-      circleColor2: fx2Color,
-      bgColor1: mainColor,
-      bgColor2: accentColor,
-    });
-
-    this.addChild(background);
   }
 }

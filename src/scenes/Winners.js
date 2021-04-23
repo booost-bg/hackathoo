@@ -1,5 +1,4 @@
 import Scene from './Scene';
-import Background from '../components/Background';
 import Team from '../components/Team';
 import gsap from 'gsap/gsap-core';
 import { filters, Sprite } from 'pixi.js';
@@ -29,25 +28,7 @@ export default class Winners extends Scene {
    * @private
    */
   _init() {
-    this._addBackground();
     this._initTeams();
-  }
-
-  /**
- * Adds the background to the scene
- * @private
- */
-  _addBackground() {
-    const background = new Background();
-    background.scale.set(1.1);
-    background.changeColors({
-      circleColor1: '#0085D1',
-      circleColor2: '#0085D1',
-      bgColor1: '#102AEB',
-      bgColor2: '#102AEB',
-    });
-
-    this.addChild(background);
   }
 
   /**

@@ -36,7 +36,6 @@ export default class Break extends Scene {
 
   async onCreated() {
     this._createProgressBar();
-    this._createBackground();
     this._createTimer();
     this._createTitle();
     this._createLogo();
@@ -52,21 +51,6 @@ export default class Break extends Scene {
     pg.x = -window.innerWidth / 2;
 
     this._progressBar = pg;
-  }
-
-  /**
-   * @private
-   */
-  _createBackground() {
-    const background = new Background({
-      bgColor1: '#014641',
-      bgColor2: '#014641',
-      circleColor1: '#FFE600',
-      circleColor2: '#FFE600',
-    });
-
-    background.addChild(this._progressBar);
-    this.addChild(background);
   }
 
   /**
