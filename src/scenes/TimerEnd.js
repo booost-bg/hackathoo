@@ -3,9 +3,7 @@ import { Text, Sprite } from 'pixi.js';
 import Title from '../components/Title';
 import Background from '../components/Background';
 import Firework from '../components/Firework';
-import * as PIXI from 'pixi.js';
 import gsap from 'gsap';
-import PixiPlugin from 'gsap/PixiPlugin';
 
 export default class TimerEnd extends Scene {
   constructor() {
@@ -21,7 +19,7 @@ export default class TimerEnd extends Scene {
 
   static get events() {
     return {
-      firework: 'NEW_FIREWORK',
+      FIREWORK: 'NEW_FIREWORK',
     }
   }
 
@@ -40,7 +38,7 @@ export default class TimerEnd extends Scene {
     const firework = new Firework();
     this.addChild(firework);
 
-    firework.on(TimerEnd.events.firework, (position) => this._addShockwave(position));
+    firework.on(TimerEnd.events.FIREWORK, (position) => this._addShockwave(position));
   }
 
   /**
@@ -79,9 +77,6 @@ export default class TimerEnd extends Scene {
       fontWeight: 600,
     });
     text.anchor.set(0.5);
-
-    gsap.registerPlugin(PixiPlugin);
-    PixiPlugin.registerPIXI(PIXI);
 
     const tl = gsap.timeline({ repeat: 3 })
       .to(text, {

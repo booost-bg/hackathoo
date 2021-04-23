@@ -12,8 +12,8 @@ export default class Firework extends Container {
 
     static get events() {
         return {
-            firework: 'NEW_FIREWORK',
-            launched: 'LAUNCHED',
+            FIREWORK: 'NEW_FIREWORK',
+            LAUNCHED: 'LAUNCHED',
         }
     }
 
@@ -31,8 +31,8 @@ export default class Firework extends Container {
         particle.position.set(position.x, position.y);
         this.addChild(particle);
 
-        particle.on(Firework.events.launched, (_y) => {
-            this.emit(Firework.events.firework, { x: particle.position.x, y: _y });
+        particle.on(Firework.events.LAUNCHED, (y) => {
+            this.emit(Firework.events.FIREWORK, { x: particle.position.x, y: y });
         })
 
         setTimeout(() => {

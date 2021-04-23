@@ -24,7 +24,7 @@ export default class FireworkParticle extends Container {
 
   static get events() {
     return {
-      launched: 'LAUNCHED',
+      LAUNCHED: 'LAUNCHED',
     }
   }
 
@@ -54,7 +54,7 @@ export default class FireworkParticle extends Container {
         duration: 0.5,
       });
 
-    this.emit(FireworkParticle.events.launched, positonTop)
+    this.emit(FireworkParticle.events.LAUNCHED, positonTop)
   }
 
   /**
@@ -76,28 +76,56 @@ export default class FireworkParticle extends Container {
       this._particles.push(circle);
     }
 
-    const half = Math.ceil(this._particles.length / 2);
-
-    const firstHalf = this._particles.splice(0, half)
-    const secondHalf = this._particles.splice(-half)
-
+    const chunks = this._splitIntoChunks(this._particles, this._particles.length / 5);
     const tl = gsap.timeline();
-    const dotIncrement = Math.PI * 2 / firstHalf.length;
-    const radius = random(100, 300);
     tl
-      .to(firstHalf, {
-        x: i => radius * Math.cos(i * dotIncrement),
-        y: i => radius * Math.sin(i * dotIncrement),
+      .add(this._addTimeline(chunks))
+      .to(chunks, { alpha: 0, duration: 0.4 }, '-=0.3')
+      .to(this._circle, { alpha: 0, duration: 0.3 }, '<-0.1');
+  }
+
+  /**
+   * @private 
+   * @param {Array} arr 
+   * @param {Number} chunk 
+   * @returns array of arrays
+   */
+  _splitIntoChunks(arr, chunk) {
+    const chunks = [];
+
+    while (arr.length > 0) {
+      const tempArray = arr.splice(0, chunk);
+      chunks.push(tempArray);
+    }
+
+    return chunks;
+  }
+
+  /**
+   * @private
+   * @param {Array} arr 
+   * @returns gsap timeline
+   */
+  _addTimeline(arr) {
+    const timeline = gsap.timeline({ paused: true });
+    const radius = random(100, 300);
+
+    let increment = 0.2;
+    arr.forEach(chunk => {
+      const dotIncrement = Math.PI * 2 / chunk.length;
+      const newRadius = radius * increment;
+
+      const tween = gsap.to(chunk, {
+        x: i => newRadius * Math.cos(i * dotIncrement),
+        y: i => newRadius * Math.sin(i * dotIncrement),
         ease: 'power3.out',
         duration: 0.6,
-      }, 'fire')
-      .to(secondHalf, {
-        x: i => radius * 0.5 * Math.cos(i * dotIncrement),
-        y: i => radius * 0.5 * Math.sin(i * dotIncrement),
-        ease: 'power3.out',
-        duration: 0.6,
-      }, 'fire')
-      .to([secondHalf, firstHalf], { alpha: 0, duration: 0.4 }, '<')
-      .to(this._circle, { alpha: 0, duration: 0.3 }, '<-1');
+      });
+      timeline.add(tween, 'fire');
+
+      increment += 0.2;
+    });
+
+    return timeline.play();
   }
 }
