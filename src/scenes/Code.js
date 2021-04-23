@@ -1,5 +1,4 @@
 import Scene from './Scene';
-import Background from '../components/Background';
 import { Container, Sprite, Texture, Text } from 'pixi.js';
 import HackathonLogo from '../components/HackathonLogo';
 import Button from '../components/Button';
@@ -22,33 +21,11 @@ export default class Code extends Scene {
    * @public
    */
   onCreated() {
-    // this._drawBackground();
     this._drawLogo();
     this._drawButton();
     this._drawTitle();
     this._drawDisplay();
     this._drawClipboardMessage();
-  }
-
-  /**
-   * Draws the background of the scene.
-   * @method
-   * @private
-   */
-  _drawBackground() {
-    const {
-      fx1Color,
-      fx2Color,
-      mainColor,
-      accentColor,
-    } = this.apiData.hackathonSettings;
-    const background = new Background({
-      circleColor1: fx1Color,
-      circleColor2: fx2Color,
-      bgColor1: mainColor,
-      bgColor2: accentColor,
-    });
-    this.addChild(background);
   }
 
   /**
