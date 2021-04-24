@@ -16,6 +16,7 @@ import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
 import Background from './components/Background';
+import { delay } from './core/utils';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -29,26 +30,32 @@ export default class Game extends Container {
     };
   }
 
-  /**
-   * @param {PIXI.Sprite} background
-   */
-  constructor({ background } = {}) {
+  constructor() {
     super();
 
     this.sortableChildren = true;
 
     this._config = config;
     this._server = null;
-    this._background = new Background();
-    this.addChild(this._background);
     this._scenes = [];
+    this._progressBar = null;
+    this._background = null;
     this.currentScene = null;
 
+    this._createBackground();
     this._registerScenes();
     this._registerPlugins();
     this._createServer();
     this.initDebug();
     // this.initNotifications();
+  }
+
+  /**
+   * @private
+   */
+  _createBackground() {
+    this._background = new Background();
+    this.addChild(this._background);
   }
 
   /**
@@ -98,23 +105,24 @@ export default class Game extends Container {
    * @param {Object} data Scene data
    */
   async switchScene({ scene, data = {} }) {
+    this._removeProgressBar();
     await this._fadeOut();
-  switchScene({ scene }) {
+
     this.removeChild(this.currentScene);
 
     const constructor = this._getScene(scene);
     this.currentScene = new constructor(this.apiData);
-    this.currentScene.background = this._background;
     this.currentScene.on(Scene.events.EXIT, ({ to }) => {
       this.switchScene({ scene: to });
     });
-    this.currentScene.alpha = 0;
 
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
     this.eventListeners();
 
     await this.currentScene.onCreated();
+
+    this._addProgressBar();
     await this._fadeIn();
   }
 
@@ -156,27 +164,14 @@ export default class Game extends Container {
   }
 
   /**
-   * Clears scene children except background before fade out
-   * @private
-   */
-  _clearChildren() {
-    for (let i = this.currentScene.children.length - 1; i >= 1; i--) {
-      const child = this.currentScene.children[i];
-
-      this.currentScene.removeChild(child);
-    }
-  }
-
-  /**
    * Scene fade out animation
    * @private
    */
   async _fadeOut() {
     await gsap.to(this.currentScene, {
       pixi: {
-        scale: 0,
+        scale: 0.9,
         alpha: 0,
-        // angle: 270,
       },
       duration: 0.8,
       ease: 'Circ.easeOut',
@@ -188,22 +183,51 @@ export default class Game extends Container {
    * @private
    */
   async _fadeIn() {
-    await gsap.fromTo(
-      this.currentScene,
-      {
-        pixi: {
-          scale: 1,
-          alpha: 0,
-        },
+    await gsap.to(this.currentScene, {
+      pixi: {
+        alpha: 1,
       },
-      {
+      duration: 0.8,
+    });
+  }
+
+  /**
+   * Add progressbar to scene background
+   * @private
+   */
+  _addProgressBar() {
+    if (this.currentScene._progressBar) {
+      this._progressBar = this.currentScene._progressBar;
+      this._progressBar.alpha = 0;
+      this._background.addChild(this.currentScene._progressBar);
+
+      gsap.to(this._progressBar, {
         pixi: {
-          scale: 1,
           alpha: 1,
         },
         duration: 0.8,
-      }
-    );
+      });
+    }
+  }
+
+  /**
+   * Remove progressbar from scene background
+   * @private
+   */
+  _removeProgressBar() {
+    if (this._progressBar) {
+      gsap.to(this._progressBar, {
+        pixi: {
+          alpha: 0,
+        },
+        duration: 0.8,
+        ease: 'Circ.easeOut',
+        onComplete: () => {
+          this._background.removeChild(this._progressBar);
+          this._progressBar = null;
+        },
+      });
+    }
   }
 
   /**
@@ -218,25 +242,23 @@ export default class Game extends Container {
   }
 
   eventListeners() {
-    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
-      // this.apiData = await this._server.create(hackathonSettings);
-      // const {
-      //   mainColor,
-      //   accentColor,
-      //   fx1Color,
-      //   fx2Color,
-      // } = this.apiData.hackathonSettings;
-      // console.log(mainColor, accentColor, fx1Color, fx2Color);
-      // #0ce4b9 #d3ed07 #06ef35 #05df01
-      this._background.changeColors({
-        bgColor1: '#0ce4b9',
-        bgColor2: '#d3ed07',
-        circleColor1: '#06ef35',
-        circleColor2: '#05df01',
-      });
+    this.currentScene.on(
+      Setup.events.CHANGE_COLOR,
+      ({ bgColor1, bgColor2, circleColor1, circleColor2 }) => {
+        this._background.changeColors({
+          bgColor1,
+          bgColor2,
+          circleColor1,
+          circleColor2,
+        });
+      }
+    );
 
+    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
+      // TODO: Handle api call here
+      await delay(2000);
+      this.currentScene.fadeOut();
       this.switchScene({ scene: 'code' });
-      // this.switchScene({ scene: "countdown", data: post.hackathonSettings });
     });
   }
 
