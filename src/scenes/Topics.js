@@ -1,7 +1,6 @@
 import Scene from './Scene';
 import { Sprite } from 'pixi.js';
 import Button from '../components/Button';
-import Background from '../components/Background';
 import TopicsContainer from '../components/TopicsContainer';
 import config from '../config';
 
@@ -30,31 +29,9 @@ export default class Topics extends Scene {
    * @private
    */
   _init() {
-    this._addBackground();
     this._addLogo();
     this._addButton();
     this.addChild(this._topicsContainer);
-  }
-
-  /**
-   * Adds the background to the scene
-   * @private
-   */
-  _addBackground() {
-    const {
-      fx1Color,
-      fx2Color,
-      mainColor,
-      accentColor,
-    } = this._apiData.hackathonSettings;
-    const background = new Background({
-      circleColor1: fx1Color,
-      circleColor2: fx2Color,
-      bgColor1: mainColor,
-      bgColor2: accentColor,
-    });
-
-    this.addChild(background);
   }
 
   /**

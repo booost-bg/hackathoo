@@ -2,7 +2,6 @@ import Scene from './Scene';
 import { Sprite } from 'pixi.js';
 import Title from '../components/Title';
 import Button from '../components/Button';
-import Background from '../components/Background';
 import Join from '../components/Join';
 import gsap from 'gsap/all';
 
@@ -21,7 +20,6 @@ export default class Intro extends Scene {
     super();
   }
   async onCreated() {
-    // this.renderBackground();
     this.drawLogo();
     this.drawTitle();
     this.drawCreateButton();
@@ -133,15 +131,5 @@ export default class Intro extends Scene {
     this.emit(Scene.events.EXIT, {
       to: 'setup',
     });
-  }
-
-  /**
-   * Renders the background of the scene.
-   * @method
-   * @private
-   */
-  renderBackground() {
-    const background = new Background();
-    this.addChild(background);
   }
 }

@@ -51,12 +51,6 @@ export default class CountdownBase extends Scene {
      * @type {PIXI.Container}
      * @private
      */
-    this._background = null;
-
-    /**
-     * @type {PIXI.Container}
-     * @private
-     */
     this.timer = null;
 
     this._createProgressBar();
