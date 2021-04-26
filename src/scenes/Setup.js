@@ -9,7 +9,7 @@ import Form from "../components/Form";
  */
 export default class Setup extends Scene {
   static get events() {
-    return { FINISH_SCENE: "finish-scene" };
+    return { FINISH_SCENE: "finish-scene", SUBMIT: "submit" };
   }
 
   constructor() {
@@ -89,7 +89,6 @@ export default class Setup extends Scene {
    */
   buttonClickHandler() {
     if (this.currentFormIndex >= this.formsConfig.length - 1) {
-      console.log(this.submittedSettings);
       localStorage.setItem(
         "hackathonSettings",
         JSON.stringify(this.submittedSettings)
@@ -106,8 +105,14 @@ export default class Setup extends Scene {
    * @method
    * @private
    */
-  finishScene() {
-    this.emit(Setup.events.FINISH_SCENE, { settings: this.submittedSettings });
+  async finishScene() {
+    this.button.startLoading();
+    this.forms.forEach((form) => {
+      form.domElement.remove();
+    });
+    this.emit(Setup.events.SUBMIT, {
+      hackathonSettings: this.submittedSettings,
+    });
   }
 
   /**

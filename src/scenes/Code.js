@@ -1,21 +1,19 @@
-import Scene from "./Scene";
-import Background from "../components/Background";
-import { Container, Sprite, Texture, Text } from "pixi.js";
-import HackathonLogo from "../components/HackathonLogo";
-import Button from "../components/Button";
-import gsap from "gsap/all";
+import Scene from './Scene';
+import Background from '../components/Background';
+import { Container, Sprite, Texture, Text } from 'pixi.js';
+import HackathonLogo from '../components/HackathonLogo';
+import Button from '../components/Button';
+import gsap from 'gsap/all';
 
 /**
  * Represents the Code scene.
  * @class
  */
 export default class Code extends Scene {
-  /**
-   * Events of the scene.
-   * @returns {string}
-   */
-  static get events() {
-    return { FINISH_SCENE: "finish-scene" };
+  constructor(apiData) {
+    super();
+    this.apiData = apiData;
+    this.code = apiData.code;
   }
 
   /**
@@ -38,7 +36,18 @@ export default class Code extends Scene {
    * @private
    */
   _drawBackground() {
-    const background = new Background();
+    const {
+      fx1Color,
+      fx2Color,
+      mainColor,
+      accentColor,
+    } = this.apiData.hackathonSettings;
+    const background = new Background({
+      circleColor1: fx1Color,
+      circleColor2: fx2Color,
+      bgColor1: mainColor,
+      bgColor2: accentColor,
+    });
     this.addChild(background);
   }
 
@@ -48,9 +57,7 @@ export default class Code extends Scene {
    * @private
    */
   _drawLogo() {
-    const logo = new HackathonLogo(
-      JSON.parse(localStorage.getItem("hackathonSettings")).hackathonName
-    );
+    const logo = new HackathonLogo(this.apiData.hackathonSettings.hackathonName.toUpperCase());
     this.addChild(logo);
   }
 
@@ -61,7 +68,7 @@ export default class Code extends Scene {
    */
   _drawButton() {
     const buttonConfig = {
-      text: "CONTINUE",
+      text: 'CONTINUE',
       fontSize: 24,
       width: 367,
       height: 53,
@@ -74,7 +81,7 @@ export default class Code extends Scene {
     button.y += buttonConfig.y;
     this.addChild(button);
 
-    button.on("click", () => {
+    button.on('click', () => {
       this._finishScene();
     });
   }
@@ -92,10 +99,10 @@ export default class Code extends Scene {
     rectangle.tint = 0x000000;
     rectangle.anchor.set(0.5);
 
-    const text = new Text("Your Code", {
-      fill: "#ffffff",
-      fontFamily: "Raleway, sans-serif",
-      fontStyle: "italic",
+    const text = new Text('Your Code', {
+      fill: '#ffffff',
+      fontFamily: 'Raleway, sans-serif',
+      fontStyle: 'italic',
       fontSize: 40,
       fontWeight: 800,
       padding: 20,
@@ -125,15 +132,13 @@ export default class Code extends Scene {
     rectangle.anchor.set(0.5);
     rectangle.alpha = 0.3;
 
-    this.code = "VB54G";
-
     const pixiText = new Text(this.code, {
-      fill: "#ffffff",
-      fontFamily: "Raleway",
-      fontStyle: "italic",
+      fill: '#ffffff',
+      fontFamily: 'Raleway',
+      fontStyle: 'italic',
       fontSize: 288,
       fontWeight: 1000,
-      padding: 20,
+      padding: 50,
     });
     pixiText.anchor.set(0.55, 0.5);
 
@@ -143,7 +148,7 @@ export default class Code extends Scene {
 
     container.interactive = true;
 
-    container.on("click", () => {
+    container.on('click', () => {
       this._copyCode();
     });
 
@@ -176,7 +181,7 @@ export default class Code extends Scene {
         alpha: 0,
         duration: 0.5,
       },
-      "+=1.5"
+      '+=1.5'
     );
   }
 
@@ -186,7 +191,9 @@ export default class Code extends Scene {
    * @private
    */
   _finishScene() {
-    this.emit(Code.events.FINISH_SCENE);
+    this.emit(Scene.events.EXIT, {
+      to: 'topics',
+    });
   }
 
   /**
@@ -203,11 +210,11 @@ export default class Code extends Scene {
     rectangle.anchor.set(0.5);
     rectangle.alpha = 0.3;
 
-    const text = "Copied to clipboard!";
+    const text = 'Copied to clipboard!';
 
     const pixiText = new Text(text, {
-      fill: "#ffffff",
-      fontFamily: "Raleway",
+      fill: '#ffffff',
+      fontFamily: 'Raleway',
       fontSize: 28,
       padding: 20,
     });
@@ -219,7 +226,7 @@ export default class Code extends Scene {
 
     this.clipboardMessageContainer.interactive = true;
 
-    this.clipboardMessageContainer.on("click", () => {
+    this.clipboardMessageContainer.on('click', () => {
       navigator.clipboard.writeText(text);
     });
 

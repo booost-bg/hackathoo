@@ -58,7 +58,7 @@ export default class Server {
 
       return data;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   }
 }

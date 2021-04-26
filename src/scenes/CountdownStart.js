@@ -18,12 +18,15 @@ export default class CountdownStart extends CountdownBase {
  * @private
  */
   _createTimer() {
-    this._startTime = dayjs();
-    this._endTime = dayjs().add(3, 'hour');
+    this._currentTime = dayjs();
 
-    const timer = new Timer(this._startTime, this._endTime);
-    timer.y = -75;
-    this.timer = timer;
+    this.timer = new Timer(this._currentTime, this._startTime);
+
+    this.timer.on(Timer.events.TIMER_END, () => {
+      this._finishScene();
+    });
+
+    this.timer.y = -75;
     this.addChild(this.timer);
     this._startProgressBar();
   }

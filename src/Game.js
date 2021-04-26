@@ -3,7 +3,6 @@ import Setup from './scenes/Setup';
 import Intro from './scenes/Intro';
 import FinalCountdown from './scenes/FinalCountdown';
 import Splash from './scenes/Splash';
-import Play from './scenes/Play';
 import Break from './scenes/Break';
 import Winners from './scenes/Winners';
 import Countdown from './scenes/Countdown';
@@ -16,6 +15,9 @@ import Scene from './scenes/Scene';
 import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
+import Code from './scenes/Code';
+import TimerEnd from './scenes/TimerEnd';
+import dayjs from 'dayjs';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -47,7 +49,7 @@ export default class Game extends Container {
     this._registerPlugins();
     this._createServer();
     this.initDebug();
-    this.initNotifications();
+    // this.initNotifications();
   }
 
   /**
@@ -63,6 +65,8 @@ export default class Game extends Container {
     this._scenes.push({ scene: Break, name: 'break' });
     this._scenes.push({ scene: FinalCountdown, name: 'finalCountdown' });
     this._scenes.push({ scene: Winners, name: 'winners' });
+    this._scenes.push({ scene: Code, name: 'code' });
+    this._scenes.push({ scene: TimerEnd, name: 'timerEnd' });
   }
 
   /**
@@ -87,30 +91,63 @@ export default class Game extends Container {
   async start() {
     await this.switchScene({ scene: 'splash' });
     await this.currentScene.finish;
-
-    // this.switchScene(Play, { scene: "play" });
-    // this.switchScene(Setup, { scene: 'setup' });
-    // this.switchScene(Break, { scene: 'setup' });
-    this.switchScene({ scene: 'countdown' });
-    // this.switchScene(Intro, { scene: 'intro' });
+    this.switchScene({ scene: 'intro' });
   }
 
   /**
    * @param {String} scene
    * @param {Object} data Scene data
    */
-  switchScene({ scene, data = {} }) {
+  switchScene({ scene }) {
     this.removeChild(this.currentScene);
     const constructor = this._getScene(scene);
-    this.currentScene = new constructor(data);
+    this.currentScene = new constructor(this.apiData);
     this.currentScene.background = this._background;
-    this.currentScene.on(Scene.events.EXIT, ({ to, data }) => {
-      this.switchScene({ scene: to, data });
+    this.currentScene.on(Scene.events.EXIT, ({ to }) => {
+      this.switchScene({ scene: to });
     });
     this.addChild(this.currentScene);
     this.emit(Game.events.SWITCH_SCENE, { scene });
+    this.eventListeners();
 
     return this.currentScene.onCreated();
+  }
+
+  eventListeners() {
+    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
+      this.apiData = await this._server.create(hackathonSettings);
+      this.switchScene({ scene: 'code' });
+    });
+
+    this.currentScene.on(Intro.events.JOIN_SUBMIT, async ({ code }) => {
+      try {
+        this.apiData = await this._server.status(code);
+        this.currentScene.join.remove();
+      } catch (e) {
+        this.currentScene.join.handleInvalidCode();
+
+        return;
+      }
+
+      const currentTime = dayjs();
+      const parsedStartTime = dayjs(this.apiData.hackathonSettings.startTime);
+      const parsedEndTime = dayjs(this.apiData.hackathonSettings.endTime);
+
+      if (currentTime < parsedStartTime) {
+        this.switchScene({ scene: 'countdownStart' });
+      } else if (parsedEndTime - currentTime <= 10000 && parsedEndTime - currentTime > 0) {
+        this.switchScene({ scene: 'finalCountdown' });
+      } else if (
+        currentTime > parsedStartTime 
+        && currentTime < parsedEndTime
+      ) {
+        this.switchScene({ scene: 'countdown' });
+      } else if (currentTime > parsedEndTime && !this.apiData.winners) {
+        this.switchScene({ scene: 'timerEnd' });
+      } else if (currentTime > parsedEndTime && this.apiData.winners) {
+        this.switchScene({scene: 'winners'});
+      }
+    });
   }
 
   /**

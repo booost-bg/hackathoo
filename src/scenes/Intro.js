@@ -4,12 +4,19 @@ import Title from '../components/Title';
 import Button from '../components/Button';
 import Background from '../components/Background';
 import Join from '../components/Join';
+import gsap from 'gsap/all';
 
 /**
  * Represents the intro scene of the app.
  * @class
  */
 export default class Intro extends Scene {
+  static get events() {
+    return {
+      JOIN_SUBMIT: 'join_submit',
+    };
+  }
+
   constructor() {
     super();
   }
@@ -69,10 +76,10 @@ export default class Intro extends Scene {
   }
 
   /**
- * Draws the join button of the scene.
- * @method
- * @private
- */
+   * Draws the join button of the scene.
+   * @method
+   * @private
+   */
   drawJoinButton() {
     const buttonConfig = {
       text: 'JOIN',
@@ -106,9 +113,16 @@ export default class Intro extends Scene {
    * @private
    */
   _joinHandler() {
-    const join = new Join();
-    document.body.appendChild(join.body);
-  };
+    this.join = new Join();
+    gsap.to(this.join.body.style, {
+      opacity: 1,
+    });
+    document.body.appendChild(this.join.body);
+
+    this.join.on(Join.events.SUMBIT, ({ code }) => {
+      this.emit(Intro.events.JOIN_SUBMIT, { code });
+    });
+  }
 
   /**
    * Emits a finish event
@@ -116,7 +130,9 @@ export default class Intro extends Scene {
    * @private
    */
   finishScene() {
-    this.emit('finishScene');
+    this.emit(Scene.events.EXIT, {
+      to: 'setup',
+    });
   }
 
   /**

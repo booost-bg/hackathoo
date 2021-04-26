@@ -13,11 +13,7 @@ export default class Winners extends Scene {
   /**
    * @param {Object[]} winners Winners array
    */
-  constructor(winners = [
-    { name: 'TEAM 1', place: '1' },
-    { name: 'TEAM 3', place: '3' },
-    { name: 'TEAM 2', place: '2' },
-  ]) {
+  constructor({winners}) {
     super();
     
     this._winners = winners;

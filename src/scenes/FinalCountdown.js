@@ -9,22 +9,16 @@ import HackathonLogo from '../components/HackathonLogo';
  * Class representing the 3D countdown scene
  */
 export default class FinalCountdown extends Scene {
-  constructor(opts = { hackathonName: 'HACKATHON' }) {
+  constructor(apiData) {
     super();
 
-    this._opts = opts;
+    this.apiData = apiData;
+
+    this._opts = apiData.hackathonSettings;
+
     this._models = Assets.models;
 
     this._init();
-  }
-  
-  /**
-   * Events getter
-   */
-  static get events() {
-    return {
-      finishScene: 'finishScene',
-    };
   }
 
   /**
@@ -70,34 +64,45 @@ export default class FinalCountdown extends Scene {
       const dummyObj = {
         rotation: 20,
       };
-      
-      gsap.timeline()
+
+      gsap
+        .timeline()
         .to(dummyObj, {
-          rotation: -30,  
+          rotation: -30,
           duration: 3,
           onUpdate: () => {
             digit.rotationQuaternion.setEulerAngles(0, dummyObj.rotation, 0);
-          }
-        })
-        .to(digit, {
-          z: 1,
-          ease: 'back',
-          duration: 1
-        }, '<')
-        .to(digit, {
-          pixi: {
-            z: -5,
-            scale: 0,
           },
-          onComplete: () => {
-            this.removeChild(digit);
-          } 
-        }, '-=2');
+        })
+        .to(
+          digit,
+          {
+            z: 1,
+            ease: 'back',
+            duration: 1,
+          },
+          '<'
+        )
+        .to(
+          digit,
+          {
+            pixi: {
+              z: -5,
+              scale: 0,
+            },
+            onComplete: () => {
+              this.removeChild(digit);
+            },
+          },
+          '-=2'
+        );
 
       await delay(1000);
     }
 
-    this.emit(FinalCountdown.events.finishScene);
+    this.emit(Scene.events.EXIT, {
+      to: 'timerEnd',
+    });
   }
 
   /**
@@ -105,12 +110,22 @@ export default class FinalCountdown extends Scene {
    * @private
    */
   _addLights() {
-    const pointLight1 = Object.assign(new Light(), { 
-      type: 'point', x: -1, y: 0, z: 6, range: 200, intensity: 100
+    const pointLight1 = Object.assign(new Light(), {
+      type: 'point',
+      x: -1,
+      y: 0,
+      z: 6,
+      range: 200,
+      intensity: 100,
     });
 
-    const pointLight2 = Object.assign(new Light(), { 
-      type: 'point', x: 1, y: 0, z: 7, range: 200, intensity: 30
+    const pointLight2 = Object.assign(new Light(), {
+      type: 'point',
+      x: 1,
+      y: 0,
+      z: 7,
+      range: 200,
+      intensity: 30,
     });
 
     LightingEnvironment.main.lights.push(pointLight1, pointLight2);
@@ -131,7 +146,18 @@ export default class FinalCountdown extends Scene {
    * @private
    */
   _addBackground() {
-    const background = new Background();
+    const {
+      fx1Color,
+      fx2Color,
+      mainColor,
+      accentColor,
+    } = this.apiData.hackathonSettings;
+    const background = new Background({
+      circleColor1: fx1Color,
+      circleColor2: fx2Color,
+      bgColor1: mainColor,
+      bgColor2: accentColor,
+    });
 
     this.addChild(background);
   }
