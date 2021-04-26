@@ -6,6 +6,7 @@ import Scene from './Scene';
 import dayjs from 'dayjs';
 import Button from '../components/Button';
 import Panel from '../components/Panel';
+import ControlPanel from '../components/ControlPanel';
 
 export default class CountdownBase extends Scene {
 
@@ -16,8 +17,8 @@ export default class CountdownBase extends Scene {
 
   async onCreated() {
 
-    const {startTime, endTime, hackathonName} = this.apiData.hackathonSettings;
-    
+    const { startTime, endTime, hackathonName } = this.apiData.hackathonSettings;
+
     /**
      * @type {Date} - The start date of the Hackathon
      * @private
@@ -66,6 +67,26 @@ export default class CountdownBase extends Scene {
     this._createLogo();
     this._createRulesButton();
     this._createCriteriaButton();
+    this._createControlButton();
+  }
+
+  /**
+   * Initializes the CONTROL button
+   * 
+   * @method
+   * @private
+   * @memberof CountdownStart
+   */
+  _createControlButton() {
+    const controlButton = new Button({ text: 'CONTROL', fontSize: 24, width: 160, height: 50, curveSize: 10 });
+    controlButton.pivot.x = 160 / 2;
+    controlButton.pivot.y = 50 / 2;
+    controlButton.x = -800;
+    controlButton.y = 235;
+    this.addChild(controlButton);
+    controlButton.on('click', () => {
+      this._controlButtonHandler();
+    });
   }
 
   /**
@@ -74,11 +95,11 @@ export default class CountdownBase extends Scene {
    * @private
    */
   _createRulesButton() {
-    const rulesButton = new Button({text: 'RULES', fontSize: 24, width: 160, height: 50, curveSize: 10});
+    const rulesButton = new Button({ text: 'RULES', fontSize: 24, width: 160, height: 50, curveSize: 10 });
     rulesButton.pivot.x = 160 / 2;
     rulesButton.pivot.y = 50 / 2;
     rulesButton.x = -800;
-    rulesButton.y = 370;
+    rulesButton.y = 365;
     this.addChild(rulesButton);
     rulesButton.on('click', () => {
       this._rulesButtonHandler();
@@ -91,7 +112,7 @@ export default class CountdownBase extends Scene {
    * @private
    */
   _createCriteriaButton() {
-    const criteriaButton = new Button({text: 'CRITERIA', fontSize: 24, width: 160, height: 50, curveSize: 10});
+    const criteriaButton = new Button({ text: 'CRITERIA', fontSize: 24, width: 160, height: 50, curveSize: 10 });
     criteriaButton.pivot.x = 160 / 2;
     criteriaButton.pivot.y = 50 / 2;
     criteriaButton.x = -800;
@@ -120,6 +141,15 @@ export default class CountdownBase extends Scene {
   _criteriaButtonHandler() {
     this.panel = new Panel('CRITERIA', 'content');
     this.panel.init();
+  };
+
+  /**
+ * Handles CONTROL button click.
+ * @method
+ * @private
+ */
+  _controlButtonHandler() {
+    this.panel = new ControlPanel(this.apiData);
   };
 
   /**

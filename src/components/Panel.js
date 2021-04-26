@@ -23,8 +23,8 @@ export default class Panel {
    */
   init() {
     this._generateTitleElement();
-    this._generateTextArea();
     this._generateExitButton();
+    this._generateTextArea();
     this._generateDomElement();
     this._animateIn();
   }
@@ -78,7 +78,11 @@ export default class Panel {
       'z-index': '1',
     });
 
-    this._titleElement.innerText = this._title;
+    if (this._title !== 'CONTROL') {
+      this._titleElement.innerText = this._title;
+    } else {
+      this._titleElement.innerText = 'CONTROL PANEL';
+    }
   }
 
   /**
@@ -107,7 +111,11 @@ export default class Panel {
       'z-index': '0',
     });
 
-    this._textArea.innerText = this._content;
+    if (this._title !== 'CONTROL') {
+      this._textArea.innerText = this._content;
+    } else {
+      this._textArea.innerText = '';
+    }
   }
 
   /**
@@ -137,6 +145,7 @@ export default class Panel {
       left: `${window.innerWidth - 70}px`,
       cursor: 'pointer',
       'z-index': '1',
+      'padding-bottom': '10px'
     });
 
     this._exitButton.innerHTML = 'x';
@@ -168,10 +177,77 @@ export default class Panel {
       position: 'absolute',
       'flex-direction': 'column',
     });
+
     this.domElement.appendChild(this._textArea);
     this.domElement.appendChild(this._titleElement);
     this.domElement.appendChild(this._exitButton);
 
     document.body.appendChild(this.domElement);
+
+    if (this._title === 'CONTROL') {
+      this._initControlPanelElements();
+    }
   }
+
+  /**
+   * Initizlies two sections inside the Panel. One for the "Break" buttons and one for the DropDownList with Winners 
+   * 
+   * @method
+   * @private
+   * @memberof Panel
+   */
+  _initControlPanelElements() {
+    this._initBreakButtonsArea();
+    this._initWinnerArea();
+  }
+
+  /**
+   * Initializes the DOM element positioned between the title and the Winners' area in the Panel
+   * 
+   * @method
+   * @private
+   * @memberof Panel
+   */
+  _initBreakButtonsArea() {
+    this._breakButtonsWrapper = document.createElement('div');
+
+    Object.assign(this._breakButtonsWrapper.style, {
+      position: 'absolute',
+      left: '1085px',
+      top: '180px',
+      width: `${window.innerWidth / 2.3}px`,
+      height: '338px',
+      'border-bottom': '1px solid #C4C4C4',
+      'z-index': 100,
+    });
+
+    this.domElement.appendChild(this._breakButtonsWrapper);
+  }
+
+  /**
+   * Initializes the DOM element positioned below the Break buttons area in the Panel
+   *
+   * @method
+   * @private
+   * @memberof Panel
+   */
+  _initWinnerArea() {
+    this._dropDownsWrapper = document.createElement('div');
+    if (document.getElementById('winnersWrapper')) {
+      document.getElementById('winnersWrapper').remove();
+    }
+    this._dropDownsWrapper.setAttribute('id', 'winnersWrapper');
+
+    Object.assign(this._dropDownsWrapper.style, {
+      position: 'absolute',
+      left: '1085px',
+      top: '518px',
+      width: `${window.innerWidth / 2.3}px`,
+      height: '615px',
+      'z-index': 100,
+    });
+
+    this.domElement.appendChild(this._dropDownsWrapper);
+  }
+
 }

@@ -1,16 +1,20 @@
 import { Container } from 'pixi.js';
-import Button from './Button';
 import gsap from 'gsap/all';
-import ControlPanelSidePanel from './ControlPanelSidePanel';
 import DropDownList from './DropDownList';
+import Panel from './Panel';
+import Server from './Server';
+import config from '../config';
 
 export default class ControlPanel extends Container {
   /**
    * Creates an instance of ControlPanel.
    * @memberof ControlPanel
    */
-  constructor() {
+  constructor(apiData) {
     super();
+
+    this.apiData = apiData;
+    this._config = config;
 
     this.panelOpenPostion = window.innerWidth / 2;
     this._tl = gsap.timeline();
@@ -25,9 +29,11 @@ export default class ControlPanel extends Container {
    * @memberof ControlPanel
    */
   init() {
-    this._generateWinnersDropdowns();
-    this._drawButtons();
+    this._createServer();
     this._initControlPanel();
+    this._generateWinnersDropdowns();
+    this._generateUpdateButton();
+    this._generateRankLabels();
     this._eventListeners();
   }
 
@@ -39,11 +45,9 @@ export default class ControlPanel extends Container {
    * @memberof ControlPanel
    */
   _initControlPanel() {
-    const panel = new ControlPanelSidePanel();
-    this.panelOpened = false;
+    const panel = new Panel('CONTROL', 'content');
     this.panel = panel;
-    this.panel.x = window.innerWidth / 2;
-    this.addChild(this.panel);
+    this.panel.init();
   }
 
   /**
@@ -52,73 +56,11 @@ export default class ControlPanel extends Container {
    * @private
    */
   _eventListeners() {
-    this.controlButton.on('click', () => {
-      if (!this.panelOpened) {
-        this._handleControlPanelAnimation(-1);
-      }
-    });
-
-    this.panel.on(ControlPanelSidePanel.events.BUTTON_CLICKED, (key) => {
-      if (key === 'closeButton' && this.panelOpened) {
-        this._handleControlPanelAnimation(1);
-      } else if (key === 'updateButton') {
+    this.on(ControlPanel.events.BUTTON_CLICKED, (key) => {
+      if (key === 'update') {
         this._submitWinners();
-      } else if (key === '15button') {
-        this._setTimeBreak(15);
-      } else if (key === '30button') {
-        this._setTimeBreak(30);
-      } else if (key === '60button') {
-        this._setTimeBreak(60);
       }
     });
-  }
-
-  /**
-   * Handles the "opening" and "closing" animations of the control panel.
-   * 
-   * @param {number} direction - defines the direction to which the panel should be moved
-   * @method
-   * @private
-   */
-  _handleControlPanelAnimation(direction) {
-    this.panelOpened = !this.panelOpened;
-
-    gsap.to(this.panel, {
-      pixi: {
-        x: this.panel.x + (974 * direction)
-      }
-    });
-
-    if (direction === 1) {
-      this._firstPlace.moveRight();
-      this._secondPlace.moveRight();
-      this._thirdPlace.moveRight();
-
-    } else {
-      this._firstPlace.moveLeft();
-      this._secondPlace.moveLeft();
-      this._thirdPlace.moveLeft();
-    }
-  }
-
-  /**
-   * Draws the Control button that opens the Control panel.
-   * @method
-   * @private
-   */
-  _drawButtons() {
-    this.controlButton = new Button({
-      text: 'CONTROL',
-      fontSize: 18,
-      width: 172,
-      height: 55,
-      curveSize: 14,
-    });
-
-    this.controlButton.pivot.x = window.innerWidth / 2 - 100;
-    this.controlButton.y = window.innerHeight / 2 - 258;
-
-    this.addChild(this.controlButton);
   }
 
   /**
@@ -129,22 +71,95 @@ export default class ControlPanel extends Container {
    * @memberof ControlPanel
    */
   _generateWinnersDropdowns() {
-    this._firstPlace = new DropDownList('first', '636px');
-    this._secondPlace = new DropDownList('second', '748px');
-    this._thirdPlace = new DropDownList('third', '860px');
+    this._firstPlace = new DropDownList('first', '118px', this.apiData, this._server);
+    this._secondPlace = new DropDownList('second', '230px', this.apiData, this._server);
+    this._thirdPlace = new DropDownList('third', '342px', this.apiData, this._server);
   }
 
   /**
-   * Makes a request to the backend with the Hackathon break time
+ * initializes the Update button
+ * 
+ * @method
+ * @private
+ * @memberof ControlPanel
+ */
+  _generateUpdateButton() {
+    this._updateButton = document.createElement('button');
+    this._updateButton.setAttribute('id', 'update');
+
+    Object.assign(this._updateButton.style, {
+      outline: 'none',
+      border: 'none',
+      'font-family': 'Raleway',
+      'font-size': '16px',
+      'font-weight': '700',
+      height: `55px`,
+      width: `185px`,
+      color: 'white',
+      'background-color': 'black',
+      position: 'absolute',
+      cursor: 'pointer',
+      'z-index': '1',
+      'text-transform': 'uppercase',
+      'margin-left': '92px',
+      top: '430px'
+    });
+
+    this._updateButton.innerHTML = 'Update';
+
+    this._updateButton.addEventListener('pointerdown', (e) => {
+      this.emit(ControlPanel.events.BUTTON_CLICKED, e.target.id);
+    });
+
+    document.getElementById('winnersWrapper').appendChild(this._updateButton);
+  }
+
+  /**
+   * Initializes all labels that appear above the different DropDown lists in the Control panel 
    * 
    * @method
    * @private
-   * @param {*} breakPeriod - the period of the break
    * @memberof ControlPanel
    */
-  _setTimeBreak(breakPeriod) {
-    console.log('Break period: ', breakPeriod);
-    // submit a POST request with the break period
+  _generateRankLabels() {
+    this._createRankLabel('1st place', 87);
+    this._createRankLabel('2nd place', 199);
+    this._createRankLabel('3rd place', 311);
+  }
+
+  /**
+   * Initializes a single text label that is positioned above each DropDownList in the Control panel
+   *
+   * @method
+   * @private
+   * @param {Text} text - the text of the label
+   * @param {Number} top - the top position of the label
+   * @memberof ControlPanel
+   */
+  _createRankLabel(text, top) {
+    this._rankLabel = document.createElement('span');
+
+    Object.assign(this._rankLabel.style, {
+      position: 'absolute',
+      'margin-left': '92px',
+      top: `${top}px`
+    });
+
+    this._rankLabel.innerHTML = text;
+    document.getElementById('winnersWrapper').appendChild(this._rankLabel);
+  }
+
+  /**
+   * Creates an instance of the Server class
+   * 
+   * @method
+   * @private
+   * @memberof ControlPanel
+   */
+  _createServer() {
+    const server = new Server(this._config.server);
+
+    this._server = server;
   }
 
   /**
@@ -155,18 +170,35 @@ export default class ControlPanel extends Container {
    * @memberof ControlPanel
    */
   _submitWinners() {
-    // submit a POST request with the winners of the Hackathon
     this._firstPlaceDropdown = document.getElementById('first');
     this._secondPlaceDropdown = document.getElementById('second');
     this._thirdPlaceDropdown = document.getElementById('third');
 
-    console.log(this._firstPlaceDropdown.value);
-    console.log(this._firstPlaceDropdown.options[this._firstPlaceDropdown.selectedIndex].text);
+    const team1Name = this._firstPlaceDropdown.options[this._firstPlaceDropdown.selectedIndex].text;
+    const team2Name = this._secondPlaceDropdown.options[this._secondPlaceDropdown.selectedIndex].text;
+    const team3Name = this._thirdPlaceDropdown.options[this._thirdPlaceDropdown.selectedIndex].text;
 
-    console.log(this._secondPlaceDropdown.value);
-    console.log(this._secondPlaceDropdown.options[this._secondPlaceDropdown.selectedIndex].text);
+    const winners = [
+      { name: team1Name, place: 1 },
+      { name: team2Name, place: 2 },
+      { name: team3Name, place: 3 },
+    ];
 
-    console.log(this._thirdPlaceDropdown.value);
-    console.log(this._thirdPlaceDropdown.options[this._thirdPlaceDropdown.selectedIndex].text);
+    const query = `${this.apiData.code}?token=$${this.apiData.token}`;
+
+    this._server.update(query, { winners });
+  }
+
+  /**
+ * Defines the events triggered by the class
+ *
+ * @readonly
+ * @static
+ * @memberof ControlPanelSidePanel
+ */
+  static get events() {
+    return {
+      BUTTON_CLICKED: 'button_clicked',
+    };
   }
 }

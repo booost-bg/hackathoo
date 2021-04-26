@@ -1,17 +1,20 @@
-import Server from './Server';
 import config from '../config';
-import gsap from 'gsap/all';
 
 export default class DropDownList {
   /**
    * Creates an instance of DropDownList.
    * @param {String} teamRank - the unique identifier of each DropDown list
    * @param {Number} topPosition - the distance from the top on which the DropDown should be positioned
+   * @param {Object} apiData - the current Hackathon data returned from the remote API
+   * @param {Number} server - contains the configuration for accessing the remote API data
    * @memberof DropDownList
    */
-  constructor(teamRank, topPosition) {
+  constructor(teamRank, topPosition, apiData, server) {
     this._teamRank = teamRank;
     this._topPosition = topPosition;
+    this.apiData = apiData;
+    this._server = server;
+
     this._leftDistanceFromBorder = 92;
 
     this._config = config;
@@ -19,28 +22,15 @@ export default class DropDownList {
   }
 
   /**
-   * Initializes fetches the teams data from the API and creates the DropDownList DOM element
+   * Initializes the teams data and creates the DropDownList DOM element
    * 
    * @method
    * @memberof DropDownList
    */
   async init() {
-    await this._getTeamsData();
+    this.participatingTeams = this.apiData.hackathonSettings.teams;
     this._createDropDownList(this._teamRank, this._topPosition);
   }
-
-  /**
-   * Fetches the Teams' data from the API
-   * 
-   * @method
-   * @private
-   * @memberof DropDownList
-   */
-  async _getTeamsData() {
-    this.server = new Server(this._config.server);
-    this.hackathonData = await this.server.status(74);
-    this.participatingTeams = this.hackathonData.hackathonSettings.teams;
-  };
 
   /**
    * Creates the DOM element of the DropDown list
@@ -54,7 +44,7 @@ export default class DropDownList {
   _createDropDownList(teamRank, topPosition) {
 
     this.teamsDropDownList = document.createElement('select');
-    this.teamsDropDownList.setAttribute('style', `position: absolute; left:${window.innerWidth + this._leftDistanceFromBorder}px; top: ${topPosition}`);
+    this.teamsDropDownList.setAttribute('style', `position: absolute; top: ${topPosition}`);
     this.teamsDropDownList.setAttribute('id', teamRank);
     this.teamsDropDownList.setAttribute('class', 'teamDropDownlist');
 
@@ -73,31 +63,7 @@ export default class DropDownList {
       option.text = team;
       document.getElementById(teamRank).add(option);
     });
-  }
 
-  /**
-   * Moves the DropDown list to left when opening the Control panel.
-   * 
-   * @method
-   * @memberof DropDownList
-   */
-  moveLeft() {
-    this.dropDownListElement = document.getElementById(this._teamRank);
-    gsap.to(this.dropDownListElement, {
-      x: -974
-    });
-  }
-
-  /**
-   * Moves the DropDown list to right when opening the Control panel.
-   * 
-   * @method
-   * @memberof DropDownList
-   */
-  moveRight() {
-    this.dropDownListElement = document.getElementById(this._teamRank);
-    gsap.to(this.dropDownListElement, {
-      x: 0
-    });
+    document.getElementById('winnersWrapper').appendChild(this.teamsDropDownList);
   }
 }
