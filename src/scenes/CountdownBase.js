@@ -108,7 +108,7 @@ export default class CountdownBase extends Scene {
    * @private
    */
   _rulesButtonHandler() {
-    this.panel = new Panel('RULES', 'content');
+    this.panel = new Panel('RULES', this.apiData.hackathonSettings.rules);
     this.panel.init();
   };
 
@@ -118,7 +118,7 @@ export default class CountdownBase extends Scene {
    * @private
    */
   _criteriaButtonHandler() {
-    this.panel = new Panel('CRITERIA', 'content');
+    this.panel = new Panel('CRITERIA', this.apiData.hackathonSettings.criteria);
     this.panel.init();
   };
 
