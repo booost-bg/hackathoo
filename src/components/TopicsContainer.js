@@ -1,13 +1,14 @@
-import { Container, Graphics, Sprite, Text } from 'pixi.js';
+import { Container, Graphics, Sprite, Text, utils } from 'pixi.js';
 import gsap, { random } from 'gsap/gsap-core';
 
 export default class TopicsContainer extends Container {
-  constructor({ topics, config, chosenTopic }) {
+  constructor({ topics, config, chosenTopic, color}) {
     super();
 
     this._topics = topics;
     this._config = config;
     this._chosenTopic = chosenTopic;
+    this._color = color;
 
     this._spinning = false;
     this._topicsContainerHeight = null;
@@ -42,7 +43,7 @@ export default class TopicsContainer extends Container {
           this._selectedTopic = topic;
         }
       } else {
-        topic.children[0].tint = 0xff00c7;
+        topic.children[0].tint = utils.string2hex(this._color);
       }
 
       topic.position.y = topic.position.y % (this._topicsContainerHeight + this._config.topicGap);
@@ -183,7 +184,7 @@ export default class TopicsContainer extends Container {
       );
 
       topicBackground.endFill();
-      topicBackground.tint = 0xff00c7;
+      topicBackground.tint = utils.string2hex(this._color);
 
       const topicText = new Text(this._topics[i], {
         fontFamily: 'Raleway',
