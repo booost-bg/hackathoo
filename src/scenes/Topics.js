@@ -3,6 +3,7 @@ import { Sprite } from 'pixi.js';
 import Button from '../components/Button';
 import Background from '../components/Background';
 import TopicsContainer from '../components/TopicsContainer';
+import gsap from 'gsap';
 import config from '../config';
 
 /**
@@ -14,13 +15,13 @@ export default class Topics extends Scene {
    */
   constructor(apiData) {
     super();
-
     this._apiData = apiData;
     this._config = config.scenes.Topics;
     this._topicsContainer = new TopicsContainer({
       topics: this._apiData.hackathonSettings.topics,
       config: this._config,
       chosenTopic: this._apiData.topic,
+      color: this._apiData.hackathonSettings.accentColor
     });
 
     this._init();
@@ -87,6 +88,7 @@ export default class Topics extends Scene {
     this._startButton.position.x = -this._config.startButton.width / 2;
 
     this._startButton.once('pointerup', async () => {
+      this._hideButton();
       await this._topicsContainer.spinWheel();
       this._finishScene();
     });
@@ -94,6 +96,19 @@ export default class Topics extends Scene {
     this.addChild(this._startButton);
   }
 
+  /**
+   * @private
+   */
+  _hideButton() {
+    gsap.to(this._startButton, {
+      pixi: {
+        alpha: 0,
+      },
+      duration: 0.4,
+      onComplete: () => this._startButton.visible = 0
+    });
+  }
+  
   _finishScene() {
     this.emit(Scene.events.EXIT, {
       to: 'countdownStart',
