@@ -95,6 +95,7 @@ export default class Countdown extends CountdownBase {
    */
   _finishScene() {
     sessionStorage.removeItem('progress');
+    this.timer.clearInterval();
     this.emit(Scene.events.EXIT, {
       to: 'finalCountdown',
     });

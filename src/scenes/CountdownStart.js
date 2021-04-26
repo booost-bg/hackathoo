@@ -1,5 +1,6 @@
 import CountdownBase from './CountdownBase';
 import Timer from '../components/Timer';
+import Scene from '../scenes/Scene';
 import dayjs from 'dayjs';
 
 /**
@@ -30,4 +31,16 @@ export default class CountdownStart extends CountdownBase {
     this.addChild(this.timer);
     this._startProgressBar();
   }
+
+  /**
+   * Emits a finish event
+   * @method
+   * @private
+   */
+  _finishScene() {
+    this.emit(Scene.events.EXIT, {
+      to: 'countdown',
+    });
+  }
+
 }

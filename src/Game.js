@@ -16,7 +16,9 @@ import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
 import Background from './components/Background';
-import { delay } from './core/utils';
+import Code from './scenes/Code';
+import TimerEnd from './scenes/TimerEnd';
+import dayjs from 'dayjs';
 
 /**
  * Main game stage, manages scenes/levels.
@@ -104,7 +106,7 @@ export default class Game extends Container {
    * @param {String} scene
    * @param {Object} data Scene data
    */
-  async switchScene({ scene, data = {} }) {
+  async switchScene({ scene }) {
     this._removeProgressBar();
     await this._fadeOut();
 
@@ -112,6 +114,8 @@ export default class Game extends Container {
 
     const constructor = this._getScene(scene);
     this.currentScene = new constructor(this.apiData);
+    this.currentScene.alpha = 0;
+
     this.currentScene.on(Scene.events.EXIT, ({ to }) => {
       this.switchScene({ scene: to });
     });
@@ -127,8 +131,17 @@ export default class Game extends Container {
   }
 
   eventListeners() {
+
+    this.currentScene.on(
+      Setup.events.CHANGE_COLOR,
+      ({ bgColor1, bgColor2, circleColor1, circleColor2 }) => {
+        this._background.changeColors({bgColor1, bgColor2, circleColor1, circleColor2});
+      }
+    );
+
     this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
       this.apiData = await this._server.create(hackathonSettings);
+      this.currentScene.fadeOut();
       this.switchScene({ scene: 'code' });
     });
 
@@ -160,7 +173,17 @@ export default class Game extends Container {
       } else if (currentTime > parsedEndTime && this.apiData.winners) {
         this.switchScene({scene: 'winners'});
       }
+
+      const { mainColor, accentColor, fx1Color, fx2Color } = this.apiData.hackathonSettings;
+      this._background.changeColors({
+        bgColor1: mainColor,
+        bgColor2: accentColor,
+        circleColor1: fx1Color,
+        circleColor2: fx2Color,
+      });
+      this._changeBackgroundColors(mainColor, accentColor, fx1Color, fx2Color);
     });
+    
   }
 
   /**
@@ -234,32 +257,11 @@ export default class Game extends Container {
    * @param {String} name Scene name
    * @returns {Function} constructor
    * @private
-   */
+*/
   _getScene(name) {
     const { scene } = this._scenes.find((scene) => scene.name === name);
 
     return scene;
-  }
-
-  eventListeners() {
-    this.currentScene.on(
-      Setup.events.CHANGE_COLOR,
-      ({ bgColor1, bgColor2, circleColor1, circleColor2 }) => {
-        this._background.changeColors({
-          bgColor1,
-          bgColor2,
-          circleColor1,
-          circleColor2,
-        });
-      }
-    );
-
-    this.currentScene.once(Setup.events.SUBMIT, async (hackathonSettings) => {
-      // TODO: Handle api call here
-      await delay(2000);
-      this.currentScene.fadeOut();
-      this.switchScene({ scene: 'code' });
-    });
   }
 
   /**
