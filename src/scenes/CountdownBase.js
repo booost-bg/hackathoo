@@ -4,6 +4,8 @@ import Background from '../components/Background';
 import Progressbar from '../components/Progressbar';
 import Scene from './Scene';
 import dayjs from 'dayjs';
+import Button from '../components/Button';
+import Panel from '../components/Panel';
 
 export default class CountdownBase extends Scene {
   async onCreated() {
@@ -58,7 +60,63 @@ export default class CountdownBase extends Scene {
     this._createBackground();
     this._createTitle();
     this._createLogo();
+    this._createRulesButton();
+    this._createCriteriaButton();
   }
+
+  /**
+   * Creates the rules button.
+   * @method
+   * @private
+   */
+  _createRulesButton() {
+    const rulesButton = new Button({text: 'RULES', fontSize: 24, width: 160, height: 50, curveSize: 10});
+    rulesButton.pivot.x = 160 / 2;
+    rulesButton.pivot.y = 50 / 2;
+    rulesButton.x = -800;
+    rulesButton.y = 370;
+    this.addChild(rulesButton);
+    rulesButton.on('click', () => {
+      this._rulesButtonHandler();
+    });
+  }
+
+  /**
+   * Creates the criteria button.
+   * @method
+   * @private
+   */
+  _createCriteriaButton() {
+    const criteriaButton = new Button({text: 'CRITERIA', fontSize: 24, width: 160, height: 50, curveSize: 10});
+    criteriaButton.pivot.x = 160 / 2;
+    criteriaButton.pivot.y = 50 / 2;
+    criteriaButton.x = -800;
+    criteriaButton.y = 300;
+    this.addChild(criteriaButton);
+    criteriaButton.on('click', () => {
+      this._criteriaButtonHandler();
+    });
+  }
+
+  /**
+   * Handles rules button click.
+   * @method
+   * @private
+   */
+  _rulesButtonHandler() {
+    this.panel = new Panel('RULES', 'content');
+    this.panel.init();
+  };
+
+  /**
+   * Handles criteria button click.
+   * @method
+   * @private
+   */
+  _criteriaButtonHandler() {
+    this.panel = new Panel('CRITERIA', 'content');
+    this.panel.init();
+  };
 
   /**
    * Initializes Progressbar 
