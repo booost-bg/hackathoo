@@ -16,6 +16,7 @@ import Debug from './components/Debug';
 import NotificationManager from './components/NotificationManager';
 import Topics from './scenes/Topics';
 import Code from './scenes/Code';
+import TimerEnd from './scenes/TimerEnd';
 import dayjs from 'dayjs';
 
 /**
@@ -65,6 +66,7 @@ export default class Game extends Container {
     this._scenes.push({ scene: FinalCountdown, name: 'finalCountdown' });
     this._scenes.push({ scene: Winners, name: 'winners' });
     this._scenes.push({ scene: Code, name: 'code' });
+    this._scenes.push({ scene: TimerEnd, name: 'timerEnd' });
   }
 
   /**
@@ -141,7 +143,7 @@ export default class Game extends Container {
       ) {
         this.switchScene({ scene: 'countdown' });
       } else if (currentTime > parsedEndTime && !this.apiData.winners) {
-        console.log('chakame scena');
+        this.switchScene({ scene: 'timerEnd' });
       } else if (currentTime > parsedEndTime && this.apiData.winners) {
         this.switchScene({scene: 'winners'});
       }

@@ -22,15 +22,6 @@ export default class FinalCountdown extends Scene {
   }
 
   /**
-   * Events getter
-   */
-  static get events() {
-    return {
-      finishScene: 'finishScene',
-    };
-  }
-
-  /**
    * @private
    */
   _init() {
@@ -109,7 +100,9 @@ export default class FinalCountdown extends Scene {
       await delay(1000);
     }
 
-    this.emit(FinalCountdown.events.finishScene);
+    this.emit(Scene.events.EXIT, {
+      to: 'timerEnd',
+    });
   }
 
   /**
