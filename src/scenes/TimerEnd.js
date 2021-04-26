@@ -1,7 +1,6 @@
 import Scene from './Scene';
 import { Text, Sprite } from 'pixi.js';
 import Title from '../components/Title';
-import Background from '../components/Background';
 import Firework from '../components/Firework';
 import gsap from 'gsap';
 
@@ -11,7 +10,6 @@ export default class TimerEnd extends Scene {
   }
 
   onCreated() {
-    this._drawBackground();
     this._drawFirework();
     this._addText();
     this._drawTitle();
@@ -20,15 +18,7 @@ export default class TimerEnd extends Scene {
   static get events() {
     return {
       FIREWORK: 'NEW_FIREWORK',
-    }
-  }
-
-  /**
-   * @private
-   */
-  _drawBackground() {
-    const background = new Background();
-    this.addChild(background);
+    };
   }
 
   /**
