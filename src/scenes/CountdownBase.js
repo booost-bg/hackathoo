@@ -67,7 +67,16 @@ export default class CountdownBase extends Scene {
     this._createLogo();
     this._createRulesButton();
     this._createCriteriaButton();
-    this._createControlButton();
+
+    if (this.apiData.token) {
+      const eventCode = this.apiData.code;
+      const token = this.apiData.token;
+      localStorage.setItem(eventCode, token);
+
+      this._createControlButton();
+    } else if (localStorage.getItem(this.apiData.code)) {
+      this._createControlButton();
+    }
   }
 
   /**

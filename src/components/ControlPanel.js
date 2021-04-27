@@ -174,6 +174,8 @@ export default class ControlPanel extends Container {
     this._secondPlaceDropdown = document.getElementById('second');
     this._thirdPlaceDropdown = document.getElementById('third');
 
+    const token = this._getToken();
+
     const team1Name = this._firstPlaceDropdown.options[this._firstPlaceDropdown.selectedIndex].text;
     const team2Name = this._secondPlaceDropdown.options[this._secondPlaceDropdown.selectedIndex].text;
     const team3Name = this._thirdPlaceDropdown.options[this._thirdPlaceDropdown.selectedIndex].text;
@@ -184,9 +186,31 @@ export default class ControlPanel extends Container {
       { name: team3Name, place: 3 },
     ];
 
-    const query = `${this.apiData.code}?token=$${this.apiData.token}`;
+    const query = `${this.apiData.code}?token=${token}`;
 
     this._server.update(query, { winners });
+  }
+
+  /**
+   *  Returns the authentication token for the current Hackathon
+   * 
+   * @method
+   * @priave
+   * @return {String} - The authentication token needed to edit the backend data 
+   * @memberof ControlPanel
+   */
+  _getToken() {
+    if (this.apiData.token) {
+      return this.apiData.token;
+    }
+
+    const localStorageToken = localStorage.getItem(this.apiData.code);
+
+    if (localStorageToken) {
+      return localStorageToken;
+    }
+
+    return '';
   }
 
   /**
