@@ -181,7 +181,6 @@ export default class Game extends Container {
         circleColor1: fx1Color,
         circleColor2: fx2Color,
       });
-      this._changeBackgroundColors(mainColor, accentColor, fx1Color, fx2Color);
     });
     
   }
