@@ -110,6 +110,8 @@ export default class Game extends Container {
     this.emit(Game.events.SWITCH_SCENE, { scene });
     this.eventListeners();
 
+    if (scene === 'timerEnd') this._checkForWinners();
+
     return this.currentScene.onCreated();
   }
 
@@ -148,6 +150,24 @@ export default class Game extends Container {
         this.switchScene({scene: 'winners'});
       }
     });
+  }
+
+  /**
+   * Switches to the winners scene if the winners are not null
+   * @private 
+   */
+  async _checkForWinners() {
+    const data = await this._server.status(this.apiData.code);
+
+    if (data.winners !== null) {
+      this.apiData = data;
+      this.switchScene({ scene: 'winners' });
+
+      return;
+    }
+    setTimeout(() => {
+      this._checkForWinners()
+    }, 1000);
   }
 
   /**
